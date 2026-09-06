@@ -4,18 +4,103 @@
   box-sizing: border-box;
 }
 
+/* ===================================================
+   VARIABLES DE TAMAÑO DEL SISTEMA SOLAR
+   Definir los tamaños como variables (en vez de escribir
+   700px, 520px, etc. sueltos en cada regla) permite hacer
+   el sistema "responsive" cambiando solo estos valores en
+   un media query, sin tocar cada regla individual otra vez.
+   =================================================== */
+:root {
+  --tam-sistema: 700px;
+  --tam-sol: 110px;
+  --tam-planeta: 46px;
+  --radio-mercurio: 220px;
+  --radio-venus: 320px;
+  --radio-tierra: 420px;
+  --radio-marte: 520px;
+}
+
+/* En pantallas de celular, el sistema solar completo se
+   encoge proporcionalmente para que quepa sin cortarse ni
+   pisar el título/botón de contacto de las esquinas.
+   600px es un punto de quiebre común para "es un celular". */
+@media (max-width: 600px) {
+  :root {
+    --tam-sistema: 300px;
+    --tam-sol: 56px;
+    --tam-planeta: 28px;
+    --radio-mercurio: 100px;
+    --radio-venus: 150px;
+    --radio-tierra: 200px;
+    --radio-marte: 250px;
+  }
+}
+
+/* scroll-behavior en el <html> (no en body) es lo que hace que
+   los saltos de ancla (#presskit, #biografia, #contacto) se vean
+   como un deslizamiento suave en vez de un salto brusco */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: #05050f;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  /* Ya NO tiene height:100vh + overflow:hidden — eso bloqueaba
+     el scroll de TODA la página. Ese comportamiento de "una sola
+     pantalla fija" ahora vive en .hero, que envuelve solo el
+     sistema solar. overflow-x sigue oculto para evitar scroll
+     horizontal accidental. */
+  overflow-x: hidden;
   font-family: sans-serif;
   /* ===== CURSOR CUSTOM (normal) ===== */
   /* Usamos un SVG como cursor. El "16 16" al final le dice al navegador
      qué punto del cursor es el "punto activo" (el centro, en este caso) */
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="6" fill="white" opacity="0.8"/></svg>') 16 16, auto;
+}
+
+/* ===================================================
+   HERO: envuelve el sistema solar para que ocupe una
+   pantalla completa y quede centrado, sin bloquear el
+   scroll del resto de la página (eso lo hacía antes el
+   body directamente)
+   =================================================== */
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ===================================================
+   SECCIONES DE SCROLL (Presskit, Biografía, Contacto)
+   Placeholder por ahora — solo para probar que el scroll
+   suave funciona. Contenido real pendiente.
+   =================================================== */
+.seccion-scroll {
+  /* position + z-index son necesarios porque .estrellas y .meteoro
+     usan position:fixed — eso los deja "flotando" por encima de
+     contenido normal aunque venga después en el HTML. Este z-index
+     asegura que estas secciones se vean siempre por encima de ellos. */
+  position: relative;
+  z-index: 20;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  background-color: #05050f;
+  color: white;
+  text-align: center;
+}
+
+.seccion-scroll h2 {
+  font-size: 28px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.4;
 }
 
 /* ===================================================
@@ -263,8 +348,8 @@ body:active {
 
 .sistema-solar {
   position: relative;
-  width: 700px;
-  height: 700px;
+  width: var(--tam-sistema);
+  height: var(--tam-sistema);
   z-index: 10; /* fuerza que TODO lo de adentro (sol, planetas) quede
                    por encima de los meteoros, que usan position:fixed
                    y viven en un contexto de apilamiento distinto */
@@ -274,8 +359,8 @@ body:active {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 110px;
-  height: 110px;
+  width: var(--tam-sol);
+  height: var(--tam-sol);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 60px 20px rgba(100, 180, 255, 0.5);
@@ -304,10 +389,10 @@ body:active {
    fijos fuera del sistema solar). Las alejamos más del sol
    (antes empezaban en 140px, ahora en 220px) para que respiren
    mejor y no queden tan pegadas al brillo central. */
-.orbita-mercurio { width: 220px; height: 220px; }
-.orbita-venus    { width: 320px; height: 320px; }
-.orbita-tierra   { width: 420px; height: 420px; }
-.orbita-marte    { width: 520px; height: 520px; }
+.orbita-mercurio { width: var(--radio-mercurio); height: var(--radio-mercurio); }
+.orbita-venus    { width: var(--radio-venus); height: var(--radio-venus); }
+.orbita-tierra   { width: var(--radio-tierra); height: var(--radio-tierra); }
+.orbita-marte    { width: var(--radio-marte); height: var(--radio-marte); }
 
 .pivote {
   position: absolute;
@@ -331,10 +416,10 @@ body:active {
   animation-play-state: paused;
 }
 
-.pivote-mercurio { width: 220px; height: 220px; animation-duration: 10s; }
-.pivote-venus    { width: 320px; height: 320px; animation-duration: 18s; }
-.pivote-tierra   { width: 420px; height: 420px; animation-duration: 26s; }
-.pivote-marte    { width: 520px; height: 520px; animation-duration: 36s; }
+.pivote-mercurio { width: var(--radio-mercurio); height: var(--radio-mercurio); animation-duration: 10s; }
+.pivote-venus    { width: var(--radio-venus); height: var(--radio-venus); animation-duration: 18s; }
+.pivote-tierra   { width: var(--radio-tierra); height: var(--radio-tierra); animation-duration: 26s; }
+.pivote-marte    { width: var(--radio-marte); height: var(--radio-marte); animation-duration: 36s; }
 
 @keyframes girar {
   from { transform: translate(-50%, -50%) rotate(0deg); }
@@ -346,8 +431,8 @@ body:active {
   top: 0;
   left: 50%;
   /* MISMO TAMAÑO para todos los planetas ahora, como pidió el cliente */
-  width: 46px;
-  height: 46px;
+  width: var(--tam-planeta);
+  height: var(--tam-planeta);
   transform: translate(-50%, -50%) scale(1);
   text-decoration: none;
   display: flex;

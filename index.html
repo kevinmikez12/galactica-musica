@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema Solar - Prototipo v2</title>
+<title>Galactica Homepage</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,7 +19,7 @@
   <!-- Contenedor vacío: JavaScript lo llena con estrellas generadas -->
   <div class="estrellas" id="estrellas"></div>
 
-  <h1 class="titulo">Galactica</h1>
+  <h1 class="titulo">Galáctica</h1>
 
   <!-- ===== METEOROS ===== -->
   <!-- Cada uno tiene contenido fijo: fecha, o una imagen de fondo -->
@@ -52,34 +52,48 @@
     </div>
   </div>
 
-  <div class="sistema-solar" id="sistemaSolar">
+  <!-- ===== HERO: envuelve el sistema solar en una pantalla completa ===== -->
+  <div class="hero">
+    <div class="sistema-solar" id="sistemaSolar">
 
-    <div class="sol"></div>
+      <div class="sol"></div>
 
-    <div class="orbita orbita-mercurio"></div>
-    <div class="orbita orbita-venus"></div>
-    <div class="orbita orbita-tierra"></div>
-    <div class="orbita orbita-marte"></div>
+      <div class="orbita orbita-mercurio"></div>
+      <div class="orbita orbita-venus"></div>
+      <div class="orbita orbita-tierra"></div>
+      <div class="orbita orbita-marte"></div>
 
-    <div class="pivote pivote-mercurio">
-      <a href="#" class="planeta mercurio" data-nombre="Shows" data-tipo="modal" title="Shows"></a>
+      <div class="pivote pivote-mercurio">
+        <a href="#" class="planeta mercurio" data-nombre="Shows" data-tipo="modal" title="Shows"></a>
+      </div>
+
+      <div class="pivote pivote-venus">
+        <a href="#presskit" class="planeta venus" data-nombre="Presskit" data-tipo="scroll" title="Presskit"></a>
+      </div>
+
+      <div class="pivote pivote-tierra">
+        <a href="#biografia" class="planeta tierra" data-nombre="Biografía" data-tipo="scroll" title="Biografía"></a>
+      </div>
+
+      <div class="pivote pivote-marte">
+        <a href="#" class="planeta marte" data-nombre="Newsletter" data-tipo="modal" title="Newsletter"></a>
+      </div>
+
     </div>
-
-    <div class="pivote pivote-venus">
-      <a href="#presskit" class="planeta venus" data-nombre="Presskit" data-tipo="scroll" title="Presskit"></a>
-    </div>
-
-    <div class="pivote pivote-tierra">
-      <a href="#biografia" class="planeta tierra" data-nombre="Biografía" data-tipo="scroll" title="Biografía"></a>
-    </div>
-
-    <div class="pivote pivote-marte">
-      <a href="#" class="planeta marte" data-nombre="Newsletter" data-tipo="modal" title="Newsletter"></a>
-    </div>
-
-    </div>
-
   </div>
+
+  <!-- ===== SECCIONES DE SCROLL (placeholder, contenido real pendiente) ===== -->
+  <section class="seccion-scroll" id="presskit">
+    <h2>Presskit — próximamente</h2>
+  </section>
+
+  <section class="seccion-scroll" id="biografia">
+    <h2>Biografía — próximamente</h2>
+  </section>
+
+  <section class="seccion-scroll" id="contacto">
+    <h2>Contacto — próximamente</h2>
+  </section>
 
   <!-- ===== BOTÓN DE CONTACTO (fijo, esquina superior derecha) ===== -->
   <a href="#contacto" class="boton-contacto">Contáctanos</a>

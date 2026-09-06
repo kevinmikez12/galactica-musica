@@ -126,10 +126,27 @@ planetas.forEach(planeta => {
     }
   });
 
-  // ===== CLICK: manda el planeta al centro Y abre su modal si aplica =====
+  // ===== CLICK: comportamiento distinto según data-tipo =====
   planeta.addEventListener('click', (evento) => {
     evento.preventDefault();
 
+    const tipo = planeta.dataset.tipo;     // lee el atributo data-tipo
+    const nombre = planeta.dataset.nombre; // lee el atributo data-nombre
+
+    // ===== TIPO "scroll" (Presskit, Biografía): solo desliza la
+    // página hacia esa sección — SIN zoom, SIN atenuar el sistema
+    // solar. Ese tratamiento es exclusivo de los planetas modal. =====
+    if (tipo === 'scroll') {
+      // El href del planeta ya trae el destino, ej. href="#presskit".
+      // .replace('#', '') nos deja solo "presskit" para usar con getElementById.
+      const idDestino = planeta.getAttribute('href').replace('#', '');
+      document.getElementById(idDestino).scrollIntoView({ behavior: 'smooth' });
+      return; // cortamos aquí, no ejecutamos el código de "enfocado" de abajo
+    }
+
+    // ===== TIPO "modal" (Shows, Newsletter): el comportamiento
+    // que ya teníamos — el planeta se va al centro agrandado y
+    // se abre su tarjeta de contenido =====
     if (planetaAbierto && planetaAbierto !== planeta) {
       cerrarPlaneta(planetaAbierto);
     }
@@ -139,17 +156,10 @@ planetas.forEach(planeta => {
     document.querySelector('.titulo').style.opacity = '0.15';
     planetaAbierto = planeta;
 
-    // Si este planeta es de tipo "modal", además abrimos su
-    // tarjeta de contenido correspondiente
-    const tipo = planeta.dataset.tipo;   // lee el atributo data-tipo
-    const nombre = planeta.dataset.nombre; // lee el atributo data-nombre
-
-    if (tipo === 'modal') {
-      if (nombre === 'Shows') {
-        abrirModal('modalShows');
-      } else if (nombre === 'Newsletter') {
-        abrirModal('modalNewsletter');
-      }
+    if (nombre === 'Shows') {
+      abrirModal('modalShows');
+    } else if (nombre === 'Newsletter') {
+      abrirModal('modalNewsletter');
     }
   });
 });
@@ -292,4 +302,38 @@ if (tieneMouseReal) {
 }
 // ============================================================
 // FIN SECCIÓN 6
+// ============================================================
+
+
+// ============================================================
+// SECCIÓN 7: PARALAX DE ESTRELLAS AL HACER SCROLL
+// ============================================================
+// Las estrellas usan position:fixed — por defecto NO se mueven
+// nada al hacer scroll, se quedan clavadas en pantalla siempre
+// igual. Para dar sensación de "viajar" por el espacio, las
+// desplazamos levemente en la misma dirección del scroll, pero
+// mucho más lento que el contenido real (0.15x) — así se sienten
+// "lejanas", como estrellas de fondo que casi no cambian de
+// posición aunque avances mucho en la página.
+const VELOCIDAD_PARALAX = 0.15;
+let paralaxPendiente = false; // evita apilar cálculos si el scroll dispara más rápido de lo que el navegador puede pintar
+
+window.addEventListener('scroll', () => {
+  if (paralaxPendiente) return; // ya hay uno en camino, no agregamos otro
+
+  // requestAnimationFrame agrupa el cálculo con el siguiente
+  // redibujado de pantalla — mismo principio que usamos en el
+  // efecto magnético de los meteoros (Sección 6), aquí para no
+  // recalcular el transform más veces de las que el navegador
+  // realmente puede mostrar (evita que el scroll se sienta "trabado")
+  requestAnimationFrame(() => {
+    const desplazamiento = window.scrollY * VELOCIDAD_PARALAX;
+    contenedorEstrellas.style.transform = `translateY(${desplazamiento}px)`;
+    paralaxPendiente = false;
+  });
+
+  paralaxPendiente = true;
+});
+// ============================================================
+// FIN SECCIÓN 7
 // ============================================================
