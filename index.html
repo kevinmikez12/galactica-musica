@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Solar - Prototipo v2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== PANTALLA DE CARGA (Big Bang) ===== -->
+  <div class="pantalla-carga" id="pantallaCarga">
+    <div class="nucleo-bigbang" id="nucleoBigbang"></div>
+    <div class="flash-explosion" id="flashExplosion"></div>
+    <p class="texto-carga" id="textoCarga">Haz clic para comenzar</p>
+    <p class="frase-artistica">— frase artística aquí —</p>
+  </div>
+
+  <!-- Contenedor vacío: JavaScript lo llena con estrellas generadas -->
+  <div class="estrellas" id="estrellas"></div>
+
+  <h1 class="titulo">Nombre del Artista</h1>
+
+  <!-- ===== METEOROS ===== -->
+  <!-- Cada uno tiene contenido fijo: fecha, o una imagen de fondo -->
+
+  <div class="meteoro meteoro-1">
+    <div class="meteoro-nucleo" style="background-color:#3d3d5c;">
+      15 Nov<br>CDMX
+    </div>
+  </div>
+
+  <div class="meteoro meteoro-2">
+    <div class="meteoro-nucleo" style="background: linear-gradient(135deg, #5a7fa6, #2c3e5c);">
+    </div>
+  </div>
+
+  <div class="meteoro meteoro-3">
+    <div class="meteoro-nucleo" style="background-color:#5c3d4a;">
+      22 Nov<br>GDL
+    </div>
+  </div>
+
+  <div class="meteoro meteoro-4">
+    <div class="meteoro-nucleo" style="background: linear-gradient(135deg, #6b9e7f, #2d4a3a);">
+    </div>
+  </div>
+
+  <div class="meteoro meteoro-5">
+    <div class="meteoro-nucleo" style="background-color:#3d5c4a;">
+      05 Dic<br>MTY
+    </div>
+  </div>
+
+  <div class="sistema-solar" id="sistemaSolar">
+
+    <div class="sol"></div>
+
+    <div class="orbita orbita-mercurio"></div>
+    <div class="orbita orbita-venus"></div>
+    <div class="orbita orbita-tierra"></div>
+    <div class="orbita orbita-marte"></div>
+
+    <div class="pivote pivote-mercurio">
+      <a href="#" class="planeta mercurio" data-nombre="Shows" data-tipo="modal" title="Shows"></a>
+    </div>
+
+    <div class="pivote pivote-venus">
+      <a href="#presskit" class="planeta venus" data-nombre="Presskit" data-tipo="scroll" title="Presskit"></a>
+    </div>
+
+    <div class="pivote pivote-tierra">
+      <a href="#biografia" class="planeta tierra" data-nombre="Biografía" data-tipo="scroll" title="Biografía"></a>
+    </div>
+
+    <div class="pivote pivote-marte">
+      <a href="#" class="planeta marte" data-nombre="Newsletter" data-tipo="modal" title="Newsletter"></a>
+    </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===== BOTÓN DE CONTACTO (fijo, esquina superior derecha) ===== -->
+  <a href="#contacto" class="boton-contacto">Contáctanos</a>
+
+  <!-- ===== FONDO OSCURO COMPARTIDO POR AMBOS MODALES ===== -->
+  <div class="fondo-modal" id="fondoModal"></div>
+
+  <!-- ===== MODAL: SHOWS ===== -->
+  <div class="tarjeta-modal" id="modalShows">
+    <button class="cerrar-modal" data-cerrar-modal>×</button>
+    <h2>Próximas Fechas</h2>
+    <p class="subtitulo-modal">No te pierdas los shows en vivo</p>
+
+    <div class="item-show">
+      <div>
+        <div class="fecha-show">15 Nov · CDMX</div>
+        <div class="ciudad-show">Foro Indie Rocks</div>
+      </div>
+      <a href="#" class="boton-boletos">Boletos</a>
+    </div>
+
+    <div class="item-show">
+      <div>
+        <div class="fecha-show">22 Nov · GDL</div>
+        <div class="ciudad-show">C3 Stage</div>
+      </div>
+      <a href="#" class="boton-boletos">Boletos</a>
+    </div>
+
+    <div class="item-show">
+      <div>
+        <div class="fecha-show">05 Dic · MTY</div>
+        <div class="ciudad-show">Café Iguana</div>
+      </div>
+      <a href="#" class="boton-boletos">Boletos</a>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: NEWSLETTER ===== -->
+  <div class="tarjeta-modal" id="modalNewsletter">
+    <button class="cerrar-modal" data-cerrar-modal>×</button>
+    <h2>Únete al newsletter</h2>
+    <p class="subtitulo-modal">Sé la primera en enterarte de nueva música, fechas y sorpresas exclusivas</p>
+
+    <input type="email" class="campo-newsletter" placeholder="tu@correo.com">
+    <button class="boton-suscribir">Suscribirme</button>
+
+    <p class="nota-privacidad">Sin spam, solo lo importante ✨</p>
+  </div>
+
+  <!-- ===== MENÚ FLOTANTE DE REDES SOCIALES (fijo, esquina inferior derecha) ===== -->
+  <!-- Orden en el HTML (de izquierda a derecha en pantalla):
+       [ocultas: Deezer, Amazon, Apple Music, YouTube] [siempre visibles: TikTok, Spotify, Instagram] [botón +] -->
+  <div class="redes-flotantes" id="redesFlotantes">
+    <a href="#" class="icono-red" title="Deezer">DZ</a>
+    <a href="#" class="icono-red" title="Amazon Music">AZ</a>
+    <a href="#" class="icono-red" title="Apple Music">AM</a>
+    <a href="#" class="icono-red" title="YouTube">YT</a>
+    <a href="#" class="icono-red siempre-visible" title="TikTok">TT</a>
+    <a href="#" class="icono-red siempre-visible" title="Spotify">SP</a>
+    <a href="#" class="icono-red siempre-visible" title="Instagram">IG</a>
+    <button class="boton-redes" id="botonRedes">+</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

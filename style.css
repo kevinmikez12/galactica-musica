@@ -1,0 +1,710 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #05050f;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: sans-serif;
+  /* ===== CURSOR CUSTOM (normal) ===== */
+  /* Usamos un SVG como cursor. El "16 16" al final le dice al navegador
+     qué punto del cursor es el "punto activo" (el centro, en este caso) */
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="6" fill="white" opacity="0.8"/></svg>') 16 16, auto;
+}
+
+/* ===================================================
+   FONDO DE ESTRELLAS
+   =================================================== */
+
+/* Contenedor que vive detrás de TODO (z-index más bajo que
+   los meteoros, que ya vimos que tienen z-index: 1) */
+.estrellas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none; /* no bloquea clics, igual que los meteoros */
+}
+
+.estrella {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation-name: titilar;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate; /* va y regresa, en vez de saltar */
+}
+
+/* ===================================================
+   BOTÓN STICKY DE REDES SOCIALES (esquina inferior derecha)
+   =================================================== */
+.redes-flotantes {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: row; /* ahora en fila, no en columna */
+  align-items: center;
+  gap: 16px;
+  z-index: 200;
+}
+
+/* El botón principal que abre/cierra el menú (este sí conserva
+   un círculo sutil, porque es un BOTÓN, no un logo de red social —
+   ayuda a que se entienda que es algo clickeable) */
+.boton-redes {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  transition: transform 0.3s ease, background 0.3s ease;
+  /* En fila horizontal, "order" alto lo manda al extremo derecho,
+     que es el lado "de origen" (pegado a la esquina) */
+  order: 999;
+  flex-shrink: 0; /* evita que el botón se achique si el espacio es poco */
+}
+
+.boton-redes:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.boton-redes.abierto {
+  transform: rotate(45deg);
+}
+
+/* ===== ÍCONOS SUELTOS, SIN CÍRCULO DE FONDO ===== */
+/* Ya no llevan background, border ni backdrop-filter — son
+   solo el ícono/texto flotando, como pediste */
+.icono-red {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0;
+  /* Ahora se deslizan desde la derecha (no desde abajo, porque
+     el menú ya es horizontal) */
+  transform: translateX(20px) scale(0.5);
+  pointer-events: none;
+  transition: all 0.35s ease;
+}
+
+.icono-red:hover {
+  transform: scale(1.25) !important;
+  /* Como ya no hay fondo circular, el hover resalta con un
+     glow suave detrás del ícono en sí */
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+}
+
+.redes-flotantes.abierto .icono-red {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+/* Cascada: como ahora se leen de derecha a izquierda (el botón
+   está a la derecha), el primer ícono en aparecer es el más
+   cercano al botón */
+.redes-flotantes.abierto .icono-red:nth-child(1) { transition-delay: 0.15s; }
+.redes-flotantes.abierto .icono-red:nth-child(2) { transition-delay: 0.1s; }
+.redes-flotantes.abierto .icono-red:nth-child(3) { transition-delay: 0.05s; }
+.redes-flotantes.abierto .icono-red:nth-child(4) { transition-delay: 0s; }
+
+/* ===== Las 3 principales, siempre visibles (fuera del toggle) ===== */
+.icono-red.siempre-visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+/* ===================================================
+   BOTÓN DE CONTACTO (esquina superior derecha)
+   =================================================== */
+.boton-contacto {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  padding: 12px 24px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(6px);
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  z-index: 200;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.boton-contacto:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+
+
+/* Capa que cubre TODA la pantalla, por encima de absolutamente
+   todo lo demás (z-index más alto que existe en el sitio) */
+.pantalla-carga {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 1s ease; /* para cuando la ocultemos al final */
+}
+
+/* Cuando le agreguemos esta clase con JS, se desvanece y dejamos
+   de bloquear clics hacia el sistema solar de abajo */
+.pantalla-carga.oculta {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* El núcleo: el punto que "respira" antes de explotar */
+.nucleo-bigbang {
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 20px 6px rgba(255,255,255,0.8);
+  animation: respirar 1.4s ease-in-out infinite;
+}
+
+/* Pulso: crece y decrece sutilmente, cada vez el ciclo se repite
+   más rápido gracias a una clase que le agregamos con JS */
+@keyframes respirar {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  50%  { transform: scale(1.8); opacity: 1;   }
+  100% { transform: scale(1);   opacity: 0.7; }
+}
+
+/* Cuando el usuario hace clic, cambiamos la animación a una
+   más frenética justo antes de la explosión real */
+.nucleo-bigbang.tension {
+  animation: respirar 0.25s ease-in-out infinite;
+}
+
+/* El flash de la explosión: un círculo blanco que se expande
+   violentamente hasta cubrir toda la pantalla */
+.flash-explosion {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.flash-explosion.explotando {
+  animation: explotar 0.8s ease-out forwards;
+}
+
+@keyframes explotar {
+  0%   { transform: scale(1);    opacity: 1; }
+  100% { transform: scale(300);  opacity: 0; }
+}
+
+.texto-carga {
+  color: white;
+  opacity: 0.6;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.frase-artistica {
+  color: white;
+  opacity: 0.4;
+  font-size: 14px;
+  font-style: italic;
+  margin-top: 12px;
+  text-align: center;
+}
+
+/* ===== CURSOR CUSTOM (al hacer clic) ===== */
+/* :active se activa SOLO durante el instante que mantienes el clic presionado */
+body:active {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="10" fill="orange" opacity="0.9"/></svg>') 16 16, auto;
+}
+
+.sistema-solar {
+  position: relative;
+  width: 700px;
+  height: 700px;
+  z-index: 10; /* fuerza que TODO lo de adentro (sol, planetas) quede
+                   por encima de los meteoros, que usan position:fixed
+                   y viven en un contexto de apilamiento distinto */
+}
+
+.sol {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 60px 20px rgba(100, 180, 255, 0.5);
+  z-index: 10;
+  transition: opacity 0.4s ease;
+  /* PLACEHOLDER local (sin depender de internet): gradiente que
+     simula una foto con tinte azul, como en el ejemplo. Cuando
+     llegue la foto real de la artista, reemplaza esta línea por:
+     background-image: url('ruta/a/foto-artista.jpg'); */
+  background: radial-gradient(circle at 40% 30%, #6fa8dc, #1c3f5f 70%);
+  background-size: cover;
+  background-position: center;
+}
+
+.orbita {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease;
+}
+
+/* Solo 4 órbitas ahora (Contacto y Redes se movieron a botones
+   fijos fuera del sistema solar). Las alejamos más del sol
+   (antes empezaban en 140px, ahora en 220px) para que respiren
+   mejor y no queden tan pegadas al brillo central. */
+.orbita-mercurio { width: 220px; height: 220px; }
+.orbita-venus    { width: 320px; height: 320px; }
+.orbita-tierra   { width: 420px; height: 420px; }
+.orbita-marte    { width: 520px; height: 520px; }
+
+.pivote {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation-name: girar;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  /* El pivote en sí es "invisible" al mouse (pointer-events: none).
+     Así el mouse "atraviesa" el círculo grande de la órbita y
+     SOLO puede interactuar con el planeta, que restauramos
+     a pointer-events: auto abajo. */
+  pointer-events: none;
+}
+
+/* ===== CLASE QUE PAUSA LA ÓRBITA ===== */
+/* JavaScript le agrega esta clase al pivote que el usuario está tocando */
+.pivote.pausado {
+  animation-play-state: paused;
+}
+
+.pivote-mercurio { width: 220px; height: 220px; animation-duration: 10s; }
+.pivote-venus    { width: 320px; height: 320px; animation-duration: 18s; }
+.pivote-tierra   { width: 420px; height: 420px; animation-duration: 26s; }
+.pivote-marte    { width: 520px; height: 520px; animation-duration: 36s; }
+
+@keyframes girar {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.planeta {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  /* MISMO TAMAÑO para todos los planetas ahora, como pidió el cliente */
+  width: 46px;
+  height: 46px;
+  transform: translate(-50%, -50%) scale(1);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  z-index: 5;
+  pointer-events: auto;
+  background-size: cover;
+  background-position: center;
+  /* drop-shadow (en vez de box-shadow) porque sigue la FORMA real
+     de la imagen recortada, no un rectángulo/círculo invisible */
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.4));
+}
+
+.planeta:hover {
+  transform: translate(-50%, -50%) scale(1.4);
+  filter: drop-shadow(0 0 14px rgba(255,255,255,0.8));
+  z-index: 20;
+}
+
+/* ===== FORMAS IRREGULARES CON clip-path =====
+   clip-path recorta la imagen cuadrada en una silueta específica.
+   polygon() dibuja formas con puntos (x% y%) conectados entre sí;
+   circle()/ellipse() son formas redondas más simples.
+   Esto es PLACEHOLDER — cuando lleguen los PNGs reales con
+   transparencia (disco, sobre, gatos), se puede quitar el
+   clip-path y dejar que el PNG mismo traiga su silueta. */
+
+/* Disco (círculo simple con un "agujero" simulado en el centro) */
+.mercurio {
+  background: radial-gradient(circle, #e8e8e8 20%, #b8b8d0 40%, #7878a0 70%, #e8e8e8 100%);
+  clip-path: circle(50%);
+}
+
+/* Sobre/carta — forma de pentágono simulando un sobre */
+.venus {
+  background: linear-gradient(135deg, #f5f0e0, #d8cfa8);
+  clip-path: polygon(0% 20%, 50% 55%, 100% 20%, 100% 100%, 0% 100%);
+}
+
+/* Silueta tipo "cabeza de gato" con orejas triangulares */
+.tierra {
+  background: linear-gradient(160deg, #b565a7, #7a3a70);
+  clip-path: polygon(
+    20% 0%, 35% 25%, 65% 25%, 80% 0%,
+    100% 40%, 100% 80%, 50% 100%, 0% 80%, 0% 40%
+  );
+}
+
+/* Caja/paquete — hexágono simulando una caja vista en 3D */
+.marte {
+  background: linear-gradient(160deg, #d9a066, #a66b35);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Otra silueta de gato, distinto color */
+.jupiter {
+  background: linear-gradient(160deg, #4a9d6e, #2d6b47);
+  clip-path: polygon(
+    20% 0%, 35% 25%, 65% 25%, 80% 0%,
+    100% 40%, 100% 80%, 50% 100%, 0% 80%, 0% 40%
+  );
+}
+
+/* Cámara/mano — forma irregular tipo "blob" orgánico */
+.saturno {
+  background: linear-gradient(160deg, #c0c0c8, #808088);
+  clip-path: polygon(
+    30% 0%, 70% 0%, 100% 30%, 100% 70%,
+    70% 100%, 30% 100%, 0% 70%, 0% 30%
+  );
+}
+
+/* ===== CLASE "ENFOCADO" ===== */
+/* Esta es la clase mágica: cuando JS se la pone a un planeta,
+   lo saca de su posición orbital y lo manda AL CENTRO de la pantalla,
+   agrandado. position: fixed + top/left 50% + translate(-50%,-50%)
+   es la fórmula clásica para centrar algo en TODA la ventana. */
+.planeta.enfocado {
+  position: fixed;
+  top: 50% !important;
+  left: 50% !important;
+  width: 260px !important;
+  height: 260px !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  font-size: 20px;
+  box-shadow: 0 0 80px 20px rgba(255, 255, 255, 0.4);
+  z-index: 100;
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+
+/* Cuando hay un planeta enfocado, atenuamos el resto del sistema solar */
+.sistema-solar.enfocando .sol,
+.sistema-solar.enfocando .orbita,
+.sistema-solar.enfocando .planeta:not(.enfocado) {
+  opacity: 0.15;
+  pointer-events: none; /* evita que se pueda hacer click en otros mientras uno está enfocado */
+}
+
+/* ===================================================
+   SISTEMA DE MODALES
+   =================================================== */
+/* El planeta agrandado (arriba) actúa como "botón visual" que
+   dispara el modal — el CONTENIDO real vive aquí, en una tarjeta
+   rectangular normal, para que texto/formularios no se depformen
+   dentro de las siluetas irregulares (clip-path) de los planetas. */
+
+.fondo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 150; /* entre el planeta enfocado (100) y la pantalla de carga (1000) */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.fondo-modal.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tarjeta-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: min(90vw, 420px); /* nunca más ancho que 420px, pero se
+                                achica en pantallas pequeñas (90% del viewport) */
+  max-height: 80vh;
+  overflow-y: auto; /* si el contenido es largo, aparece scroll interno */
+  background: #0d0d1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 32px;
+  color: white;
+  z-index: 151;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.tarjeta-modal.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+.tarjeta-modal h2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.tarjeta-modal .subtitulo-modal {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-bottom: 24px;
+}
+
+.cerrar-modal {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  font-size: 22px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  background: none;
+  border: none;
+  color: white;
+}
+
+.cerrar-modal:hover {
+  opacity: 1;
+}
+
+/* ===== Contenido específico: lista de shows ===== */
+.item-show {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.item-show:last-child {
+  border-bottom: none;
+}
+
+.item-show .fecha-show {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.item-show .ciudad-show {
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+.item-show .boton-boletos {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  font-size: 12px;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.2s ease;
+}
+
+.item-show .boton-boletos:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== Contenido específico: formulario de newsletter ===== */
+.campo-newsletter {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.campo-newsletter::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.boton-suscribir {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: white;
+  color: #0d0d1a;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.boton-suscribir:hover {
+  opacity: 0.85;
+}
+
+.nota-privacidad {
+  font-size: 11px;
+  opacity: 0.5;
+  text-align: center;
+  margin-top: 14px;
+}
+
+.titulo {
+  position: fixed; /* fixed en vez de absolute: se queda anclado
+                       a la ventana, no al centro del sistema solar */
+  top: 24px;
+  left: 24px;
+  color: white;
+  font-size: 18px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  transition: opacity 0.4s ease;
+  z-index: 200; /* mismo nivel que el botón de contacto y redes,
+                    para que conviva bien con esos elementos fijos */
+}
+
+/* Nota: el atenuado del título al enfocar un planeta ahora se
+   controla con JavaScript (ver más abajo), porque el título es
+   un elemento fijo e independiente, no un "hermano después" del
+   sistema solar en el HTML. */
+
+/* ===================================================
+   METEOROS
+   =================================================== */
+
+/* Contenedor de cada meteoro: viaja en diagonal por toda
+   la pantalla. Usamos position: fixed porque su recorrido
+   es relativo a TODA la ventana, no al sistema solar. */
+.meteoro {
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  z-index: 1; /* muy por debajo de los planetas (z-index: 5) y el sol (z-index: 10) */
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  pointer-events: none; /* ya no reacciona al mouse, y tampoco bloquea clics en lo que esté encima */
+  transition: transform 0.3s ease-out; /* suaviza el "jalón" magnético */
+}
+
+/* La cola del meteoro se quitó — ahora solo se ve el círculo/imagen */
+
+/* El círculo/imagen visible del meteoro */
+.meteoro-nucleo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 0 10px 2px rgba(255,255,255,0.3);
+}
+
+/* ===== RUTAS DE CADA METEORO (diagonales distintas) ===== */
+/* Cada uno nace fuera de la pantalla en una esquina y viaja
+   a la esquina opuesta. Usamos vw/vh (% del ancho/alto de
+   la ventana) para que funcione en cualquier tamaño de pantalla. */
+
+.meteoro-1 { animation-name: ruta1; animation-duration: 18s; }
+@keyframes ruta1 {
+  from { top: -10vh; left: -10vw; }
+  to   { top: 110vh; left: 110vw; }
+}
+
+.meteoro-2 { animation-name: ruta2; animation-duration: 24s; animation-delay: -4s; }
+@keyframes ruta2 {
+  from { top: -10vh; left: 60vw; }
+  to   { top: 110vh; left: -20vw; }
+}
+
+.meteoro-3 { animation-name: ruta3; animation-duration: 30s; animation-delay: -10s; }
+@keyframes ruta3 {
+  from { top: 20vh; left: 110vw; }
+  to   { top: 80vh; left: -20vw; }
+}
+
+.meteoro-4 { animation-name: ruta4; animation-duration: 21s; animation-delay: -14s; }
+@keyframes ruta4 {
+  from { top: 110vh; left: 20vw; }
+  to   { top: -20vh; left: 90vw; }
+}
+
+.meteoro-5 { animation-name: ruta5; animation-duration: 26s; animation-delay: -7s; }
+@keyframes ruta5 {
+  from { top: -10vh; left: 30vw; }
+  to   { top: 110vh; left: 70vw; }
+}
