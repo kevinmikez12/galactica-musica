@@ -1,6 +1,6 @@
-// ===================================================
-// MENÚ FLOTANTE DE REDES SOCIALES
-// ===================================================
+// ============================================================
+// SECCIÓN 1: MENÚ FLOTANTE DE REDES SOCIALES
+// ============================================================
 const botonRedes = document.getElementById('botonRedes');
 const redesFlotantes = document.getElementById('redesFlotantes');
 
@@ -12,10 +12,14 @@ botonRedes.addEventListener('click', () => {
   // Cambiamos el símbolo "+" por "×" cuando está abierto
   botonRedes.textContent = redesFlotantes.classList.contains('abierto') ? '×' : '+';
 });
+// ============================================================
+// FIN SECCIÓN 1
+// ============================================================
 
-// ===================================================
-// SECUENCIA "BIG BANG" DE LA PANTALLA DE CARGA
-// ===================================================
+
+// ============================================================
+// SECCIÓN 2: SECUENCIA "BIG BANG" DE LA PANTALLA DE CARGA
+// ============================================================
 const pantallaCarga = document.getElementById('pantallaCarga');
 const nucleoBigbang = document.getElementById('nucleoBigbang');
 const flashExplosion = document.getElementById('flashExplosion');
@@ -48,9 +52,14 @@ pantallaCarga.addEventListener('click', () => {
                   // el flash blanco ya cubra la pantalla justo cuando
                   // empezamos a desvanecer esta capa
 });
-// ===================================================
-// GENERAR ESTRELLAS DE FONDO
-// ===================================================
+// ============================================================
+// FIN SECCIÓN 2
+// ============================================================
+
+
+// ============================================================
+// SECCIÓN 3: GENERAR ESTRELLAS DE FONDO
+// ============================================================
 // En vez de escribir 150 <div> a mano en el HTML, dejamos
 // que JavaScript las cree en un loop — mucho más práctico
 // cuando quieres muchas repeticiones con variación aleatoria.
@@ -82,10 +91,17 @@ for (let i = 0; i < CANTIDAD_ESTRELLAS; i++) {
 
   contenedorEstrellas.appendChild(estrella);
 }
-// ===== SELECCIONAMOS LOS ELEMENTOS QUE VAMOS A CONTROLAR =====
-// Ahora seleccionamos los PIVOTES (los contenedores que giran),
-// no los planetas directamente. Esto es más estable porque el
-// pivote nunca cambia de "sistema de coordenadas" (siempre es
+// ============================================================
+// FIN SECCIÓN 3
+// ============================================================
+
+
+// ============================================================
+// SECCIÓN 4: INTERACCIÓN DE PLANETAS (hover, click, enfocado)
+// ============================================================
+// Seleccionamos los PIVOTES (los contenedores que giran), no los
+// planetas directamente. Esto es más estable porque el pivote
+// nunca cambia de "sistema de coordenadas" (siempre es
 // position:absolute), a diferencia del planeta que salta a
 // position:fixed al enfocarse.
 const planetas = document.querySelectorAll('.planeta');
@@ -137,10 +153,14 @@ planetas.forEach(planeta => {
     }
   });
 });
+// ============================================================
+// FIN SECCIÓN 4
+// ============================================================
 
-// ===================================================
-// SISTEMA DE MODALES: abrir y cerrar
-// ===================================================
+
+// ============================================================
+// SECCIÓN 5: SISTEMA DE MODALES (abrir, cerrar, click-fuera)
+// ============================================================
 const fondoModal = document.getElementById('fondoModal');
 
 function abrirModal(idModal) {
@@ -194,80 +214,82 @@ document.addEventListener('click', (evento) => {
                       // modal que estuviera abierto al mismo tiempo
   }
 });
+// ============================================================
+// FIN SECCIÓN 5
+// ============================================================
 
-// Los meteoros ya no reaccionan al hover — solo cruzan la pantalla
-// de forma continua, como fondo decorativo.
 
-// ===================================================
-// EFECTO MAGNÉTICO: los meteoros se desplazan levemente
-// hacia el cursor cuando este pasa cerca
-// ===================================================
+// ============================================================
+// SECCIÓN 6: EFECTO MAGNÉTICO DE LOS METEOROS (solo con mouse real)
+// ============================================================
+// Este efecto solo tiene sentido con un mouse real. En touch no
+// existe "cursor pasando cerca" — lo que pasaba antes era que el
+// navegador dispara un mousemove sintético después de cada tap, y
+// el meteoro se enganchaba hacia donde tocaste en la pantalla
+// (bug reportado en vista de celular). matchMedia detecta si el
+// dispositivo tiene puntero fino con hover real (mouse) — si no
+// lo tiene, ni siquiera corremos el efecto.
+const tieneMouseReal = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 const RADIO_DETECCION = 150;   // distancia en px a partir de la cual "siente" el cursor
 const DESPLAZAMIENTO_MAX = 35; // qué tanto se puede mover el meteoro hacia el cursor, en px
-
-// Esta línea se había perdido — sin ella, "meteoros" no existía
-// en ningún lado y JavaScript no podía usarla más abajo.
 const meteoros = document.querySelectorAll('.meteoro');
 
-let mouseX = -1000; // arrancamos fuera de pantalla para que no reaccione al cargar
-let mouseY = -1000;
+if (tieneMouseReal) {
+  let mouseX = -1000; // arrancamos fuera de pantalla para que no reaccione al cargar
+  let mouseY = -1000;
 
-// Guardamos la posición del mouse cada vez que se mueve.
-// OJO: no calculamos nada pesado aquí, solo guardamos números —
-// el cálculo real se hace aparte, en un loop controlado (ver abajo).
-document.addEventListener('mousemove', (evento) => {
-  mouseX = evento.clientX;
-  mouseY = evento.clientY;
-});
-
-// requestAnimationFrame es la forma correcta de animar en JS:
-// le pide al navegador "llama esta función justo antes del
-// siguiente redibujado de pantalla" — usualmente 60 veces por
-// segundo, sincronizado con el monitor, mucho más eficiente
-// que un setInterval a mano.
-function actualizarMeteoros() {
-  meteoros.forEach(meteoro => {
-    // getBoundingClientRect() nos da la posición ACTUAL real
-    // del meteoro en pantalla (incluyendo dónde va su animación
-    // CSS en este preciso instante)
-    const rect = meteoro.getBoundingClientRect();
-    const centroX = rect.left + rect.width / 2;
-    const centroY = rect.top + rect.height / 2;
-
-    // Distancia entre el cursor y el centro del meteoro
-    // (teorema de Pitágoras: raíz de (dx² + dy²))
-    const dx = mouseX - centroX;
-    const dy = mouseY - centroY;
-    const distancia = Math.sqrt(dx * dx + dy * dy);
-
-    if (distancia < RADIO_DETECCION) {
-      // Mientras más cerca el cursor, más fuerte el "jalón"
-      const fuerza = 1 - (distancia / RADIO_DETECCION);
-
-      // ===== FIX DEL BUG =====
-      // Si el cursor cae justo, justo encima del centro exacto del
-      // meteoro, "distancia" puede ser 0 (o casi 0). Dividir entre 0
-      // da como resultado "NaN" (Not a Number), lo cual rompe el
-      // transform y deja al meteoro congelado — exactamente el bug
-      // que viste. Math.max(distancia, 1) evita esto: nunca dejamos
-      // que el divisor baje de 1, así el cálculo siempre da un
-      // número válido, sin cambiar el efecto visual de forma notoria.
-      const distanciaSegura = Math.max(distancia, 1);
-
-      const desplazX = (dx / distanciaSegura) * DESPLAZAMIENTO_MAX * fuerza;
-      const desplazY = (dy / distanciaSegura) * DESPLAZAMIENTO_MAX * fuerza;
-
-      meteoro.style.transform = `translate(${desplazX}px, ${desplazY}px)`;
-    } else {
-      meteoro.style.transform = `translate(0px, 0px)`;
-    }
+  // Guardamos la posición del mouse cada vez que se mueve.
+  document.addEventListener('mousemove', (evento) => {
+    mouseX = evento.clientX;
+    mouseY = evento.clientY;
   });
 
-  // Volvemos a llamar esta misma función en el siguiente frame,
-  // creando un loop infinito y eficiente
-  requestAnimationFrame(actualizarMeteoros);
-}
+  // requestAnimationFrame es la forma correcta de animar en JS:
+  // le pide al navegador "llama esta función justo antes del
+  // siguiente redibujado de pantalla" — usualmente 60 veces por
+  // segundo, sincronizado con el monitor, mucho más eficiente
+  // que un setInterval a mano.
+  function actualizarMeteoros() {
+    meteoros.forEach(meteoro => {
+      // getBoundingClientRect() nos da la posición ACTUAL real
+      // del meteoro en pantalla (incluyendo dónde va su animación
+      // CSS en este preciso instante)
+      const rect = meteoro.getBoundingClientRect();
+      const centroX = rect.left + rect.width / 2;
+      const centroY = rect.top + rect.height / 2;
 
-// Arrancamos el loop una sola vez
-actualizarMeteoros();
+      // Distancia entre el cursor y el centro del meteoro
+      // (teorema de Pitágoras: raíz de (dx² + dy²))
+      const dx = mouseX - centroX;
+      const dy = mouseY - centroY;
+      const distancia = Math.sqrt(dx * dx + dy * dy);
+
+      if (distancia < RADIO_DETECCION) {
+        // Mientras más cerca el cursor, más fuerte el "jalón"
+        const fuerza = 1 - (distancia / RADIO_DETECCION);
+
+        // Evita división por cero si el cursor cae justo en el
+        // centro exacto del meteoro (NaN rompería el transform)
+        const distanciaSegura = Math.max(distancia, 1);
+
+        const desplazX = (dx / distanciaSegura) * DESPLAZAMIENTO_MAX * fuerza;
+        const desplazY = (dy / distanciaSegura) * DESPLAZAMIENTO_MAX * fuerza;
+
+        meteoro.style.transform = `translate(${desplazX}px, ${desplazY}px)`;
+      } else {
+        meteoro.style.transform = `translate(0px, 0px)`;
+      }
+    });
+
+    // Volvemos a llamar esta misma función en el siguiente frame,
+    // creando un loop infinito y eficiente
+    requestAnimationFrame(actualizarMeteoros);
+  }
+
+  // Arrancamos el loop una sola vez
+  actualizarMeteoros();
+}
+// ============================================================
+// FIN SECCIÓN 6
+// ============================================================
