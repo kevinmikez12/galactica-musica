@@ -91,7 +91,10 @@ body {
   align-items: center;
   justify-content: center;
   padding: 80px 24px;
-  background-color: #05050f;
+  /* rgba en vez de un color sólido: deja ver las estrellas/meteoros
+     de fondo (continuidad del tema espacial), pero con suficiente
+     opacidad para mantener buen contraste de texto (WCAG AA) */
+  background-color: rgba(5, 5, 15, 0.82);
   color: white;
   text-align: center;
 }
@@ -101,6 +104,57 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
   opacity: 0.4;
+}
+
+/* ===================================================
+   TARJETA DE CONTENIDO (dentro de una .seccion-scroll)
+   Fondo prácticamente sólido (igual que .tarjeta-modal)
+   para garantizar buen contraste de texto, sin importar
+   qué tan visibles estén las estrellas/meteoros detrás.
+   =================================================== */
+.tarjeta-seccion {
+  background: #0d0d1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 48px 40px;
+  max-width: 480px;
+  text-align: center;
+}
+
+/* Sobreescribe la opacidad 0.4 de ".seccion-scroll h2" de arriba —
+   dentro de una tarjeta con fondo sólido sí queremos el título
+   al 100% de opacidad, ya no hace falta atenuarlo */
+.tarjeta-seccion h2 {
+  opacity: 1;
+  margin-bottom: 12px;
+}
+
+.subtitulo-seccion {
+  font-size: 14px;
+  opacity: 0.6;
+  margin-bottom: 24px;
+}
+
+.enlace-contacto {
+  display: inline-block;
+  font-size: 18px;
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  padding-bottom: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.enlace-contacto:hover {
+  opacity: 0.7;
+}
+
+.nota-seccion {
+  font-size: 12px;
+  opacity: 0.4;
+  margin-top: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* ===================================================
