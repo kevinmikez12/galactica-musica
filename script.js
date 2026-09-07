@@ -65,7 +65,12 @@ pantallaCarga.addEventListener('click', () => {
 // cuando quieres muchas repeticiones con variación aleatoria.
 
 const contenedorEstrellas = document.getElementById('estrellas');
-const CANTIDAD_ESTRELLAS = 150;
+// El contenedor .estrellas ahora mide 160vh en vez de 100vh (ver
+// comentario en style.css) para que el parallax no deje huecos.
+// Subimos la cantidad en la misma proporción (150 * 1.6 = 240)
+// para que la densidad de estrellas por pantalla se sienta igual
+// que antes, en vez de verse "más vacío" al repartirse en más área.
+const CANTIDAD_ESTRELLAS = 240;
 
 for (let i = 0; i < CANTIDAD_ESTRELLAS; i++) {
   const estrella = document.createElement('div');
@@ -327,7 +332,16 @@ window.addEventListener('scroll', () => {
   // recalcular el transform más veces de las que el navegador
   // realmente puede mostrar (evita que el scroll se sienta "trabado")
   requestAnimationFrame(() => {
-    const desplazamiento = window.scrollY * VELOCIDAD_PARALAX;
+    // Tope de seguridad: el contenedor .estrellas tiene 30vh de
+    // colchón extra (ver style.css). Sin este límite, si la página
+    // se vuelve muy larga (cuando agreguemos contenido real a
+    // Presskit/Biografía) el desplazamiento podría crecer más allá
+    // de esos 30vh y volver a aparecer el hueco vacío. Al limitarlo
+    // con Math.min(), el parallax simplemente deja de aumentar una
+    // vez que llega al borde del colchón, sin importar qué tan
+    // largo se ponga el scroll total de la página.
+    const limiteParalax = window.innerHeight * 0.3; // 30vh en píxeles reales
+    const desplazamiento = Math.min(window.scrollY * VELOCIDAD_PARALAX, limiteParalax);
     contenedorEstrellas.style.transform = `translateY(${desplazamiento}px)`;
     paralaxPendiente = false;
   });

@@ -19,21 +19,32 @@
   --radio-venus: 320px;
   --radio-tierra: 420px;
   --radio-marte: 520px;
+  --tam-meteoro: 50px;
 }
 
-/* En pantallas de celular, el sistema solar completo se
-   encoge proporcionalmente para que quepa sin cortarse ni
-   pisar el título/botón de contacto de las esquinas.
-   600px es un punto de quiebre común para "es un celular". */
+/* En pantallas de celular, el sistema solar ya NO usa un tamaño
+   fijo — usa min(92vw, 420px): el 92% del ancho real de LA
+   PANTALLA de cada quien (así abarca casi todo el ancho en un
+   iPhone chico o uno grande por igual), con un tope de 420px para
+   que en una tablet no se vuelva gigante. Los demás valores se
+   calculan como porcentaje de ese tamaño con calc(), para que
+   guarden las mismas proporciones que en escritorio.
+   El tamaño del planeta usa clamp() además, para nunca verse
+   más chico que el meteoro (ver --tam-meteoro reducido abajo)
+   ni tan grande que se vea desproporcionado. */
 @media (max-width: 600px) {
   :root {
-    --tam-sistema: 300px;
-    --tam-sol: 56px;
-    --tam-planeta: 28px;
-    --radio-mercurio: 100px;
-    --radio-venus: 150px;
-    --radio-tierra: 200px;
-    --radio-marte: 250px;
+    --tam-sistema: min(92vw, 420px);
+    --tam-sol: calc(var(--tam-sistema) * 0.16);
+    --tam-planeta: clamp(34px, calc(var(--tam-sistema) * 0.11), 46px);
+    --radio-mercurio: calc(var(--tam-sistema) * 0.314);
+    --radio-venus: calc(var(--tam-sistema) * 0.457);
+    --radio-tierra: calc(var(--tam-sistema) * 0.6);
+    --radio-marte: calc(var(--tam-sistema) * 0.743);
+    /* Los meteoros SÍ siguen siendo tamaño fijo (no dependen del
+       sistema solar, cruzan la pantalla entera) pero los achicamos
+       para que no se vean más grandes que los planetas */
+    --tam-meteoro: 38px;
   }
 }
 
@@ -165,10 +176,18 @@ body {
    los meteoros, que ya vimos que tienen z-index: 1) */
 .estrellas {
   position: fixed;
-  top: 0;
+  /* Antes medía exactamente 100vh (el alto de la pantalla). El
+     problema: el parallax de la Sección 7 de script.js mueve este
+     contenedor con translateY() al hacer scroll, y como no medía
+     más que la pantalla, al moverlo se veía un hueco vacío del
+     lado de donde se alejaba. Ahora es más alto que la pantalla,
+     con 30vh de "colchón" extra arriba (top:-30vh) y 30vh abajo
+     (160vh de alto = 30 + 100 + 30) — así el contenedor siempre
+     tiene de sobra para cubrir toda la pantalla aunque se desplace. */
+  top: -30vh;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 160vh;
   z-index: 0;
   pointer-events: none; /* no bloquea clics, igual que los meteoros */
 }
@@ -283,15 +302,19 @@ body {
   position: fixed;
   top: 24px;
   right: 24px;
-  padding: 12px 24px;
+  /* clamp(mínimo, preferido, máximo): en vez de un breakpoint fijo,
+     el padding y el texto se achican de forma continua según el
+     ancho de pantalla (vw). Esto evita que se encime con .titulo
+     en pantallas muy angostas (320px), sin afectar desktop. */
+  padding: clamp(8px, 3vw, 12px) clamp(14px, 5vw, 24px);
   border-radius: 30px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(6px);
   color: white;
-  font-size: 13px;
+  font-size: clamp(10px, 3vw, 13px);
   font-weight: bold;
-  letter-spacing: 1px;
+  letter-spacing: clamp(0.3px, 0.4vw, 1px);
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -761,8 +784,11 @@ body:active {
   top: 24px;
   left: 24px;
   color: white;
-  font-size: 18px;
-  letter-spacing: 3px;
+  /* mismo criterio de clamp() que en .boton-contacto: en pantallas
+     angostas el título se achica junto con el botón para que no
+     se encimen (se comprobó el choque real en un viewport de 320px) */
+  font-size: clamp(13px, 4vw, 18px);
+  letter-spacing: clamp(1px, 0.6vw, 3px);
   text-transform: uppercase;
   opacity: 0.85;
   transition: opacity 0.4s ease;
@@ -784,8 +810,8 @@ body:active {
    es relativo a TODA la ventana, no al sistema solar. */
 .meteoro {
   position: fixed;
-  width: 50px;
-  height: 50px;
+  width: var(--tam-meteoro);
+  height: var(--tam-meteoro);
   z-index: 1; /* muy por debajo de los planetas (z-index: 5) y el sol (z-index: 10) */
   animation-timing-function: linear;
   animation-iteration-count: infinite;
