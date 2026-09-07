@@ -537,18 +537,63 @@ body {
 }
 
 /* ===================================================
-   BIOGRAFÍA — foto + texto lado a lado
+   BIOGRAFÍA — intro/tagline + bloques foto+texto alternados
+   (inspirado en la sección "Reflections..." de KOSA Artist
+   Residency). El planeta Tierra sigue siendo la única forma de
+   llegar aquí — no hay botón/flecha ancla dentro de la sección.
    =================================================== */
-.contenedor-biografia {
+.contenedor-biografia-completo {
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 96px; /* espacio generoso entre intro y cada bloque, como en la referencia */
+}
+
+/* --- INTRO / TAGLINE --- */
+.intro-biografia {
+  text-align: center;
+
+  /* Solo fade, sin desplazamiento — por eso no necesita el
+     min-width que usan los bloques de abajo: un fade nunca causa
+     el problema de "aparece fuera de pantalla" que si tiene un
+     translateX, así que puede quedarse igual en mobile y desktop. */
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.intro-biografia.en-vista {
+  opacity: 1;
+}
+
+.intro-biografia h2 {
+  opacity: 1; /* mismo criterio que en Presskit: contenido real necesita full contraste */
+  margin-bottom: 16px;
+}
+
+.tagline-biografia {
+  font-size: 19px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* --- BLOQUES foto + texto --- */
+.bloque-bio {
   display: flex;
   align-items: center;
   gap: 48px;
-  max-width: 900px;
-  width: 100%;
-  text-align: left;
 }
 
-.foto-biografia {
+/* .bloque-bio--invertido no cambia el HTML (la foto sigue siendo
+   el primer div) — row-reverse solo cambia el ORDEN VISUAL, para
+   que la foto quede a la derecha y el texto a la izquierda. */
+.bloque-bio--invertido {
+  flex-direction: row-reverse;
+}
+
+.foto-bloque-bio {
   flex: 0 0 260px;
   height: 320px;
   border-radius: 16px;
@@ -556,37 +601,93 @@ body {
   background: linear-gradient(135deg, #3d3d5c, #1a1a2e);
 }
 
-.texto-biografia h2 {
-  opacity: 1; /* mismo criterio que en Presskit: contenido real necesita full contraste */
-  text-align: left;
-  margin-bottom: 16px;
+.bloque-bio--invertido .foto-bloque-bio {
+  background: linear-gradient(135deg, #5c3d4a, #2a1520); /* color distinto: ayuda a distinguir los 2 bloques mientras es placeholder */
 }
 
-.texto-biografia p {
+.texto-bloque-bio p {
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.7;
   font-size: 15px;
-  margin-bottom: 16px;
+}
+
+/* Entrada: foto y texto entran cada uno desde SU lado (la foto
+   desde donde está ella, el texto desde el suyo) — por eso los
+   valores de translateX se invierten entre .bloque-bio y
+   .bloque-bio--invertido en vez de ser un solo valor fijo.
+
+   OJO: el translateX vive en un @media (min-width) en vez de en
+   una regla base + un override para mobile. Es el mismo objetivo
+   que "transform:none" en el carrusel de Presskit, pero con menos
+   riesgo: en vez de anular la regla en mobile (que exige que la
+   especificidad coincida exacto, o pierde), evitamos que la regla
+   exista ahí desde el principio — mobile nunca ve un transform que
+   anular. La misma condición sirve para respetar
+   prefers-reduced-motion (ver abajo): a quien tiene esa preferencia
+   activada, tampoco le llega el desplazamiento, en desktop o en
+   mobile — solo el fade, que no representa el mismo riesgo de
+   mareo/desorientación que mover 60px algo mientras se hace scroll. */
+.foto-bloque-bio,
+.texto-bloque-bio {
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+@media (min-width: 701px) and (prefers-reduced-motion: no-preference) {
+  .bloque-bio .foto-bloque-bio { transform: translateX(-60px); }
+  .bloque-bio .texto-bloque-bio { transform: translateX(60px); }
+  .bloque-bio--invertido .foto-bloque-bio { transform: translateX(60px); }
+  .bloque-bio--invertido .texto-bloque-bio { transform: translateX(-60px); }
+}
+
+.bloque-bio.en-vista .foto-bloque-bio,
+.bloque-bio.en-vista .texto-bloque-bio,
+.bloque-bio--invertido.en-vista .foto-bloque-bio,
+.bloque-bio--invertido.en-vista .texto-bloque-bio {
+  opacity: 1;
+}
+
+/* el texto entra un pelín después que la foto — detalle chico,
+   nada más notorio que eso. Igual que arriba, gated a min-width +
+   no-preference: nada que "deshacer" en mobile ni en reduced-motion. */
+@media (min-width: 701px) and (prefers-reduced-motion: no-preference) {
+  .bloque-bio.en-vista .foto-bloque-bio,
+  .bloque-bio.en-vista .texto-bloque-bio,
+  .bloque-bio--invertido.en-vista .foto-bloque-bio,
+  .bloque-bio--invertido.en-vista .texto-bloque-bio {
+    transform: translateX(0);
+  }
+
+  .bloque-bio.en-vista .texto-bloque-bio,
+  .bloque-bio--invertido.en-vista .texto-bloque-bio {
+    transition-delay: 0.1s;
+  }
 }
 
 /* flex-direction:column apila foto arriba y texto abajo en vez de
-   lado a lado — necesario porque a 260px fijos de ancho, la foto
-   por sí sola ya casi no deja espacio para el texto en un celular. */
+   lado a lado en AMBOS bloques (invertido incluido — en mobile no
+   existe "izquierda/derecha") — necesario porque a 260px fijos de
+   ancho, la foto por sí sola ya casi no deja espacio para el texto
+   en un celular. */
 @media (max-width: 700px) {
-  .contenedor-biografia {
+  .contenedor-biografia-completo {
+    gap: 56px;
+  }
+
+  .bloque-bio,
+  .bloque-bio--invertido {
     flex-direction: column;
     gap: 24px;
   }
 
-  .foto-biografia {
+  .foto-bloque-bio {
     flex: 0 0 auto;
     width: 100%;
     max-width: 320px;
     height: 220px;
   }
 
-  .texto-biografia h2,
-  .texto-biografia p {
+  .texto-bloque-bio p {
     text-align: center;
   }
 }

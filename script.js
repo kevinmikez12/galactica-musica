@@ -354,56 +354,62 @@ window.addEventListener('scroll', () => {
 
 
 // ============================================================
-// SECCIÓN 8: REVELADO ESCALONADO DEL MOODBOARD DE PRESSKIT
+// SECCIÓN 8: REVELADO AL HACER SCROLL — utilidad reutilizable
 // (reversible: entra al bajar, se resetea al subir)
 // ============================================================
-// Para el efecto "las fotos van apareciendo al hacer scroll" NO
-// usamos un listener de scroll como en el parallax (Sección 7).
-// Ahí necesitábamos la posición EXACTA en cada momento (para mover
-// las estrellas junto con el scroll). Aquí solo necesitamos una
-// pregunta de sí/no: "¿el moodboard ya entró a la pantalla?" —
-// y para ESO existe una herramienta hecha a la medida:
-// IntersectionObserver. El navegador se encarga de vigilar el
-// elemento y nos avisa solo, sin que nosotros calculemos nada en
-// cada frame — más simple y más eficiente que reusar el patrón
-// de scroll+requestAnimationFrame para este caso.
+// Para el efecto "esto va apareciendo al hacer scroll" NO usamos
+// un listener de scroll como en el parallax (Sección 7). Ahí
+// necesitábamos la posición EXACTA en cada momento (para mover las
+// estrellas junto con el scroll). Aquí solo necesitamos una
+// pregunta de sí/no: "¿el elemento ya entró a la pantalla?" — y
+// para ESO existe una herramienta hecha a la medida:
+// IntersectionObserver. El navegador vigila el elemento y nos
+// avisa solo, sin que nosotros calculemos nada en cada frame.
+//
+// activarRevelado() es GENÉRICA a propósito: le pasas un selector
+// y observa TODOS los elementos que hagan match, cada uno por su
+// cuenta (independiente de los demás — si hay 3 elementos, cada
+// uno entra/sale según si ÉL está en pantalla, no los otros dos).
+// A cada uno le agrega/quita 'en-vista' — el CSS decide CÓMO se ve
+// la animación (opacity, transform, delay...), esta función solo
+// decide CUÁNDO. Por eso el mismo helper sirve tanto para el
+// moodboard de Presskit (un solo elemento, cascada interna por
+// CSS) como para los bloques de Biografía (varios elementos
+// independientes) sin duplicar la lógica del observer cada vez
+// que una sección nueva necesite este mismo efecto.
+//
+// Para que sea reversible basta con alternar: agregar la clase
+// cuando SÍ se ve (isIntersecting true, bajando) y quitarla cuando
+// deja de verse (false, al subir y salir por arriba). Mientras el
+// elemento tenga su transition definida en el estado BASE (no solo
+// en .en-vista), quitar la clase anima de regreso solita, sin CSS
+// extra — ver la nota sobre .medio-presskit en style.css para el
+// motivo por el que el transition-delay escalonado NO debe vivir
+// en la regla base (ahí está documentado el bug que eso causaba).
+function activarRevelado(selector, threshold = 0.2) {
+  const elementos = document.querySelectorAll(selector);
+  if (!elementos.length) return;
 
-const moodboardPresskit = document.getElementById('moodboardPresskit');
-
-if (moodboardPresskit) {
-  const observadorPresskit = new IntersectionObserver((entradas) => {
-    // "entradas" es una lista porque un mismo observer puede vigilar
-    // varios elementos a la vez — aquí solo vigilamos uno, pero el
-    // forEach es la forma estándar de leer el resultado de todos modos
+  const observador = new IntersectionObserver((entradas) => {
     entradas.forEach((entrada) => {
-      // .en-vista es la clase que activa las transiciones en CSS
-      // (ver .moodboard-presskit.en-vista en style.css) — el CSS
-      // decide CÓMO se ve la animación, JS solo decide CUÁNDO.
-      //
-      // La versión anterior solo hacía classList.add() y luego
-      // dejaba de observar (unobserve) para que fuera "una sola
-      // vez". Para que sea reversible basta con alternar: agregar
-      // la clase cuando SÍ se ve (isIntersecting true, bajando) y
-      // quitarla cuando deja de verse (isIntersecting false, al
-      // subir y salir de la pantalla por arriba). Como .medio-presskit
-      // ya tiene su transition definida en el estado base (no solo
-      // en .en-vista), quitar la clase anima de regreso al estado
-      // inicial con la misma duración — no hace falta CSS nuevo.
       entrada.target.classList.toggle('en-vista', entrada.isIntersecting);
     });
-  }, {
-    // threshold es un % del alto TOTAL del elemento, no de la pantalla.
-    // Con 0.25 nos alcanzaba en desktop (moodboard de 780px, ~195px
-    // ya activaban el efecto) pero en móvil el moodboard se apila en
-    // una sola columna y mide más de 2000px — el 25% de eso son más
-    // de 500px, y normalmente no entra tanto de una vez al llegar a
-    // la sección. Bajarlo a 0.1 lo hace confiable sin importar qué
-    // tan alto sea el moodboard en cada tamaño de pantalla.
-    threshold: 0.1,
-  });
+  }, { threshold });
 
-  observadorPresskit.observe(moodboardPresskit);
+  elementos.forEach((elemento) => observador.observe(elemento));
 }
+
+// Presskit: threshold bajo (0.1) porque el moodboard mide muy
+// distinto de alto en mobile (apilado, 2000px+) que en desktop
+// (~780px) — con un threshold más alto no disparaba en mobile.
+activarRevelado('#moodboardPresskit', 0.1);
+
+// Biografía: la intro (tagline) y cada uno de los 2 bloques
+// foto+texto se revela cuando ÉL entra en pantalla — no cuando
+// entra la sección completa. threshold default (0.2): aquí no hay
+// tanta diferencia de alto entre mobile y desktop como en Presskit.
+activarRevelado('.intro-biografia');
+activarRevelado('.bloque-bio');
 
 // ============================================================
 // FIN SECCIÓN 8

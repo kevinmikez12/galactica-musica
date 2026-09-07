@@ -149,16 +149,42 @@
     </div>
   </section>
 
+  <!-- BIOGRAFÍA: intro/tagline + 2 bloques foto+texto que se
+       revelan al hacer scroll (ver activarRevelado en script.js).
+       Sin botón/flecha ancla adentro — el planeta Tierra sigue
+       siendo la única entrada a esta sección. -->
   <section class="seccion-scroll" id="biografia">
-    <div class="contenedor-biografia">
-      <!-- FOTO DE PRUEBA -->
-      <div class="foto-biografia"></div>
-      <!-- TEXTO DE PRUEBA -->
-      <div class="texto-biografia">
+    <div class="contenedor-biografia-completo">
+
+      <!-- INTRO / TAGLINE DE PRUEBA -->
+      <div class="intro-biografia">
         <h2>Biografía</h2>
-        <p>Texto de prueba: aquí va el primer párrafo de la biografía — de dónde viene la artista, cómo empezó en la música y qué la distingue de otras propuestas.</p>
-        <p>Segundo párrafo de prueba: logros destacados, colaboraciones importantes, o el proyecto más reciente que quiere posicionar.</p>
+        <p class="tagline-biografia">Reflexiones de una artista cuyo camino por la escena independiente se convirtió en parte de su identidad creativa.</p>
       </div>
+
+      <!-- BLOQUE 1: foto entra desde la izquierda, texto desde la derecha -->
+      <div class="bloque-bio">
+        <!-- FOTO DE PRUEBA -->
+        <div class="foto-bloque-bio"></div>
+        <!-- TEXTO DE PRUEBA -->
+        <div class="texto-bloque-bio">
+          <p>Texto de prueba: aquí va el primer párrafo de la biografía — de dónde viene la artista, cómo empezó en la música y qué la distingue de otras propuestas.</p>
+        </div>
+      </div>
+
+      <!-- BLOQUE 2: invertido (--invertido) — foto a la derecha,
+           texto a la izquierda. El HTML mantiene el mismo orden
+           (foto primero, texto después): el orden visual lo cambia
+           el CSS (row-reverse), no el HTML. -->
+      <div class="bloque-bio bloque-bio--invertido">
+        <!-- FOTO DE PRUEBA -->
+        <div class="foto-bloque-bio"></div>
+        <!-- TEXTO DE PRUEBA -->
+        <div class="texto-bloque-bio">
+          <p>Segundo párrafo de prueba: logros destacados, colaboraciones importantes, o el proyecto más reciente que quiere posicionar.</p>
+        </div>
+      </div>
+
     </div>
   </section>
 
