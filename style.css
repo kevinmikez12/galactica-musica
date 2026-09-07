@@ -169,6 +169,429 @@ body {
 }
 
 /* ===================================================
+   PRESSKIT — collage de fotos + cita de prensa
+   Contenido de prueba (ver comentarios en index.html);
+   el layout ya queda listo para cuando llegue el material real.
+   =================================================== */
+.contenedor-presskit {
+  max-width: 1100px; /* más ancho que Biografía/Contacto: el moodboard
+                        necesita espacio para esparcir los medios */
+  width: 100%;
+}
+
+/* Igual que en .tarjeta-seccion: el heading necesita opacity:1
+   (no el 0.4 por default de .seccion-scroll h2) porque aquí SÍ
+   hay contenido real que la gente tiene que poder leer bien. */
+.contenedor-presskit h2 {
+  opacity: 1;
+  margin-bottom: 8px;
+}
+
+/* ===================================================
+   MOODBOARD: fotos/video en posiciones irregulares que se
+   revelan escalonadas al hacer scroll (JS: Sección 8).
+
+   Técnica: cada .medio-presskit arranca invisible y desplazado
+   (opacity:0 + translateY + scale) tal cual llega la página. En
+   cuanto script.js detecta que el moodboard entró a la pantalla,
+   le agrega la clase .en-vista AL CONTENEDOR — no a cada foto — y
+   son estas reglas de aquí abajo (.en-vista .medio-N) las que
+   deciden cómo se ve cada una en su estado final. El "efecto
+   cascada" (una aparece, luego la otra) no lo hace JavaScript:
+   lo hace transition-delay, escalonado a mano por foto más abajo.
+   =================================================== */
+.moodboard-presskit {
+  /* position:relative de vuelta: en desktop .cabecera-moodboard se
+     posiciona absoluta ENCIMADA en medio de las fotos (como en tu
+     referencia), y necesita un ancla — en mobile la deshacemos por
+     completo (ver media query), así que ahí no molesta que exista. */
+  position: relative;
+  margin: 56px 0;
+}
+
+/* Desktop: la cabecera flota ENCIMADA en medio del collage, no
+   arriba de todo — el flex-column + gap sigue siendo lo que da el
+   margen entre título y cita, nada más que ahora ese bloque
+   completo se posiciona con top/left en vez de vivir en flujo
+   normal. En mobile (ver media query) se deshace todo esto y
+   vuelve a flujo normal arriba del carrusel, que es como ya te
+   gustó cómo quedó. */
+.cabecera-moodboard {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: 100%;
+  max-width: 480px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* .medios-presskit necesita su propio position:relative + height:
+   es el ancla de los .medio-presskit (position:absolute) y el que
+   les da el espacio vertical para acomodarse. */
+.medios-presskit {
+  position: relative;
+  height: 580px;
+}
+
+.medio-presskit {
+  position: absolute;
+  z-index: 1; /* por debajo del texto (z-index:5) — ver hover más abajo */
+  border-radius: 6px;
+  border: 6px solid #fff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Estado inicial (invisible, desplazado hacia abajo y un poco
+     chico). rotate() se queda fijo en var(--angulo) todo el
+     tiempo — no anima, solo mantiene la inclinación del collage.
+
+     OJO: translate/scale/rotate van como propiedades INDEPENDIENTES
+     (no como un solo transform: translateY() scale() rotate()) a
+     propósito. Un elemento solo puede tener UN transition-delay
+     por propiedad — si esta entrada y el hover de más abajo
+     compartieran la propiedad "transform", el delay escalonado de
+     entrada (ver reglas por índice abajo) también retrasaría el
+     hover. Dejando "transform" libre, el hover la puede usar sin
+     pisarle el paso a esta animación. */
+  opacity: 0;
+  translate: 0 60px;
+  scale: 0.85;
+  rotate: var(--angulo, 0deg);
+
+  transition-property: opacity, translate, scale, transform, box-shadow;
+  transition-duration: 0.6s, 0.6s, 0.6s, 0.25s, 0.25s;
+  transition-timing-function: ease;
+  transition-delay: 0s; /* base: sin stagger (se define por índice abajo) */
+}
+
+.moodboard-presskit.en-vista .medio-presskit {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+}
+
+/* transition-delay escalonado: cada medio tarda un poco más en
+   aparecer que el anterior (0.15s de diferencia), así se ve como
+   una cascada en vez de que las 8 aparezcan de golpe.
+
+   Cada regla trae 5 valores, uno por propiedad de la lista de
+   arriba (opacity, translate, scale, transform, box-shadow) — los
+   primeros 3 escalonados, los últimos 2 SIEMPRE en 0s. Esos
+   últimos dos son los que usa el hover: sin importar cuánto le
+   tocó esperar a esa foto para aparecer, el hover se siente
+   instantáneo.
+
+   IMPORTANTE: el delay va SOLO en la versión .en-vista (el estado
+   "hacia el que voy"), no en la regla base .medio-N de arriba. El
+   navegador calcula el transition-delay usando el estado AL QUE se
+   transiciona, así que: al agregarse .en-vista (bajas y entra en
+   pantalla) → cascada escalonada; al quitarse .en-vista (subes y
+   sale de pantalla) → usa el delay de la regla base (0s, un solo
+   valor que aplica a las 5 propiedades) → las 8 se desvanecen
+   juntas, todas a la vez. */
+.moodboard-presskit.en-vista .medio-1 { transition-delay: 0s,    0s,    0s,    0s, 0s; }
+.moodboard-presskit.en-vista .medio-2 { transition-delay: 0.15s, 0.15s, 0.15s, 0s, 0s; }
+.moodboard-presskit.en-vista .medio-3 { transition-delay: 0.3s,  0.3s,  0.3s,  0s, 0s; }
+.moodboard-presskit.en-vista .medio-4 { transition-delay: 0.45s, 0.45s, 0.45s, 0s, 0s; }
+.moodboard-presskit.en-vista .medio-5 { transition-delay: 0.6s,  0.6s,  0.6s,  0s, 0s; }
+.moodboard-presskit.en-vista .medio-6 { transition-delay: 0.75s, 0.75s, 0.75s, 0s, 0s; }
+.moodboard-presskit.en-vista .medio-7 { transition-delay: 0.9s,  0.9s,  0.9s,  0s, 0s; }
+.moodboard-presskit.en-vista .medio-8 { transition-delay: 1.05s, 1.05s, 1.05s, 0s, 0s; }
+
+/* HOVER: solo en FOTOS, no en video (data-tipo="foto"). Al pasar el
+   cursor, la foto se JALA hacia afuera del texto — cada una tiene su
+   propia dirección de escape (--jx/--jy, definidas junto a su
+   posición más abajo) que apunta hacia donde está el hueco vacío
+   más cercano, alejándola de la zona del título/cita. También
+   crece un poco y su sombra se hace más profunda.
+
+   z-index:3 la sube por encima de las demás fotos con las que se
+   traslapa (que se quedan en 1), pero OJO: sigue siendo menor que
+   el z-index:5 del título/cita — a propósito, para que la foto
+   nunca tape el texto, ni jalándose hacia afuera.
+
+   Los videos no lo llevan: ya tienen su propio indicador de
+   interacción (el ícono de play) y ahora viven en las esquinas,
+   siempre visibles, sin necesitar este truco. */
+.medio-presskit[data-tipo="foto"]:hover {
+  transform: translate(var(--jx, 0px), var(--jy, 0px)) scale(1.06);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.6);
+  z-index: 3;
+  cursor: pointer;
+}
+
+/* Posiciones y colores de prueba — mismos gradientes que ya usas
+   en los meteoros para mantener la paleta consistente. Cuando
+   llegue material real, aquí es donde se ajustan tamaños/lugares
+   según las fotos/videos que mande la artista.
+
+   Los 3 VIDEOS (1, 2 y 6) van en las esquinas — fuera de la franja
+   horizontal ~28%-72% que ocupa .cabecera-moodboard — para que
+   siempre se vean completos, sin taparse con el título/cita. Las
+   5 FOTOS (3, 4, 5, 7, 8) sí se meten debajo del texto a propósito
+   (efecto collage) y cada una trae su dirección de "jalón" hacia
+   afuera (--jx/--jy) para el hover de arriba: apunta hacia el
+   espacio libre más cercano, alejándola del texto. */
+.medio-1 { top: 0%;   left: 0%;  width: 250px; height: 250px; --angulo: -6deg; background: linear-gradient(135deg, #5a7fa6, #2c3e5c); } /* video: esquina sup-izq */
+.medio-2 { top: 2%;   left: 76%; width: 220px; height: 190px; --angulo: 3deg;  background: linear-gradient(135deg, #6b9e7f, #2d4a3a); } /* video: esquina sup-der */
+.medio-3 { top: 2%;   left: 33%; width: 270px; height: 215px; --angulo: -4deg; --jx: 20px;  --jy: -30px; background: linear-gradient(135deg, #9a6b8f, #3d2a4a); }
+.medio-4 { top: 28%;  left: 10%; width: 235px; height: 230px; --angulo: 4deg;  --jx: -32px; --jy: 6px;   background: linear-gradient(135deg, #3d3d5c, #1a1a2e); }
+.medio-5 { top: 32%;  left: 62%; width: 265px; height: 225px; --angulo: -3deg; --jx: 36px;  --jy: -8px;  background: linear-gradient(135deg, #5c3d4a, #2a1520); }
+.medio-6 { top: 58%;  left: 0%;  width: 245px; height: 225px; --angulo: 5deg;  background: linear-gradient(135deg, #3d5c4a, #152a1e); } /* video: esquina inf-izq */
+.medio-7 { top: 60%;  left: 30%; width: 220px; height: 195px; --angulo: -5deg; --jx: -6px;  --jy: 34px;  background: linear-gradient(135deg, #6b7f9e, #2a3d4a); }
+.medio-8 { top: 56%;  left: 60%; width: 250px; height: 250px; --angulo: 3deg;  --jx: 32px;  --jy: 28px;  background: linear-gradient(135deg, #7f6b9e, #3d2a4a); }
+
+/* Ícono de play: distingue los medios data-tipo="video" de las
+   fotos sin necesitar una etiqueta de texto */
+.icono-play {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  padding-left: 3px; /* centra visualmente el triángulo ▶, que no es simétrico */
+}
+
+/* ===================================================
+   TÍTULO Y CITA: dos contenedores separados (siguen siendo dos
+   divs distintos en el HTML), apilados en flujo normal dentro de
+   .cabecera-moodboard (arriba de las fotos). Comparten el mismo
+   tratamiento visual que ya usas en .tarjeta-modal — fondo casi
+   sólido, borde y esquinas redondeadas.
+   =================================================== */
+.titulo-moodboard {
+  z-index: 5;
+  text-align: center;
+  max-width: 480px;
+  background: #0d0d1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 20px 32px;
+
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.moodboard-presskit.en-vista .titulo-moodboard {
+  opacity: 1;
+  transition-delay: 1.2s; /* arranca justo después del último medio (.medio-8, 1.05s) — solo al aparecer, ver nota arriba en .medio-1..8 */
+}
+
+.titulo-moodboard h2 {
+  margin-bottom: 4px;
+}
+
+.texto-moodboard {
+  z-index: 5;
+  max-width: 480px;
+  background: #0d0d1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 24px 32px;
+  text-align: center;
+
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.moodboard-presskit.en-vista .texto-moodboard {
+  opacity: 1;
+  transition-delay: 1.35s; /* un paso más de cascada después del título — solo al aparecer */
+}
+
+.texto-cita-moodboard {
+  color: white;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* <mark>: la etiqueta semántica de HTML para "texto resaltado" —
+   mejor que un <span> genérico porque describe el SIGNIFICADO
+   (esto es importante), no solo la apariencia. Usamos un verde
+   translúcido en vez de amarillo/rosa porque el verde ya es
+   uno de los colores de marca que mencionó Kevin (pendiente
+   aplicar la paleta real completa). */
+.texto-moodboard mark {
+  background: rgba(107, 158, 127, 0.35);
+  color: white;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+.boton-descarga {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+}
+
+.boton-descarga:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===================================================
+   MOBILE: el esparcido irregular con position:absolute no cabe en
+   una pantalla angosta, y apilar las 8 en una columna (lo que
+   probamos antes) dejaba el moodboard midiendo más de 2000px de
+   alto — demasiado scroll vertical solo para llegar al texto.
+
+   En vez de eso: .medios-presskit se convierte en un carrusel
+   horizontal usando scroll-snap, una función NATIVA del navegador
+   para "se desliza y se acomoda solo en cada foto" — sin una sola
+   línea de JavaScript. overflow-x:auto lo hace deslizable con el
+   dedo, scroll-snap-type+scroll-snap-align hacen que se acomode
+   justo en cada foto en vez de quedarse a la mitad de dos.
+
+   Nota de especificidad: estas reglas pesan lo mismo que .medio-1..8
+   de arriba (una sola clase), así que ganan por venir después en el
+   archivo — por eso este bloque va al final, no antes. */
+@media (max-width: 700px) {
+  .medios-presskit {
+    /* el height:580px de desktop ya no aplica: en el carrusel la
+       altura la define .medio-presskit (220px) + el padding, no
+       un valor fijo del contenedor */
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    /* padding a los lados (no solo arriba/abajo) deja ver un
+       pedacito de la siguiente foto — es la pista visual de que
+       se puede deslizar, sin necesitar flechas ni texto explicando */
+    padding: 8px 40px 16px;
+    -webkit-overflow-scrolling: touch; /* scroll con inercia en iOS */
+  }
+
+  .medio-presskit {
+    position: relative;
+    top: auto;
+    left: auto;
+    /* cada foto ocupa 78% del ancho de pantalla: se alcanza a ver
+       una rebanada de la siguiente, como en el padding de arriba */
+    flex: 0 0 78%;
+    width: auto;
+    height: 220px;
+    scroll-snap-align: center;
+    /* en el carrusel no rotamos ni deslizamos hacia arriba — se ven
+       derechas, como tarjetas, no como el pizarrón de desktop.
+       ("transform" ya no hace falta tocarlo aquí: en desktop ahora
+       solo lo usa el hover, la entrada usa translate/scale/rotate) */
+    translate: none;
+    scale: 1;
+    rotate: 0deg;
+    transition-delay: 0s; /* sin cascada individual: aparecen juntas */
+  }
+
+  .moodboard-presskit.en-vista .medio-presskit {
+    translate: none;
+    scale: 1;
+  }
+
+  /* Sin hover en mobile: aquí no hay cursor, y en pantallas táctiles
+     un :hover que se queda "atorado" tras el primer toque se ve raro. */
+  .medio-presskit[data-tipo="foto"]:hover {
+    transform: none;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Deshace el position:absolute de desktop: en mobile la cabecera
+     vuelve a flujo normal, arriba del carrusel — que es justo como
+     ya te gustó cómo se ve. */
+  .cabecera-moodboard {
+    position: static;
+    transform: none;
+    width: auto;
+    max-width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .titulo-moodboard {
+    margin-top: 28px;
+  }
+
+  .texto-moodboard {
+    margin-top: 16px;
+  }
+}
+
+/* ===================================================
+   BIOGRAFÍA — foto + texto lado a lado
+   =================================================== */
+.contenedor-biografia {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  max-width: 900px;
+  width: 100%;
+  text-align: left;
+}
+
+.foto-biografia {
+  flex: 0 0 260px;
+  height: 320px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #3d3d5c, #1a1a2e);
+}
+
+.texto-biografia h2 {
+  opacity: 1; /* mismo criterio que en Presskit: contenido real necesita full contraste */
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.texto-biografia p {
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.7;
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+
+/* flex-direction:column apila foto arriba y texto abajo en vez de
+   lado a lado — necesario porque a 260px fijos de ancho, la foto
+   por sí sola ya casi no deja espacio para el texto en un celular. */
+@media (max-width: 700px) {
+  .contenedor-biografia {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .foto-biografia {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 320px;
+    height: 220px;
+  }
+
+  .texto-biografia h2,
+  .texto-biografia p {
+    text-align: center;
+  }
+}
+
+/* ===================================================
    FONDO DE ESTRELLAS
    =================================================== */
 

@@ -351,3 +351,60 @@ window.addEventListener('scroll', () => {
 // ============================================================
 // FIN SECCIÓN 7
 // ============================================================
+
+
+// ============================================================
+// SECCIÓN 8: REVELADO ESCALONADO DEL MOODBOARD DE PRESSKIT
+// (reversible: entra al bajar, se resetea al subir)
+// ============================================================
+// Para el efecto "las fotos van apareciendo al hacer scroll" NO
+// usamos un listener de scroll como en el parallax (Sección 7).
+// Ahí necesitábamos la posición EXACTA en cada momento (para mover
+// las estrellas junto con el scroll). Aquí solo necesitamos una
+// pregunta de sí/no: "¿el moodboard ya entró a la pantalla?" —
+// y para ESO existe una herramienta hecha a la medida:
+// IntersectionObserver. El navegador se encarga de vigilar el
+// elemento y nos avisa solo, sin que nosotros calculemos nada en
+// cada frame — más simple y más eficiente que reusar el patrón
+// de scroll+requestAnimationFrame para este caso.
+
+const moodboardPresskit = document.getElementById('moodboardPresskit');
+
+if (moodboardPresskit) {
+  const observadorPresskit = new IntersectionObserver((entradas) => {
+    // "entradas" es una lista porque un mismo observer puede vigilar
+    // varios elementos a la vez — aquí solo vigilamos uno, pero el
+    // forEach es la forma estándar de leer el resultado de todos modos
+    entradas.forEach((entrada) => {
+      // .en-vista es la clase que activa las transiciones en CSS
+      // (ver .moodboard-presskit.en-vista en style.css) — el CSS
+      // decide CÓMO se ve la animación, JS solo decide CUÁNDO.
+      //
+      // La versión anterior solo hacía classList.add() y luego
+      // dejaba de observar (unobserve) para que fuera "una sola
+      // vez". Para que sea reversible basta con alternar: agregar
+      // la clase cuando SÍ se ve (isIntersecting true, bajando) y
+      // quitarla cuando deja de verse (isIntersecting false, al
+      // subir y salir de la pantalla por arriba). Como .medio-presskit
+      // ya tiene su transition definida en el estado base (no solo
+      // en .en-vista), quitar la clase anima de regreso al estado
+      // inicial con la misma duración — no hace falta CSS nuevo.
+      entrada.target.classList.toggle('en-vista', entrada.isIntersecting);
+    });
+  }, {
+    // threshold es un % del alto TOTAL del elemento, no de la pantalla.
+    // Con 0.25 nos alcanzaba en desktop (moodboard de 780px, ~195px
+    // ya activaban el efecto) pero en móvil el moodboard se apila en
+    // una sola columna y mide más de 2000px — el 25% de eso son más
+    // de 500px, y normalmente no entra tanto de una vez al llegar a
+    // la sección. Bajarlo a 0.1 lo hace confiable sin importar qué
+    // tan alto sea el moodboard en cada tamaño de pantalla.
+    threshold: 0.1,
+  });
+
+  observadorPresskit.observe(moodboardPresskit);
+}
+
+// ============================================================
+// FIN SECCIÓN 8
+// ============================================================

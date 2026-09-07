@@ -82,13 +82,84 @@
     </div>
   </div>
 
-  <!-- ===== SECCIONES DE SCROLL (placeholder, contenido real pendiente) ===== -->
+  <!-- ===== SECCIONES DE SCROLL ===== -->
+  <!-- El texto y las imágenes de esta sección son de PRUEBA, para darle
+       forma al layout mientras llega el material real de la artista.
+       Búscalo por el comentario "TEXTO/FOTOS DE PRUEBA" para reemplazarlo. -->
   <section class="seccion-scroll" id="presskit">
-    <h2>Presskit — próximamente</h2>
+    <div class="contenedor-presskit">
+
+      <!-- MOODBOARD: 8 medios (foto/video) en posiciones irregulares que
+           se revelan uno por uno al hacer scroll (ver Sección 8 de
+           script.js). Título+subtítulo y la cita ahora van EN FLUJO
+           NORMAL, arriba de las fotos (.cabecera-moodboard) — como
+           en Biografía/Contacto — en vez de flotar encimadas a la
+           mitad del collage. Las fotos (.medios-presskit) son las
+           únicas que se posicionan sueltas/irregulares debajo.
+           data-tipo distingue foto de video solo para mostrar el
+           ícono de play — no cambia el comportamiento del scroll.
+
+           .medios-presskit envuelve solo las 8 fotos/video porque en
+           mobile ESTE envoltorio es el que se convierte en carrusel
+           horizontal (scroll-snap) — si la cabecera estuviera
+           adentro, se deslizaría como si fuera una foto más. -->
+      <div class="moodboard-presskit" id="moodboardPresskit">
+
+        <!-- TEXTO DE PRUEBA -->
+        <div class="cabecera-moodboard">
+          <div class="titulo-moodboard">
+            <h2>Presskit</h2>
+            <p class="subtitulo-seccion">Fotos, video y material para difusión</p>
+          </div>
+
+          <div class="texto-moodboard">
+            <p class="texto-cita-moodboard">Una propuesta que mezcla <mark>influencias muy propias</mark> con una identidad visual distinta — de lo más interesante que ha salido de la escena local este año.</p>
+          </div>
+        </div>
+
+        <div class="medios-presskit">
+          <!-- FOTOS/VIDEO DE PRUEBA: bloques de color en vez de material
+               real. Cuando llegue, cada .medio-presskit se convierte en
+               <img> o <video> (quitando el div.icono-play en fotos).
+               Los 3 VIDEOS van en 1, 2 y 6 — las esquinas del collage,
+               posiciones que en style.css quedan fuera de la franja
+               horizontal que ocupa el título/cita (siempre visibles,
+               completos). Las 5 FOTOS (3,4,5,7,8) sí se meten debajo
+               del texto a propósito — el hover las jala hacia afuera
+               (ver style.css). -->
+          <div class="medio-presskit medio-1" data-tipo="video">
+            <span class="icono-play">▶</span>
+          </div>
+          <div class="medio-presskit medio-2" data-tipo="video">
+            <span class="icono-play">▶</span>
+          </div>
+          <div class="medio-presskit medio-3" data-tipo="foto"></div>
+          <div class="medio-presskit medio-4" data-tipo="foto"></div>
+          <div class="medio-presskit medio-5" data-tipo="foto"></div>
+          <div class="medio-presskit medio-6" data-tipo="video">
+            <span class="icono-play">▶</span>
+          </div>
+          <div class="medio-presskit medio-7" data-tipo="foto"></div>
+          <div class="medio-presskit medio-8" data-tipo="foto"></div>
+        </div>
+
+      </div>
+
+      <a href="#" class="boton-descarga">Descargar EPK completo</a>
+    </div>
   </section>
 
   <section class="seccion-scroll" id="biografia">
-    <h2>Biografía — próximamente</h2>
+    <div class="contenedor-biografia">
+      <!-- FOTO DE PRUEBA -->
+      <div class="foto-biografia"></div>
+      <!-- TEXTO DE PRUEBA -->
+      <div class="texto-biografia">
+        <h2>Biografía</h2>
+        <p>Texto de prueba: aquí va el primer párrafo de la biografía — de dónde viene la artista, cómo empezó en la música y qué la distingue de otras propuestas.</p>
+        <p>Segundo párrafo de prueba: logros destacados, colaboraciones importantes, o el proyecto más reciente que quiere posicionar.</p>
+      </div>
+    </div>
   </section>
 
   <section class="seccion-scroll" id="contacto">
