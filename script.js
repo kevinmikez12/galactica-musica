@@ -50,6 +50,18 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 // así que el listener nunca se quitaba de verdad). Con doble-clic rápido
 // esto permitía re-disparar toda la secuencia y encimar los setTimeout.
 pantallaCarga.addEventListener('click', () => {
+  // Guardamos la bandera apenas hace clic (no hace falta esperar a que
+  // termine la animación): la próxima vez que esta MISMA pestaña haga
+  // un refresh, el script de <head> la va a encontrar y va a saltarse
+  // la pantalla de carga por completo. Se borra sola si cierra la
+  // pestaña/navegador — por eso sessionStorage y no localStorage.
+  try {
+    sessionStorage.setItem('galacticaIntroVista', '1');
+  } catch (error) {
+    // Si sessionStorage no está disponible, no pasa nada grave: solo
+    // significa que la próxima vez volverá a ver la intro.
+  }
+
   pantallaCarga.style.cursor = 'default';
   textoCarga.textContent = '';
 
