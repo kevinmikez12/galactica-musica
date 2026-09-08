@@ -5,12 +5,22 @@ const botonRedes = document.getElementById('botonRedes');
 const redesFlotantes = document.getElementById('redesFlotantes');
 
 botonRedes.addEventListener('click', () => {
+  // En modo "volver arriba" (footer visible, ver Sección 9) este
+  // mismo botón ya no abre el menú de redes — regresa al inicio.
+  if (redesFlotantes.classList.contains('modo-volver-arriba')) {
+    const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefiereMenosMovimiento ? 'auto' : 'smooth' });
+    return;
+  }
+
   // toggle() es un método que AGREGA la clase si no la tiene,
   // o la QUITA si ya la tiene — perfecto para "encender/apagar"
   redesFlotantes.classList.toggle('abierto');
   botonRedes.classList.toggle('abierto');
+  const abierto = redesFlotantes.classList.contains('abierto');
   // Cambiamos el símbolo "+" por "×" cuando está abierto
-  botonRedes.textContent = redesFlotantes.classList.contains('abierto') ? '×' : '+';
+  botonRedes.textContent = abierto ? '×' : '+';
+  botonRedes.setAttribute('aria-label', abierto ? 'Cerrar redes sociales' : 'Abrir redes sociales');
 });
 // ============================================================
 // FIN SECCIÓN 1
@@ -25,9 +35,21 @@ const nucleoBigbang = document.getElementById('nucleoBigbang');
 const flashExplosion = document.getElementById('flashExplosion');
 const textoCarga = document.getElementById('textoCarga');
 
+// nucleoBigbang es un <img> con un GIF animado (la estrella del
+// cliente). Un GIF no se puede "pausar" con CSS como una animación
+// nuestra — si el usuario pidió menos movimiento, la única forma de
+// respetarlo de verdad es servirle un frame fijo en vez del GIF.
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  nucleoBigbang.src = 'assets/nucleo-estrella-estatica.png';
+}
+
+// { once: true }: el propio navegador remueve este listener después del
+// primer clic — reemplaza el intento anterior de hacerlo a mano con
+// removeEventListener, que no funcionaba porque le pasábamos una función
+// anónima DISTINTA a la que se había registrado (nunca podía coincidir,
+// así que el listener nunca se quitaba de verdad). Con doble-clic rápido
+// esto permitía re-disparar toda la secuencia y encimar los setTimeout.
 pantallaCarga.addEventListener('click', () => {
-  // Evitar que se pueda hacer clic dos veces mientras ya está explotando
-  pantallaCarga.removeEventListener('click', () => {});
   pantallaCarga.style.cursor = 'default';
   textoCarga.textContent = '';
 
@@ -51,7 +73,7 @@ pantallaCarga.addEventListener('click', () => {
   }, 600 + 400); // 600ms de tensión + parte de la explosión, para que
                   // el flash blanco ya cubra la pantalla justo cuando
                   // empezamos a desvanecer esta capa
-});
+}, { once: true });
 // ============================================================
 // FIN SECCIÓN 2
 // ============================================================
@@ -204,6 +226,16 @@ document.querySelectorAll('[data-cerrar-modal]').forEach(boton => {
 
 // Click en el fondo oscuro (fuera de la tarjeta) también cierra
 fondoModal.addEventListener('click', cerrarModales);
+
+// Tecla Escape también cierra — patrón esperado de accesibilidad
+// (WCAG 2.1, "cierre de contenido"/manejo de foco): quien navega con
+// teclado o lector de pantalla no debería depender de encontrar y
+// hacer click en el botón "×" para salir de un modal.
+document.addEventListener('keydown', (evento) => {
+  if (evento.key === 'Escape' && planetaAbierto) {
+    cerrarModales();
+  }
+});
 
 // ===== Función para cerrar un planeta enfocado =====
 function cerrarPlaneta(planeta) {
@@ -413,4 +445,46 @@ activarRevelado('.bloque-bio');
 
 // ============================================================
 // FIN SECCIÓN 8
+// ============================================================
+
+
+// ============================================================
+// SECCIÓN 9: BOTÓN STICKY → "VOLVER ARRIBA" AL LLEGAR AL FOOTER
+// ============================================================
+// El mismo botón redondo de redes sociales (Sección 1) se transforma
+// en un cohete que regresa al usuario arriba cuando el footer entra
+// en pantalla. No usamos activarRevelado() aquí porque esa función
+// alterna una clase en el MISMO elemento que observa — este caso es
+// distinto: observamos el footer, pero el que cambia es el botón de
+// redes, que vive en otra parte del HTML.
+const piePagina = document.querySelector('.pie-pagina');
+
+if (piePagina) {
+  const observadorFooter = new IntersectionObserver((entradas) => {
+    entradas.forEach((entrada) => {
+      if (entrada.isIntersecting) {
+        // Si el menú de redes se había quedado abierto, lo cerramos
+        // primero — si no, se ve una lista de íconos abierta justo
+        // encima de la fila de redes del footer (duplicado y feo).
+        redesFlotantes.classList.remove('abierto');
+        botonRedes.classList.remove('abierto');
+        // Sincronizamos también el texto "+/×": aquí no se ve porque
+        // el modo cohete lo oculta con font-size:0, pero si no lo
+        // reseteamos, al volver arriba reaparecería con el símbolo
+        // equivocado (el "×" de un menú que ya forzamos a cerrar).
+        botonRedes.textContent = '+';
+        botonRedes.setAttribute('aria-label', 'Volver arriba');
+      } else {
+        botonRedes.setAttribute('aria-label', 'Abrir redes sociales');
+      }
+      // Reversible, mismo patrón que el resto del sitio: aparece al
+      // entrar el footer, se deshace solo al volver a subir.
+      redesFlotantes.classList.toggle('modo-volver-arriba', entrada.isIntersecting);
+    });
+  }, { threshold: 0.1 });
+
+  observadorFooter.observe(piePagina);
+}
+// ============================================================
+// FIN SECCIÓN 9
 // ============================================================

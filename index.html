@@ -5,12 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Galactica Homepage</title>
 <link rel="stylesheet" href="style.css">
+<script>
+  // Esto va aquí (en <head>, antes de pintar el <body>) y no al final
+  // junto con el resto de script.js a propósito: si esperáramos hasta
+  // ahí, el navegador ya habría pintado la pantalla de carga completa
+  // un instante antes de ocultarla — se vería un parpadeo. Corriendo
+  // esto ANTES de que el <body> se pinte, evitamos que llegue a
+  // mostrarse siquiera. try/catch por si sessionStorage está
+  // bloqueado (algunos modos privados) — si falla, simplemente se
+  // ve la pantalla de carga normal, no rompe nada.
+  try {
+    if (sessionStorage.getItem('galacticaIntroVista')) {
+      document.documentElement.classList.add('sin-intro');
+    }
+  } catch (error) {
+    // sessionStorage no disponible: no hacemos nada, se comporta
+    // como si fuera la primera visita.
+  }
+</script>
 </head>
 <body>
 
   <!-- ===== PANTALLA DE CARGA (Big Bang) ===== -->
   <div class="pantalla-carga" id="pantallaCarga">
-    <div class="nucleo-bigbang" id="nucleoBigbang"></div>
+    <!-- Antes era un círculo blanco puro CSS. Ahora es la estrella real
+         que mandó el cliente (GIF animado, "destello" azul→blanco).
+         alt="" porque es puramente decorativo — no aporta información
+         que un lector de pantalla necesite anunciar. -->
+    <img src="assets/nucleo-estrella.gif" class="nucleo-bigbang" id="nucleoBigbang" alt="">
     <div class="flash-explosion" id="flashExplosion"></div>
     <p class="texto-carga" id="textoCarga">Haz clic para comenzar</p>
     <p class="frase-artistica">— frase artística aquí —</p>
@@ -64,7 +86,7 @@
       <div class="orbita orbita-marte"></div>
 
       <div class="pivote pivote-mercurio">
-        <a href="#" class="planeta mercurio" data-nombre="Shows" data-tipo="modal" title="Shows"></a>
+        <button type="button" class="planeta mercurio" data-nombre="Shows" data-tipo="modal" title="Shows"></button>
       </div>
 
       <div class="pivote pivote-venus">
@@ -76,7 +98,7 @@
       </div>
 
       <div class="pivote pivote-marte">
-        <a href="#" class="planeta marte" data-nombre="Newsletter" data-tipo="modal" title="Newsletter"></a>
+        <button type="button" class="planeta marte" data-nombre="Newsletter" data-tipo="modal" title="Newsletter"></button>
       </div>
 
     </div>
@@ -106,10 +128,14 @@
       <div class="moodboard-presskit" id="moodboardPresskit">
 
         <!-- TEXTO DE PRUEBA -->
+        <!-- Efecto "marcador" (.texto-resaltado) también aquí, mismo
+             criterio que en Biografía: solo título+tagline, NO en
+             .texto-cita-moodboard — esa ya tiene su propio resaltado
+             (el <mark> verde) y es texto más largo tipo cita. -->
         <div class="cabecera-moodboard">
           <div class="titulo-moodboard">
-            <h2>Presskit</h2>
-            <p class="subtitulo-seccion">Fotos, video y material para difusión</p>
+            <h2><span class="texto-resaltado">Presskit</span></h2>
+            <p class="subtitulo-seccion"><span class="texto-resaltado">Fotos, video y material para difusión</span></p>
           </div>
 
           <div class="texto-moodboard">
@@ -157,9 +183,15 @@
     <div class="contenedor-biografia-completo">
 
       <!-- INTRO / TAGLINE DE PRUEBA -->
+      <!-- PRUEBA (7 sept): título y tagline con efecto "marcador" tipo
+           KOSA Artist Residency — fondo blanco pegado a cada renglón
+           de texto, texto en negro. El span (no el h2/p) es el que
+           lleva la clase: así el fondo abraza el texto renglón por
+           renglón, en vez de dibujar un solo rectángulo detrás de
+           todo el bloque. Ver .texto-resaltado en style.css. -->
       <div class="intro-biografia">
-        <h2>Biografía</h2>
-        <p class="tagline-biografia">Reflexiones de una artista cuyo camino por la escena independiente se convirtió en parte de su identidad creativa.</p>
+        <h2><span class="texto-resaltado">Biografía</span></h2>
+        <p class="tagline-biografia"><span class="texto-resaltado">Reflexiones de una artista cuyo camino por la escena independiente se convirtió en parte de su identidad creativa.</span></p>
       </div>
 
       <!-- BLOQUE 1: foto entra desde la izquierda, texto desde la derecha -->
@@ -189,13 +221,52 @@
   </section>
 
   <section class="seccion-scroll" id="contacto">
-    <div class="tarjeta-seccion">
-      <h2>Contacto</h2>
-      <p class="subtitulo-seccion">Para shows, prensa y colaboraciones</p>
-      <a href="mailto:contacto@karjarecords.com" class="enlace-contacto">contacto@karjarecords.com</a>
-      <p class="nota-seccion">vía Karja Records</p>
+    <div class="contenedor-contacto">
+
+      <!-- Título y tagline FUERA de la tarjeta (8 sept) — mismo
+           criterio que ya aplicamos en Presskit: el fondo blanco de
+           .texto-resaltado ya da todo el contraste que necesita
+           contra el fondo oscuro de la sección, la tarjeta ahí
+           encima era una capa redundante. -->
+      <div class="intro-contacto">
+        <h2><span class="texto-resaltado">Contacto</span></h2>
+        <p class="subtitulo-seccion"><span class="texto-resaltado">Para shows, prensa y colaboraciones</span></p>
+      </div>
+
+      <!-- La tarjeta se queda solo con el email + nota — SÍ necesitan
+           el fondo casi sólido (a diferencia del título, no llevan
+           su propio fondo blanco) para garantizar contraste WCAG. -->
+      <div class="tarjeta-seccion">
+        <a href="mailto:contacto@karjarecords.com" class="enlace-contacto">contacto@karjarecords.com</a>
+        <p class="nota-seccion">vía Karja Records</p>
+      </div>
+
     </div>
   </section>
+
+  <!-- FOOTER: estilo inspirado en galobarker.com (booking/contacto +
+       redes + copyright). "Galáctica" en el copyright es PLACEHOLDER —
+       cámbialo por el nombre/proyecto real de la artista cuando se
+       defina. Los emails/redes SÍ son los reales ya confirmados,
+       no son de prueba. -->
+  <!-- Sin etiqueta/email aquí a propósito (se quitaron el 7 sept):
+       la tarjeta de #contacto queda justo arriba en el flujo de
+       scroll y ya muestra ese mismo correo — repetirlo aquí era
+       redundancia literal. El footer se queda con lo que SÍ es
+       distinto en este punto de la página: redes y copyright. -->
+  <footer class="pie-pagina">
+    <nav class="pie-redes" aria-label="Redes sociales">
+      <a href="#">Spotify</a>
+      <a href="#">Apple Music</a>
+      <a href="#">YouTube</a>
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+      <a href="#">Amazon Music</a>
+      <a href="#">Deezer</a>
+    </nav>
+
+    <p class="pie-copyright">© 2026 Galáctica. Todos los derechos reservados.</p>
+  </footer>
 
   <!-- ===== BOTÓN DE CONTACTO (fijo, esquina superior derecha) ===== -->
   <a href="#contacto" class="boton-contacto">Contáctanos</a>
@@ -257,7 +328,7 @@
     <a href="#" class="icono-red siempre-visible" title="TikTok">TT</a>
     <a href="#" class="icono-red siempre-visible" title="Spotify">SP</a>
     <a href="#" class="icono-red siempre-visible" title="Instagram">IG</a>
-    <button class="boton-redes" id="botonRedes">+</button>
+    <button class="boton-redes" id="botonRedes" aria-label="Abrir redes sociales">+</button>
   </div>
 
   <script src="script.js"></script>

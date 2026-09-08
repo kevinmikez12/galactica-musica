@@ -123,26 +123,58 @@ body {
    para garantizar buen contraste de texto, sin importar
    qué tan visibles estén las estrellas/meteoros detrás.
    =================================================== */
+/* Contenedor de #contacto: agrupa el título/tagline (sin tarjeta,
+   ver .intro-contacto) y la tarjeta recortada (solo email+nota) en
+   una sola columna centrada — mismo espaciado que ya usa Biografía
+   entre sus bloques. */
+.contenedor-contacto {
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.intro-contacto {
+  text-align: center;
+}
+
+.intro-contacto h2 {
+  opacity: 1; /* mismo criterio que Biografía/Presskit: contenido real necesita full contraste */
+  margin-bottom: 16px;
+}
+
 .tarjeta-seccion {
   background: #0d0d1a;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
-  padding: 48px 40px;
+  padding: 32px 40px;
   max-width: 480px;
+  width: 100%;
   text-align: center;
 }
 
-/* Sobreescribe la opacidad 0.4 de ".seccion-scroll h2" de arriba —
-   dentro de una tarjeta con fondo sólido sí queremos el título
-   al 100% de opacidad, ya no hace falta atenuarlo */
-.tarjeta-seccion h2 {
-  opacity: 1;
-  margin-bottom: 12px;
-}
+/* Nota: .tarjeta-seccion ya NO lleva h2 (8 sept) — el título de
+   Contacto se movió a .intro-contacto, fuera de la tarjeta, igual
+   que en Presskit. La regla ".tarjeta-seccion h2 { opacity:1 }" que
+   vivía aquí se eliminó por quedar sin uso. */
 
 .subtitulo-seccion {
-  font-size: 14px;
-  opacity: 0.6;
+  /* Mismo tamaño/interlineado que .tagline-biografia (19px/1.7) —
+     antes eran más chicos (14px) que el tagline de Biografía, y
+     Kevin pidió normalizarlos: las 3 secciones (Biografía, Presskit,
+     Contacto) ahora usan la misma jerarquía tipográfica para su
+     título+tagline. */
+  font-size: 19px;
+  line-height: 1.7;
+  /* Antes opacity:0.6 (texto plano atenuado). Ahora lleva el span
+     .texto-resaltado adentro (fondo blanco sólido) en sus 2 únicos
+     usos del sitio (Presskit y Contacto) — con opacity:0.6 en el
+     padre, ese fondo blanco se vería gris/lavado en vez de sólido,
+     porque opacity afecta TODO lo que se pinta dentro del elemento,
+     no solo el texto. */
+  opacity: 1;
   margin-bottom: 24px;
 }
 
@@ -372,14 +404,17 @@ body {
    tratamiento visual que ya usas en .tarjeta-modal — fondo casi
    sólido, borde y esquinas redondeadas.
    =================================================== */
+/* Sin tarjeta oscura de fondo (a propósito, 8 sept): con el título y
+   el tagline ya llevando .texto-resaltado (fondo blanco sólido), la
+   tarjeta se volvió una capa redundante — el blanco sólido ya da
+   todo el contraste que necesita contra las fotos del collage detrás,
+   sin encerrarlo en otra caja. .texto-moodboard (la cita, abajo)
+   SÍ conserva su tarjeta — es un tratamiento distinto (el <mark>
+   verde), no lleva fondo blanco propio. */
 .titulo-moodboard {
   z-index: 5;
   text-align: center;
   max-width: 480px;
-  background: #0d0d1a;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 20px 32px;
 
   opacity: 0;
   transition: opacity 0.7s ease;
@@ -391,7 +426,7 @@ body {
 }
 
 .titulo-moodboard h2 {
-  margin-bottom: 4px;
+  margin-bottom: 16px; /* antes 4px — subido junto con el tamaño del tagline (8 sept), mismo espaciado que Biografía/Contacto */
 }
 
 .texto-moodboard {
@@ -573,10 +608,32 @@ body {
 
 .tagline-biografia {
   font-size: 19px;
-  line-height: 1.6;
+  line-height: 1.7; /* un poco más alto que antes (1.6) para que los
+                        renglones resaltados de abajo no se peguen
+                        entre sí verticalmente */
   color: rgba(255, 255, 255, 0.85);
   max-width: 560px;
   margin: 0 auto;
+}
+
+/* PRUEBA (7 sept), referencia: KOSA Artist Residency — efecto
+   "marcador": fondo blanco que se pega a cada renglón de texto,
+   texto en negro. Clave: va en un <span> DENTRO del h2/p, nunca en
+   el h2/p mismo — un span es inline por default, así que cuando el
+   texto se parte en varios renglones, cada renglón es su propia
+   "caja" y box-decoration-break:clone le clona el mismo fondo+padding
+   a cada una. Si se pusiera en el h2/p (block-level) se vería UN
+   solo rectángulo blanco gigante detrás de todo el párrafo, no el
+   efecto de renglones sueltos que se ve en la referencia.
+   Clase reutilizable a propósito — es una prueba en Biografía, pero
+   si funciona se puede reusar en otros títulos/textos sin duplicar
+   CSS. */
+.texto-resaltado {
+  background-color: #ffffff;
+  color: #0a0a12;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 0.15em 0.5em;
 }
 
 /* --- BLOQUES foto + texto --- */
@@ -693,6 +750,60 @@ body {
 }
 
 /* ===================================================
+   FOOTER — inspirado en el footer de galobarker.com:
+   contacto + redes + copyright, minimalista, en una sola
+   columna centrada. Va DESPUÉS de #contacto, cierra el sitio.
+   =================================================== */
+.pie-pagina {
+  /* mismo motivo que .seccion-scroll: .estrellas/.meteoro son
+     position:fixed, sin esto podrían quedar por encima del footer */
+  position: relative;
+  z-index: 20;
+
+  padding: 56px 24px 32px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  /* casi sólido (no rgba(5,5,15,0.82) como .seccion-scroll): es el
+     cierre del sitio, no necesita seguir viendo estrellas detrás */
+  background-color: rgba(5, 5, 15, 0.95);
+}
+
+/* .pie-etiqueta y .pie-email se quitaron (7 sept): duplicaban
+   literalmente el correo que ya muestra la tarjeta de #contacto
+   justo arriba en el flujo de scroll. */
+
+.pie-redes {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-bottom: 32px;
+}
+
+.pie-redes a {
+  color: white;
+  font-size: 13px;
+  text-decoration: none;
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s ease;
+}
+
+.pie-redes a:hover {
+  opacity: 1;
+}
+
+.pie-copyright {
+  /* opacity 0.5 (no 0.35) a propósito: a 11px, 0.35 da 3.06:1 de
+     contraste y no pasa WCAG AA (mínimo 4.5:1 en texto normal).
+     0.5 da 5.31:1. */
+  color: white;
+  font-size: 11px;
+  opacity: 0.5;
+  letter-spacing: 0.5px;
+}
+
+/* ===================================================
    FONDO DE ESTRELLAS
    =================================================== */
 
@@ -744,6 +855,12 @@ body {
    un círculo sutil, porque es un BOTÓN, no un logo de red social —
    ayuda a que se entienda que es algo clickeable) */
 .boton-redes {
+  /* position:relative ancla los pseudo-elementos del cohete (modo
+     "volver arriba", ver abajo) A ESTE botón — sin esto, top/left:50%
+     se calcularía contra .redes-flotantes (su ancestro posicionado
+     más cercano, que es position:fixed) y el cohete quedaría mal
+     centrado. */
+  position: relative;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -820,6 +937,83 @@ body {
 }
 
 /* ===================================================
+   MODO "VOLVER ARRIBA" — el mismo botón redondo se convierte
+   en un cohete cuando el footer entra en pantalla (ver Sección 9
+   de script.js). En vez de agregar un elemento nuevo, reutilizamos
+   el sticky de redes: se ocultan sus íconos (ya se repiten con la
+   fila de redes del footer) y el botón principal cambia de función.
+   =================================================== */
+
+/* Ocultamos TODOS los íconos sueltos, incluyendo los .siempre-visible
+   — por especificidad (3 clases contra 2) esta regla gana sin
+   necesitar !important. */
+.redes-flotantes.modo-volver-arriba .icono-red {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Escondemos el texto "+"/"×" (ya no aplica en este modo) dejando
+   que los pseudo-elementos de abajo dibujen el cohete */
+.redes-flotantes.modo-volver-arriba .boton-redes {
+  font-size: 0;
+}
+
+/* Cuerpo del cohete: mismo recurso de .clip-path que usamos en los
+   planetas (.mercurio, .marte, etc.), aquí como silueta simple con
+   nariz, cuerpo y aletas en vez de una imagen/GIF — cero peso extra
+   y encaja con el resto del sitio en vez de un ícono ilustrado. */
+.redes-flotantes.modo-volver-arriba .boton-redes::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 22px;
+  transform: translate(-50%, -55%);
+  background: linear-gradient(180deg, #ffffff, #c9d6e8);
+  clip-path: polygon(
+    50% 0%, 78% 35%, 78% 65%, 100% 100%,
+    60% 82%, 50% 90%, 40% 82%, 0% 100%,
+    22% 65%, 22% 35%
+  );
+  transition: transform 0.3s ease;
+}
+
+/* Pequeña llama debajo del cohete — parpadea sutilmente, pero solo
+   si el usuario no pidió menos movimiento (mismo criterio que ya
+   aplicamos en Biografía) */
+.redes-flotantes.modo-volver-arriba .boton-redes::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 7px;
+  transform: translate(-50%, 45%);
+  background: linear-gradient(180deg, #ffd76b, #ff7a4d);
+  clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .redes-flotantes.modo-volver-arriba .boton-redes::after {
+    animation: parpadeoLlama 0.6s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes parpadeoLlama {
+  from { transform: translate(-50%, 45%) scaleY(1); opacity: 1; }
+  to   { transform: translate(-50%, 45%) scaleY(0.7); opacity: 0.8; }
+}
+
+/* Al pasar el cursor, un pequeño "impulso" hacia arriba — mismo
+   criterio que el hover de los planetas/fotos: es una respuesta
+   directa al usuario, no una animación automática, así que no
+   necesita el guard de prefers-reduced-motion */
+.redes-flotantes.modo-volver-arriba .boton-redes:hover::before {
+  transform: translate(-50%, -70%);
+}
+
+/* ===================================================
    BOTÓN DE CONTACTO (esquina superior derecha)
    =================================================== */
 .boton-contacto {
@@ -871,6 +1065,15 @@ body {
   transition: opacity 1s ease; /* para cuando la ocultemos al final */
 }
 
+/* Si ya vio la intro en esta pestaña/sesión (ver el script en <head>
+   de index.html), la pantalla de carga ni siquiera llega a existir
+   visualmente — display:none, no opacity:0, porque además de
+   ocultarla queremos sacarla del todo del flujo/interacción sin
+   depender de la transición de 1s de arriba. */
+html.sin-intro .pantalla-carga {
+  display: none;
+}
+
 /* Cuando le agreguemos esta clase con JS, se desvanece y dejamos
    de bloquear clics hacia el sistema solar de abajo */
 .pantalla-carga.oculta {
@@ -878,28 +1081,56 @@ body {
   pointer-events: none;
 }
 
-/* El núcleo: el punto que "respira" antes de explotar */
+/* El núcleo: la estrella que "respira" antes de explotar.
+   Antes era un círculo CSS puro (12px + box-shadow); ahora es un
+   <img> con el GIF real del cliente, así que el tratamiento cambia:
+   - Tamaño subido a 52px: a 12px el detalle dibujado a mano de la
+     estrella se perdía por completo (se veía como un punto borroso,
+     igual que el círculo de antes) — sin esto, cambiar el asset no
+     se hubiera notado.
+   - object-fit:contain porque el archivo es cuadrado (1080x1080
+     originalmente, ya redimensionado a 220x220 en /assets) y la
+     estrella no ocupa todo el cuadro.
+   - filter:drop-shadow en vez de box-shadow: box-shadow dibuja un
+     halo sobre la caja RECTANGULAR del elemento; con una imagen con
+     transparencia eso se vería como un cuadrado brillante detrás de
+     la estrella. drop-shadow sigue la silueta real (el canal alfa),
+     como ya usamos en otros brillos del sitio.
+   - Color del glow en azul (#38b3fa, el mismo azul de la estrella)
+     en vez de blanco — es el primer color de marca REAL que llega
+     del cliente (antes solo había adelantos/suposiciones, ver nota
+     de la paleta pendiente en PENDIENTES del doc del proyecto). */
 .nucleo-bigbang {
-  width: 12px;
-  height: 12px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 0 0 20px 6px rgba(255,255,255,0.8);
-  animation: respirar 1.4s ease-in-out infinite;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(56, 179, 250, 0.75));
 }
 
 /* Pulso: crece y decrece sutilmente, cada vez el ciclo se repite
-   más rápido gracias a una clase que le agregamos con JS */
+   más rápido gracias a una clase que le agregamos con JS.
+   Va dentro de este media query (mismo criterio que Biografía): con
+   prefers-reduced-motion, el script.js ya cambia el GIF por un PNG
+   estático (ver Sección 2), así que aquí además evitamos que ese PNG
+   se quede "respirando" con un escalado continuo — sería justo el
+   tipo de movimiento automático y de fondo que reduced-motion pide
+   evitar. La única animación que SÍ sigue corriendo para todos es el
+   flash de explosión (es una transición de estado puntual al hacer
+   clic, no un loop decorativo de fondo). */
+@media (prefers-reduced-motion: no-preference) {
+  .nucleo-bigbang {
+    animation: respirar 1.4s ease-in-out infinite;
+  }
+
+  .nucleo-bigbang.tension {
+    animation: respirar 0.25s ease-in-out infinite;
+  }
+}
+
 @keyframes respirar {
   0%   { transform: scale(1);   opacity: 0.7; }
   50%  { transform: scale(1.8); opacity: 1;   }
   100% { transform: scale(1);   opacity: 0.7; }
-}
-
-/* Cuando el usuario hace clic, cambiamos la animación a una
-   más frenética justo antes de la explosión real */
-.nucleo-bigbang.tension {
-  animation: respirar 0.25s ease-in-out infinite;
 }
 
 /* El flash de la explosión: un círculo blanco que se expande
@@ -1028,6 +1259,19 @@ body:active {
 }
 
 .planeta {
+  /* Mercurio y Marte son <button> (disparan una acción de JS: abrir
+     modal), Venus y Tierra siguen siendo <a href="#seccion"> (navegan
+     de verdad a un ancla) — cada uno usa el elemento HTML correcto
+     para lo que hace. Este reset solo le quita a <button> sus estilos
+     nativos (borde, fondo, padding, fuente) para que se vea igual que
+     el <a>; en <a> estas propiedades no hacen nada porque ya son así
+     por defecto. */
+  appearance: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+
   position: absolute;
   top: 0;
   left: 50%;
@@ -1094,23 +1338,10 @@ body:active {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
-/* Otra silueta de gato, distinto color */
-.jupiter {
-  background: linear-gradient(160deg, #4a9d6e, #2d6b47);
-  clip-path: polygon(
-    20% 0%, 35% 25%, 65% 25%, 80% 0%,
-    100% 40%, 100% 80%, 50% 100%, 0% 80%, 0% 40%
-  );
-}
-
-/* Cámara/mano — forma irregular tipo "blob" orgánico */
-.saturno {
-  background: linear-gradient(160deg, #c0c0c8, #808088);
-  clip-path: polygon(
-    30% 0%, 70% 0%, 100% 30%, 100% 70%,
-    70% 100%, 30% 100%, 0% 70%, 0% 30%
-  );
-}
+/* .jupiter y .saturno se eliminaron (7 sept): no se usaban en el HTML.
+   Decisión de Kevin: el sistema solar se queda en 4 planetas (mercurio,
+   venus, tierra, marte) — con más se satura el diseño y afecta la UX,
+   así que no se reservan clases para planetas futuros. */
 
 /* ===== CLASE "ENFOCADO" ===== */
 /* Esta es la clase mágica: cuando JS se la pone a un planeta,
