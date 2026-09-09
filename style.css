@@ -489,23 +489,173 @@ body {
   margin-bottom: 20px;
 }
 
-.videos-presskit,
+/* .videos-presskit tiene su propio max-width (más ancho, para el
+   video) y más aire arriba/abajo (9 sept, pedido de Mike) — antes
+   compartía regla con .discografia-presskit y el margen (56px) se
+   "colapsaba" con el margin-bottom de .moodboard-presskit (también
+   56px): en CSS, márgenes verticales de bloques contiguos no se
+   SUMAN, se quedan con el más grande de los dos — por eso el
+   espacio real terminaba siendo solo 56px, no 112px, y con las
+   fotos rotadas del collage saliéndose un poco de su propia caja
+   visualmente, se sentía sin separación. Subir el margen aquí (no
+   en .moodboard-presskit) alcanza para ganar el colapso sin tocar
+   esa otra sección. */
+.videos-presskit {
+  max-width: 840px;
+  margin: 130px auto 110px;
+}
+
 .discografia-presskit {
   max-width: 700px;
-  margin: 56px auto 0;
+  margin: 0 auto 0;
 }
 
-.grid-videos {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+/* ===== VIDEO DESTACADO + "nebulosa" (9 sept, ronda 3: vapor) =====
+   Antes: un aro giratorio (conic-gradient + overflow:hidden, ver
+   historial en el doc del proyecto). Se reemplazó por una sombra que
+   "respira" (crece y se desvanece, `@keyframes laten-nebulosa` abajo)
+   para dejar el video como único foco. Mike pidió ir un paso más:
+   que se sienta como una "tormenta nebulosa" con vapor saliendo, no
+   solo un brillo respirando parejo.
+
+   Técnica: 2 manchas (::before y ::after) de `radial-gradient` MÁS
+   GRANDES que el contenedor, muy difuminadas (`filter:blur`), puestas
+   detrás (`z-index:-1`, con `isolation:isolate` en el padre para que
+   ese z-index no se escape a pelear con otras capas de la página) y
+   puestas a la MISMA altura con `inset:0` — object-position/transform
+   las mueve. Cada una anima POSICIÓN, TAMAÑO y OPACIDAD con su propia
+   duración y delay (7s / 9s, una arrancando 2s después) — al no estar
+   sincronizadas, nunca respiran igual al mismo tiempo, que es lo que
+   hace que se sienta orgánico ("vapor" moviéndose) y no un pulso
+   mecánico de un solo tamaño. Los colores repiten el azul/morado que
+   ya usa el sitio (`#38b3fa`, `#9b6bdc`) en vez de inventar una
+   paleta nueva. Es 100% CSS — nada de imágenes/GIFs, mismo criterio
+   que el resto del sitio. */
+.video-destacado {
+  position: relative;
+  isolation: isolate;
+  max-width: 780px;
+  margin: 0 auto;
+  border-radius: 18px;
+  background: #05050f; /* fondo detrás del video mientras carga el iframe */
+  box-shadow: 0 0 50px 6px rgba(20, 10, 40, 0.35);
 }
 
-.video-embed {
+.video-destacado::before,
+.video-destacado::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -10%;
+  border-radius: 50%;
+  filter: blur(45px);
+  opacity: 0.5;
+}
+
+.video-destacado::before {
+  background: radial-gradient(circle at 30% 35%, rgba(56, 179, 250, 0.55), transparent 60%);
+}
+
+.video-destacado::after {
+  background: radial-gradient(circle at 72% 65%, rgba(155, 107, 220, 0.5), transparent 60%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .video-destacado {
+    animation: laten-nebulosa 5s ease-in-out infinite;
+  }
+
+  .video-destacado::before {
+    animation: vapor-deriva-1 7s ease-in-out infinite;
+  }
+
+  .video-destacado::after {
+    animation: vapor-deriva-2 9s ease-in-out infinite 2s; /* delay distinto: nunca coincide con la de ::before */
+  }
+}
+
+/* Con prefers-reduced-motion, el box-shadow y las manchas de arriba se
+   quedan fijos (nebulosa estática) en vez de correr estos ciclos. */
+@keyframes laten-nebulosa {
+  0%, 100% { box-shadow: 0 0 50px 6px rgba(20, 10, 40, 0.35); }
+  50%      { box-shadow: 0 0 90px 20px rgba(20, 10, 40, 0.55); }
+}
+
+@keyframes vapor-deriva-1 {
+  0%, 100% { transform: translate(0, 0) scale(1);       opacity: 0.4; }
+  50%      { transform: translate(4%, -6%) scale(1.15); opacity: 0.65; }
+}
+
+@keyframes vapor-deriva-2 {
+  0%, 100% { transform: translate(0, 0) scale(1.05);    opacity: 0.35; }
+  50%      { transform: translate(-5%, 5%) scale(0.9);  opacity: 0.6; }
+}
+
+.video-embed--destacado {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
   border: 0;
-  border-radius: 12px;
+  border-radius: 18px;
+}
+
+/* ===== "Nuevo" — mismo blanco sólido que .texto-resaltado, a
+   propósito: es el único acento de alto contraste que ya usa el
+   sitio (decisión de Kevin: sin colores por sección) — un badge
+   verde/rojo aquí sería sumar un color nuevo sin paleta confirmada. */
+.badge-nuevo {
+  display: inline-block;
+  background: #ffffff;
+  color: #0a0a12;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+
+/* ===== Último lanzamiento (9 sept) — bloque compacto arriba de la
+   lista completa, escalado desde el hero-banner grande que usa
+   galobarker.com para su canción más nueva (referencia de Kevin) a
+   algo proporcional para un artista con 5 sencillos, no una
+   discografía extensa. */
+.lanzamiento-destacado {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 14px;
+}
+
+.portada-lanzamiento {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.info-lanzamiento {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.etiqueta-lanzamiento {
+  font-size: 11px;
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.nombre-lanzamiento {
+  font-size: 17px;
+  font-weight: bold;
 }
 
 .lista-discografia {
@@ -577,14 +727,18 @@ body {
    ("A Song I Wrote About U at the Airport Lol") no cabe junto al
    botón en una fila angosta — se apilan igual que .bloque-bio. */
 @media (max-width: 600px) {
-  .grid-videos {
-    grid-template-columns: 1fr;
-  }
-
   .item-discografia {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+
+  .lanzamiento-destacado {
+    flex-wrap: wrap;
+  }
+
+  .lanzamiento-destacado .boton-pill {
+    margin-left: 80px; /* alinea con el texto, no con la portada */
   }
 }
 
@@ -903,12 +1057,35 @@ body {
 }
 
 .pie-redes a {
+  /* Antes llevaban texto junto al ícono (gap/font-size/letter-spacing
+     eran para ESE texto) — ahora es solo ícono (9 sept, pedido de
+     Kevin), el padding es lo que le da un área de toque decente sin
+     inflar el tamaño visual del ícono. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
   color: white;
-  font-size: 13px;
   text-decoration: none;
   opacity: 0.6;
-  letter-spacing: 0.5px;
   transition: opacity 0.2s ease;
+}
+
+/* ===== Íconos de marca (sprite <symbol>/<use> arriba en el <body>) =====
+   fill:currentColor los conecta con el color/opacity que ya trae cada
+   link (incluida la dimerización a 0.6 de arriba y el hover a 1) —
+   no hace falta pintar cada logo de su color de marca por separado,
+   consistente con la decisión de no variar colores por sección. */
+.svg-icono {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.icono-red .svg-icono {
+  width: 20px;
+  height: 20px;
 }
 
 .pie-redes a:hover {
