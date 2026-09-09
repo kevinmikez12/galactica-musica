@@ -1076,6 +1076,19 @@ body {
    link (incluida la dimerización a 0.6 de arriba y el hover a 1) —
    no hace falta pintar cada logo de su color de marca por separado,
    consistente con la decisión de no variar colores por sección. */
+/* Fix (9 sept): el atributo HTML "hidden" del sprite de íconos (ver
+   index.html, justo después de abrir <body>) no se estaba respetando de
+   forma confiable en un <svg> raíz — en vez de desaparecer del todo,
+   se quedaba con su tamaño de reemplazo por default (300x150px) y
+   empujaba TODO lo de abajo (incluido el sistema solar) 150px hacia
+   abajo. Por eso "después del cambio de íconos" el sistema solar se
+   veía corrido — no tiene que ver con el espaciado del video. Se
+   fuerza aquí con CSS explícito en vez de depender solo del atributo,
+   para que sea consistente en cualquier navegador. */
+svg[hidden] {
+  display: none;
+}
+
 .svg-icono {
   width: 16px;
   height: 16px;
