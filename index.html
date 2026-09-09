@@ -171,7 +171,93 @@
 
       </div>
 
-      <a href="#" class="boton-descarga">Descargar EPK completo</a>
+      <!-- VIDEOS REALES (8 sept) — a diferencia de las fotos del moodboard
+           de arriba, estos SÍ son contenido real de la artista (no
+           placeholder). Van en su propia sección, derechos (sin rotar):
+           investigamos las referencias del cliente (galobarker.com,
+           phoebebridgers.com) antes de construir esto, y NINGUNA rota
+           sus embeds de YouTube — son reproductores funcionales, no
+           fotos decorativas, así que siguen el mismo criterio aquí.
+           loading="lazy": con 4 iframes de YouTube, cada uno pesa lo
+           suyo — lazy evita cargar los que todavía no se ven en pantalla. -->
+      <div class="videos-presskit">
+        <p class="etiqueta-bloque"><span class="texto-resaltado">Videos</span></p>
+        <div class="grid-videos">
+          <iframe class="video-embed" src="https://www.youtube-nocookie.com/embed/VYQSgHsJq5U" title="Video musical — YouTube" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          <iframe class="video-embed" src="https://www.youtube-nocookie.com/embed/pNlquwSaUeA" title="Video musical — YouTube" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          <iframe class="video-embed" src="https://www.youtube-nocookie.com/embed/RzOg2PfQrJs" title="Video musical — YouTube" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          <iframe class="video-embed" src="https://www.youtube-nocookie.com/embed/1OJQMN-B6g0" title="Video musical — YouTube" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <!-- DISCOGRAFÍA REAL (8 sept) — igual que los videos, contenido
+           real. Sin reproductor de Spotify embebido a propósito: las
+           3 referencias del cliente que sí pudimos revisar a fondo
+           (galobarker, bratty, phoebebridgers) NINGUNA embebe Spotify —
+           las tres usan un link/botón que saca directo a la app/web,
+           en vez de una cajita angosta que además casi siempre solo
+           reproduce preview. Seguimos ese mismo patrón aquí. -->
+      <div class="discografia-presskit">
+        <p class="etiqueta-bloque"><span class="texto-resaltado">Discografía</span></p>
+        <!-- Portadas (8 sept): extraídas del endpoint público oEmbed de
+             Spotify (https://open.spotify.com/oembed?url=...), el mismo
+             que usa Spotify para generar sus propios embeds — no
+             requiere login ni API key. A diferencia de las fotos del
+             moodboard (que siguen esperando material de la artista),
+             la portada de un sencillo ya publicado es un asset
+             terminado y público: no hay razón para esperar.
+             Referenciadas directo desde el CDN de Spotify (no
+             descargadas a /assets/) — es exactamente para esto que
+             existe ese campo en su API pública. Si algún día cambian
+             de asset o quieres control total, se pueden descargar y
+             auto-hospedar, pero no es necesario. -->
+        <ul class="lista-discografia">
+          <li class="item-discografia">
+            <div class="info-cancion">
+              <img class="portada-cancion" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02dc89dcab7e97d3cd84a733dd" alt="" loading="lazy">
+              <span class="nombre-cancion">Dejé de Buscar</span>
+            </div>
+            <a href="https://open.spotify.com/track/1RKH5FWvYWZwjnZwJzzzYr" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+          </li>
+          <li class="item-discografia">
+            <div class="info-cancion">
+              <img class="portada-cancion" src="https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02db428c2cfdb723d2c933d341" alt="" loading="lazy">
+              <span class="nombre-cancion">La Invitada de la Temporada</span>
+            </div>
+            <a href="https://open.spotify.com/track/5qdOMaBSZPfA8eWEJ2Yk33" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+          </li>
+          <li class="item-discografia">
+            <div class="info-cancion">
+              <img class="portada-cancion" src="https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025411ec6145d49cd2e93c3be4" alt="" loading="lazy">
+              <span class="nombre-cancion">Fallin'</span>
+            </div>
+            <a href="https://open.spotify.com/track/2mgBJBK47WrqAsmTEUKDjn" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+          </li>
+          <li class="item-discografia">
+            <div class="info-cancion">
+              <img class="portada-cancion" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e027cd6d5e8db1c1d7613902702" alt="" loading="lazy">
+              <span class="nombre-cancion">Quiero</span>
+            </div>
+            <a href="https://open.spotify.com/track/5r8yDrZqh4rb5rLtsegjSS" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+          </li>
+          <li class="item-discografia">
+            <div class="info-cancion">
+              <img class="portada-cancion" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02ac6e431cf90fb54ea292f37c" alt="" loading="lazy">
+              <span class="nombre-cancion">A Song I Wrote About U at the Airport Lol</span>
+            </div>
+            <a href="https://open.spotify.com/track/3wP3gCvHfergX7Uud5EWhk" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- "Descargar EPK completo" se quitó (8 sept, decisión de Kevin):
+           no apuntaba a ningún archivo real (href="#"), y con bio+fotos+
+           videos+discografía ya viviendo en vivo en esta misma página,
+           un PDF aparte solo sería contenido duplicado que mantener.
+           Si algún booker pide un adjunto puntual más adelante, ese es
+           el momento de generar uno real a partir del contenido ya
+           definitivo — no antes. .boton-descarga se deja en el CSS
+           por si se vuelve a necesitar. -->
     </div>
   </section>
 
@@ -285,7 +371,7 @@
         <div class="fecha-show">15 Nov · CDMX</div>
         <div class="ciudad-show">Foro Indie Rocks</div>
       </div>
-      <a href="#" class="boton-boletos">Boletos</a>
+      <a href="#" class="boton-pill">Boletos</a>
     </div>
 
     <div class="item-show">
@@ -293,7 +379,7 @@
         <div class="fecha-show">22 Nov · GDL</div>
         <div class="ciudad-show">C3 Stage</div>
       </div>
-      <a href="#" class="boton-boletos">Boletos</a>
+      <a href="#" class="boton-pill">Boletos</a>
     </div>
 
     <div class="item-show">
@@ -301,7 +387,7 @@
         <div class="fecha-show">05 Dic · MTY</div>
         <div class="ciudad-show">Café Iguana</div>
       </div>
-      <a href="#" class="boton-boletos">Boletos</a>
+      <a href="#" class="boton-pill">Boletos</a>
     </div>
   </div>
 
