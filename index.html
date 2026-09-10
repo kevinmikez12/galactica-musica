@@ -235,68 +235,85 @@
       <div class="discografia-presskit">
         <p class="etiqueta-bloque"><span class="texto-resaltado">Discografía</span></p>
 
-        <!-- ÚLTIMO LANZAMIENTO (9 sept) — inspirado en cómo galobarker.com
-             destaca su canción más nueva, pero a escala de un sitio con
-             5 sencillos (no el hero-banner grande de esa referencia):
-             un bloque compacto arriba de la lista, con la misma portada
-             y el mismo badge "Nuevo" que también lleva su fila más abajo
-             en la lista completa — no son dos piezas de contenido
-             distintas, es la misma canción resaltada dos veces. -->
-        <div class="lanzamiento-destacado">
-          <img class="portada-lanzamiento" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02dc89dcab7e97d3cd84a733dd" alt="" loading="lazy">
-          <div class="info-lanzamiento">
-            <p class="etiqueta-lanzamiento">Último sencillo</p>
-            <p class="nombre-lanzamiento">Dejé de Buscar <span class="badge-nuevo">Nuevo</span></p>
-          </div>
-          <a href="https://open.spotify.com/track/1RKH5FWvYWZwjnZwJzzzYr" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
-        </div>
+        <!-- ===== ronda 4 (9 sept): "modal" apilado =====
+             Mike pidió meter la lista completa en un fondo tipo tarjeta/
+             modal (.tarjeta-lista-discografia, mismo lenguaje que
+             .tarjeta-seccion) y poner el sencillo más nuevo en una
+             tarjeta APARTE, position:absolute, flotando ENCIMA del
+             borde superior de esa tarjeta — sin tapar ningún renglón
+             de la lista de abajo. .discografia-cuerpo es el ancla
+             (position:relative) de la que cuelga esa tarjeta flotante;
+             el padding-top de .tarjeta-lista-discografia (ver CSS) es
+             lo que deja el hueco exacto para que no se encimen. -->
+        <div class="discografia-cuerpo">
 
-        <!-- Portadas (8 sept): extraídas del endpoint público oEmbed de
-             Spotify (https://open.spotify.com/oembed?url=...), el mismo
-             que usa Spotify para generar sus propios embeds — no
-             requiere login ni API key. A diferencia de las fotos del
-             moodboard (que siguen esperando material de la artista),
-             la portada de un sencillo ya publicado es un asset
-             terminado y público: no hay razón para esperar.
-             Referenciadas directo desde el CDN de Spotify (no
-             descargadas a /assets/) — es exactamente para esto que
-             existe ese campo en su API pública. Si algún día cambian
-             de asset o quieres control total, se pueden descargar y
-             auto-hospedar, pero no es necesario. -->
-        <ul class="lista-discografia">
-          <!-- "Dejé de Buscar" NO se repite aquí (9 sept, pedido de Kevin)
-               — ya vive arriba en .lanzamiento-destacado; repetirla en la
-               lista completa era mostrar la misma canción dos veces
-               seguidas en la misma sección. -->
-          <li class="item-discografia">
-            <div class="info-cancion">
-              <img class="portada-cancion" src="https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02db428c2cfdb723d2c933d341" alt="" loading="lazy">
-              <span class="nombre-cancion">La Invitada de la Temporada</span>
+          <!-- ÚLTIMO LANZAMIENTO — inspirado en cómo galobarker.com
+               destaca su canción más nueva, pero a escala de un sitio
+               con 5 sencillos (no el hero-banner grande de esa
+               referencia). Fondo degradado azul/morado (mismos tonos
+               que la nebulosa del video destacado) para que se note
+               que ESTA es la que está por encima, no solo otra fila
+               más de la lista. Misma canción que su fila en la lista
+               de abajo — no son dos piezas de contenido distintas. -->
+          <div class="lanzamiento-destacado">
+            <img class="portada-lanzamiento" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02dc89dcab7e97d3cd84a733dd" alt="" loading="lazy">
+            <div class="info-lanzamiento">
+              <p class="etiqueta-lanzamiento">Último sencillo</p>
+              <p class="nombre-lanzamiento">Dejé de Buscar <span class="badge-nuevo">Nuevo</span></p>
             </div>
-            <a href="https://open.spotify.com/track/5qdOMaBSZPfA8eWEJ2Yk33" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
-          </li>
-          <li class="item-discografia">
-            <div class="info-cancion">
-              <img class="portada-cancion" src="https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025411ec6145d49cd2e93c3be4" alt="" loading="lazy">
-              <span class="nombre-cancion">Fallin'</span>
-            </div>
-            <a href="https://open.spotify.com/track/2mgBJBK47WrqAsmTEUKDjn" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
-          </li>
-          <li class="item-discografia">
-            <div class="info-cancion">
-              <img class="portada-cancion" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e027cd6d5e8db1c1d7613902702" alt="" loading="lazy">
-              <span class="nombre-cancion">Quiero</span>
-            </div>
-            <a href="https://open.spotify.com/track/5r8yDrZqh4rb5rLtsegjSS" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
-          </li>
-          <li class="item-discografia">
-            <div class="info-cancion">
-              <img class="portada-cancion" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02ac6e431cf90fb54ea292f37c" alt="" loading="lazy">
-              <span class="nombre-cancion">A Song I Wrote About U at the Airport Lol</span>
-            </div>
-            <a href="https://open.spotify.com/track/3wP3gCvHfergX7Uud5EWhk" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
-          </li>
-        </ul>
+            <a href="https://open.spotify.com/track/1RKH5FWvYWZwjnZwJzzzYr" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+          </div>
+
+          <!-- Portadas (8 sept): extraídas del endpoint público oEmbed de
+               Spotify (https://open.spotify.com/oembed?url=...), el mismo
+               que usa Spotify para generar sus propios embeds — no
+               requiere login ni API key. A diferencia de las fotos del
+               moodboard (que siguen esperando material de la artista),
+               la portada de un sencillo ya publicado es un asset
+               terminado y público: no hay razón para esperar.
+               Referenciadas directo desde el CDN de Spotify (no
+               descargadas a /assets/) — es exactamente para esto que
+               existe ese campo en su API pública. Si algún día cambian
+               de asset o quieres control total, se pueden descargar y
+               auto-hospedar, pero no es necesario. -->
+          <div class="tarjeta-lista-discografia">
+            <ul class="lista-discografia">
+              <!-- "Dejé de Buscar" NO se repite aquí (9 sept, pedido de
+                   Kevin) — ya vive arriba en .lanzamiento-destacado;
+                   repetirla en la lista completa era mostrar la misma
+                   canción dos veces seguidas en la misma sección. -->
+              <li class="item-discografia">
+                <div class="info-cancion">
+                  <img class="portada-cancion" src="https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02db428c2cfdb723d2c933d341" alt="" loading="lazy">
+                  <span class="nombre-cancion">La Invitada de la Temporada</span>
+                </div>
+                <a href="https://open.spotify.com/track/5qdOMaBSZPfA8eWEJ2Yk33" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+              </li>
+              <li class="item-discografia">
+                <div class="info-cancion">
+                  <img class="portada-cancion" src="https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025411ec6145d49cd2e93c3be4" alt="" loading="lazy">
+                  <span class="nombre-cancion">Fallin'</span>
+                </div>
+                <a href="https://open.spotify.com/track/2mgBJBK47WrqAsmTEUKDjn" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+              </li>
+              <li class="item-discografia">
+                <div class="info-cancion">
+                  <img class="portada-cancion" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e027cd6d5e8db1c1d7613902702" alt="" loading="lazy">
+                  <span class="nombre-cancion">Quiero</span>
+                </div>
+                <a href="https://open.spotify.com/track/5r8yDrZqh4rb5rLtsegjSS" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+              </li>
+              <li class="item-discografia">
+                <div class="info-cancion">
+                  <img class="portada-cancion" src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02ac6e431cf90fb54ea292f37c" alt="" loading="lazy">
+                  <span class="nombre-cancion">A Song I Wrote About U at the Airport Lol</span>
+                </div>
+                <a href="https://open.spotify.com/track/3wP3gCvHfergX7Uud5EWhk" class="boton-pill" target="_blank" rel="noopener">Escuchar en Spotify</a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
       </div>
 
       <!-- "Descargar EPK completo" se quitó (8 sept, decisión de Kevin):

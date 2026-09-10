@@ -616,19 +616,74 @@ body {
   vertical-align: middle;
 }
 
-/* ===== Último lanzamiento (9 sept) — bloque compacto arriba de la
-   lista completa, escalado desde el hero-banner grande que usa
+/* ===== Ronda 4 (9 sept): lista en tarjeta + último lanzamiento
+   flotando encima (pedido de Mike) =====
+
+   .discografia-cuerpo es el ancla (position:relative) de la que
+   cuelga .lanzamiento-destacado (position:absolute). El truco para
+   que "quede por encima pero no lo oculte" es puramente de espacio:
+   .tarjeta-lista-discografia reserva un padding-top (64px) más grande
+   que la mitad de la tarjeta flotante que sobresale hacia ABAJO hacia
+   su interior (ver "top: -48px" más abajo — con la tarjeta midiendo
+   ~96px de alto, 48px quedan por fuera/arriba de la tarjeta de lista
+   y los otros 48px se encimarían con su borde superior; el padding
+   de 64px deja 16px de aire de sobra para que ningún renglón de la
+   lista quede tapado). Mismo mecanismo que un "badge" o card flotante
+   de UI, solo que aquí en vez de un ícono chico es la canción entera. */
+.discografia-cuerpo {
+  position: relative;
+  margin-top: 80px; /* antes 56px — Mike pidió alejar un poco más la etiqueta "Discografía" de la tarjeta flotante, se sentían pegadas */
+}
+
+.tarjeta-lista-discografia {
+  /* mismo fondo casi sólido que .tarjeta-seccion/.tarjeta-modal —
+     el "fondo de modal" que pidió Mike para la lista completa */
+  background: #0d0d1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 64px 24px 8px;
+}
+
+/* ===== Último lanzamiento — bloque compacto arriba de la lista
+   completa, escalado desde el hero-banner grande que usa
    galobarker.com para su canción más nueva (referencia de Kevin) a
    algo proporcional para un artista con 5 sencillos, no una
-   discografía extensa. */
+   discografía extensa. Ahora flota SOBRE .tarjeta-lista-discografia
+   en vez de ir arriba en flujo normal (ver nota en .discografia-cuerpo
+   arriba) — el fondo cambia de un simple borde a un degradado
+   azul/morado (los mismos tonos que ya usa la nebulosa del video
+   destacado, `#38b3fa`/`#9b6bdc`) para que se lea como "destacado que
+   flota encima", no solo otra fila más de la lista. Es un degradado
+   estático (sin animación) a propósito: esta tarjeta lleva texto que
+   hay que poder leer bien, y demasiado movimiento aquí competiría con
+   el efecto del video de arriba en vez de reforzar la identidad visual
+   del sitio — si después de verlo prefieres que también "respire" un
+   poco, es un cambio chico. */
 .lanzamiento-destacado {
+  position: absolute;
+  top: -48px;
+  left: 0;
+  width: 100%;
+  z-index: 5;
+
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 16px;
-  margin-bottom: 28px;
   border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 14px;
+  border-radius: 16px;
+
+  background: linear-gradient(135deg, rgba(56, 179, 250, 0.3), rgba(155, 107, 220, 0.3)), #12121f;
+  /* Sombra reducida (pedido de Mike) — antes era grande y difusa
+     (32px de blur + dos glows de 46-70px). Ahora es delgada: blur
+     corto y desplazamiento chico para la sombra de elevación, y los
+     glows de color se acortan y se les baja la opacidad — se sigue
+     notando el color de la nebulosa pegado al borde, pero ya no se
+     "riega" tanto hacia afuera. */
+  box-shadow:
+    0 4px 10px rgba(5, 5, 15, 0.4),
+    0 0 16px 1px rgba(56, 179, 250, 0.18),
+    0 0 22px 2px rgba(155, 107, 220, 0.14);
 }
 
 .portada-lanzamiento {
@@ -739,6 +794,16 @@ body {
 
   .lanzamiento-destacado .boton-pill {
     margin-left: 80px; /* alinea con el texto, no con la portada */
+  }
+
+  /* El botón se envuelve a su propio renglón en mobile (flex-wrap de
+     arriba), así que la tarjeta flotante mide más alto aquí que en
+     desktop (~146px vs ~98px) — el padding-top de 64px calculado para
+     desktop se quedaba corto y la tarjeta tapaba el primer sencillo de
+     la lista. Se sube a 120px, mismo criterio (altura real + colchón
+     de aire), solo que calibrado para la altura de mobile. */
+  .tarjeta-lista-discografia {
+    padding-top: 120px;
   }
 }
 
@@ -931,11 +996,40 @@ body {
   height: 320px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: linear-gradient(135deg, #3d3d5c, #1a1a2e);
+  /* Oscurecidas un poco (9 sept, pedido de Mike) — mismo tono, nomás
+     bajando la luminosidad de cada color. */
+  background: linear-gradient(135deg, #2e2e47, #131320);
 }
 
 .bloque-bio--invertido .foto-bloque-bio {
-  background: linear-gradient(135deg, #5c3d4a, #2a1520); /* color distinto: ayuda a distinguir los 2 bloques mientras es placeholder */
+  background: linear-gradient(135deg, #472e39, #1c0f16); /* color distinto: ayuda a distinguir los 2 bloques mientras es placeholder */
+}
+
+/* ===== Fondo "nebulosa" detrás del texto (9 sept, pedido de Mike) =====
+   El texto vivía directo sobre el fondo semitransparente de la sección
+   (rgba(5,5,15,0.82)), con estrellas/meteoros de fondo asomando — Mike
+   pidió reforzar su contraste con un fondo propio, en el mismo lenguaje
+   visual que ya usa el sitio (los tonos azul/morado de la nebulosa del
+   video destacado y el degradado del "último lanzamiento") en vez de
+   una tarjeta plana sin más.
+
+   Técnica: dos radial-gradient suaves (azul arriba-izquierda, morado
+   abajo-derecha) mezclados sobre una base oscura casi sólida
+   (rgba(8,8,16,0.6)) — sin pseudo-elementos ni blur, porque aquí el
+   fondo vive DETRÁS de texto que hay que poder leer bien (el blur del
+   video funciona porque no lleva texto encima). Mismo color en los dos
+   bloques (no uno por cada tono de foto) — a propósito, para no
+   contradecir la decisión ya tomada de no variar colores por sección;
+   el color distinto es solo cosa de las fotos placeholder (ver nota
+   arriba), no del acento de marca. */
+.texto-bloque-bio {
+  padding: 28px 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 18% 20%, rgba(56, 179, 250, 0.18), transparent 55%),
+    radial-gradient(circle at 82% 80%, rgba(155, 107, 220, 0.18), transparent 55%),
+    rgba(8, 8, 16, 0.6);
 }
 
 .texto-bloque-bio p {
@@ -1018,6 +1112,10 @@ body {
     width: 100%;
     max-width: 320px;
     height: 220px;
+  }
+
+  .texto-bloque-bio {
+    padding: 22px 20px; /* un poco menos que en desktop (28px/32px) — pantalla angosta */
   }
 
   .texto-bloque-bio p {
