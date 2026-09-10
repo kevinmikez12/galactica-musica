@@ -1042,35 +1042,17 @@ body {
   padding: 40px 44px;
 }
 
-/* Custom property registrada (9 sept): esto es lo que hace posible
-   animar el COLOR de un gradiente directamente — sin @property, un
-   custom property normal (--x) no es interpolable, el navegador solo
-   sabe hacer "salto" de un valor a otro a la mitad del keyframe, no
-   transición gradual. Con `syntax:'<color>'` el navegador sí sabe
-   mezclar los canales rgba() paso a paso. Vive fuera de cualquier
-   selector/media query a propósito (así lo pide la spec). Si un
-   navegador no soporta @property, simplemente ignora esta regla y la
-   propiedad se queda fija en su initial-value — no rompe nada, solo
-   no anima el color (degradación segura). */
-@property --nebulosa-color-bio {
-  syntax: '<color>';
-  inherits: false;
-  initial-value: rgba(56, 179, 250, 0.34);
-}
-
-/* v4 (9 sept, pedido de Mike): "se ve claro como si fuera blanco".
-   La causa real: dos capas de color TRASLÚCIDAS montadas una sobre
-   otra (azul + morado, ambos tonos claros) mezcladas por un blur
-   grande se leen como gris-lavanda pálido, no como un color rico —
-   entre más capas claras semitransparentes se encimen, más se acerca
-   a blanco. La solución no es solo estética, es estructural: UNA
-   sola capa de color a la vez (nunca las dos mezclándose), que
-   transiciona de azul a morado y de vuelta — más el blur reducido
-   (34px → 26px) y el alpha un poco más alto (0.3/0.28 → 0.34) para
-   que el color se sienta presente en vez de lavado.
-   La viñeta oscura (2ª capa) es idéntica a la v3 y sigue sin animar
-   nada — ni posición ni color — el núcleo de contraste del texto
-   queda intacto. */
+/* v5 (9 sept, pedido de Mike): la v4 (color que cambia de azul a
+   morado en vivo, vía @property) le ganaba la atención al título
+   "BIOGRAFÍA" — un cambio de TONO es una señal visual mucho más
+   fuerte que un simple desplazamiento de posición, así que aunque
+   la paleta fuera la misma de siempre, el comportamiento nuevo se
+   sentía más "ruidoso" que el resto del sitio. Se quita el
+   @property y el cambio de color por completo — de vuelta a colores
+   FIJOS por capa (mismo criterio que `.video-destacado`, que nunca
+   generó esta queja: ahí las manchas se mueven pero nunca cambian
+   de tono). La viñeta oscura (3ª capa) sigue igual de siempre: fija,
+   sin animar nada. */
 .texto-bloque-bio::before {
   content: '';
   position: absolute;
@@ -1079,50 +1061,50 @@ body {
   filter: blur(26px);
   background-repeat: no-repeat;
   background-image:
-    radial-gradient(ellipse 60% 58%, var(--nebulosa-color-bio), transparent 70%),
+    radial-gradient(ellipse 55% 55%, rgba(56, 179, 250, 0.32), transparent 68%),
+    radial-gradient(ellipse 55% 55%, rgba(155, 107, 220, 0.3), transparent 68%),
     radial-gradient(ellipse 62% 58%, rgba(8, 8, 16, 0.85) 0%, rgba(8, 8, 16, 0.8) 45%, transparent 92%);
-  background-position: 45% 35%, 50% 50%;
+  background-position: 32% 30%, 72% 74%, 50% 50%;
 }
 
-/* Dos animaciones independientes sobre el mismo ::before (se puede,
-   `animation` acepta una lista separada por comas, cada una corre su
-   propio timing): una mueve la POSICIÓN de la capa de color (misma
-   idea que v3 — la viñeta se queda fija en "50% 50%" en ambas capas
-   de la lista, nunca se mueve), la otra transiciona el COLOR de azul
-   a morado y de regreso. Duraciones distintas (11s vs 14s) para que
-   nunca queden sincronizadas — se ve más orgánico. El color se hizo
-   más lento a propósito (8s → 14s, pedido de Mike): menos "cambia"
-   y más "respira". Gated a prefers-reduced-motion, igual que el
-   resto del sitio. */
+/* Patrón invertido (9 sept, pedido de Mike): "que no se repita" entre
+   los dos bloques de Biografía. Se invierte el PATRÓN DE COLOR
+   mismo: se intercambia qué color va en cada capa — donde el bloque
+   normal tiene azul arriba-izquierda y morado abajo-derecha, este
+   bloque tiene morado arriba-izquierda y azul abajo-derecha. Nada de
+   @keyframes nuevo, un solo override de `background-image`.
+
+   (9 sept: hubo una comparación temporal aquí — "manchas más chicas
+   y separadas, alpha 0.4, blur 22px" contra el actual — para decidir
+   si el fondo grisáceo mejoraba. Mike decidió quedarse con EL ACTUAL
+   (el de siempre, sin ese ajuste), así que este bloque vuelve a ser
+   solo el intercambio de color, igual que antes de la prueba.) */
+.bloque-bio--invertido .texto-bloque-bio::before {
+  background-image:
+    radial-gradient(ellipse 55% 55%, rgba(155, 107, 220, 0.3), transparent 68%),
+    radial-gradient(ellipse 55% 55%, rgba(56, 179, 250, 0.32), transparent 68%),
+    radial-gradient(ellipse 62% 58%, rgba(8, 8, 16, 0.85) 0%, rgba(8, 8, 16, 0.8) 45%, transparent 92%);
+}
+
+/* Solo se anima la POSICIÓN (mismo mecanismo de siempre: la 3ª capa,
+   la viñeta, se queda fija en "50% 50%" en los dos pasos del
+   keyframe, nunca se mueve). El bloque invertido corre la MISMA
+   animación pero con un delay negativo de medio ciclo, para que los
+   dos bloques tampoco se muevan en espejo perfecto — ya no cambian
+   de color, pero sí conviene que su desplazamiento esté desfasado. */
 @media (prefers-reduced-motion: no-preference) {
   .texto-bloque-bio::before {
-    animation:
-      nebulosa-bio-deriva 11s ease-in-out infinite,
-      nebulosa-bio-color 14s ease-in-out infinite;
+    animation: nebulosa-bio-deriva 11s ease-in-out infinite;
   }
 
-  /* Bloque invertido (9 sept, pedido de Mike): "intercalar" los dos
-     bloques de Biografía para que no se vean como gemelos moviéndose
-     en espejo. Mismo par de animaciones, mismas keyframes — solo se
-     desfasa el DELAY de la animación de color (el segundo valor de
-     la lista; el de posición, primer valor, se deja en 0s para no
-     tocarlo). Un delay NEGATIVO de medio ciclo (-7s de 14s) hace que
-     la animación arranque como si ya llevara 7s corriendo, es decir,
-     empieza en el punto opuesto del degradado (morado→azul en vez de
-     azul→morado) — sin necesitar un segundo @keyframes. */
   .bloque-bio--invertido .texto-bloque-bio::before {
-    animation-delay: 0s, -7s;
+    animation-delay: -5.5s;
   }
 }
 
 @keyframes nebulosa-bio-deriva {
-  0%, 100% { background-position: 45% 35%, 50% 50%; }
-  50%      { background-position: 55% 65%, 50% 50%; }
-}
-
-@keyframes nebulosa-bio-color {
-  0%, 100% { --nebulosa-color-bio: rgba(56, 179, 250, 0.34); }
-  50%      { --nebulosa-color-bio: rgba(155, 107, 220, 0.34); }
+  0%, 100% { background-position: 32% 30%, 72% 74%, 50% 50%; }
+  50%      { background-position: 42% 20%, 60% 84%, 50% 50%; }
 }
 
 /* Refuerzo de legibilidad (9 sept, pedido de Mike): el contraste en
@@ -1142,6 +1124,29 @@ body {
   line-height: 1.7;
   font-size: 15px;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
+}
+
+/* <mark> de previsualización (9 sept, pedido de Mike) — misma idea
+   que el <mark> de la cita en Presskit (.texto-moodboard mark), con
+   dos ajustes a propósito:
+   1. Color de marca (azul) en vez del verde de Presskit — ese verde
+      sigue siendo un placeholder pendiente de la paleta real, y
+      Biografía ya tiene su propio lenguaje de color (azul/morado) —
+      meter un tercer color aquí rompería esa consistencia.
+   2. Alpha más alto que el 0.35 de Presskit (aquí 0.55): el mark de
+      Presskit vive sobre una tarjeta de fondo casi sólido, así que
+      su contraste está garantizado siempre. Aquí el texto vive
+      directo sobre la nebulosa animada — el alpha más alto hace que
+      el highlight no dependa de qué tan oscuro esté el fondo en ese
+      punto exacto del ciclo.
+   Por ahora solo se usa una vez, en una palabra, nada más para ver
+   cómo se ve — falta el texto final de la biografía para decidir
+   qué frases vale la pena resaltar de verdad. */
+.texto-bloque-bio mark {
+  background: rgba(56, 179, 250, 0.55);
+  color: white;
+  padding: 0 4px;
+  border-radius: 3px;
 }
 
 /* Entrada: foto y texto entran cada uno desde SU lado (la foto
