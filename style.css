@@ -777,33 +777,43 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* Mobile: 2 columnas de video se ven demasiado chicas para
-   distinguir el contenido, y el nombre de canción más largo
-   ("A Song I Wrote About U at the Airport Lol") no cabe junto al
-   botón en una fila angosta — se apilan igual que .bloque-bio. */
+/* .boton-spotify (9 sept, pedido de Mike): modificador SOLO para los
+   links de Spotify — el mismo ".boton-pill" también se usa para
+   "Boletos" en Shows, y ese no lleva ícono ni necesita el texto
+   corto, así que el cambio va scoped aquí, no en ".boton-pill" en
+   general. ".texto-boton-corto" ("Play") existe siempre en el HTML
+   pero se queda oculto por default — el media query de abajo es el
+   que decide cuál de los dos textos se ve. */
+.boton-spotify {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icono-boton-spotify {
+  width: 14px;
+  height: 14px;
+}
+
+.texto-boton-corto {
+  display: none;
+}
+
+/* Mobile (9 sept, pedido de Mike): antes el nombre de canción largo
+   ("A Song I Wrote About U at the Airport Lol") no cabía junto al
+   botón "ESCUCHAR EN SPOTIFY" completo en una fila angosta, así que
+   forzábamos todo a apilarse en columna. Con el botón comprimido a
+   ícono + "PLAY" (mucho más angosto), ya no hace falta ese apilado:
+   miniatura + nombre + botón caben en una sola fila — el nombre
+   simplemente hace wrap a 2 líneas si el título es largo, en vez de
+   saltar a su propio renglón completo. */
 @media (max-width: 600px) {
-  .item-discografia {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .texto-boton-completo {
+    display: none;
   }
 
-  .lanzamiento-destacado {
-    flex-wrap: wrap;
-  }
-
-  .lanzamiento-destacado .boton-pill {
-    margin-left: 80px; /* alinea con el texto, no con la portada */
-  }
-
-  /* El botón se envuelve a su propio renglón en mobile (flex-wrap de
-     arriba), así que la tarjeta flotante mide más alto aquí que en
-     desktop (~146px vs ~98px) — el padding-top de 64px calculado para
-     desktop se quedaba corto y la tarjeta tapaba el primer sencillo de
-     la lista. Se sube a 120px, mismo criterio (altura real + colchón
-     de aire), solo que calibrado para la altura de mobile. */
-  .tarjeta-lista-discografia {
-    padding-top: 120px;
+  .texto-boton-corto {
+    display: inline;
   }
 }
 
