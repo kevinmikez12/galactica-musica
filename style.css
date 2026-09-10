@@ -1005,37 +1005,143 @@ body {
   background: linear-gradient(135deg, #472e39, #1c0f16); /* color distinto: ayuda a distinguir los 2 bloques mientras es placeholder */
 }
 
-/* ===== Fondo "nebulosa" detrás del texto (9 sept, pedido de Mike) =====
-   El texto vivía directo sobre el fondo semitransparente de la sección
-   (rgba(5,5,15,0.82)), con estrellas/meteoros de fondo asomando — Mike
-   pidió reforzar su contraste con un fondo propio, en el mismo lenguaje
-   visual que ya usa el sitio (los tonos azul/morado de la nebulosa del
-   video destacado y el degradado del "último lanzamiento") en vez de
-   una tarjeta plana sin más.
+/* ===== Fondo "nebulosa" detrás del texto — v3, sin silueta (9 sept,
+   pedido de Mike) =====
+   v1 era una tarjeta (borde + esquinas redondeadas + fondo casi
+   sólido) — se sentía "modal". v2 quitó el borde y metió un
+   radial-gradient más chico que la caja para que no se cortara en un
+   borde recto — mejoró, pero Mike notó que TODAVÍA se alcanzaba a ver
+   la forma del rectángulo (la caja `.texto-bloque-bio` es ancha y
+   baja, casi del ancho de una ellipse pegada a sus proporciones, así
+   que el degradado terminaba "abrazando" esa forma).
 
-   Técnica: dos radial-gradient suaves (azul arriba-izquierda, morado
-   abajo-derecha) mezclados sobre una base oscura casi sólida
-   (rgba(8,8,16,0.6)) — sin pseudo-elementos ni blur, porque aquí el
-   fondo vive DETRÁS de texto que hay que poder leer bien (el blur del
-   video funciona porque no lleva texto encima). Mismo color en los dos
-   bloques (no uno por cada tono de foto) — a propósito, para no
-   contradecir la decisión ya tomada de no variar colores por sección;
-   el color distinto es solo cosa de las fotos placeholder (ver nota
-   arriba), no del acento de marca. */
+   v3: mismo espíritu que la nebulosa del video destacado — el
+   degradado ahora vive en un `::before` MÁS GRANDE que la caja
+   (`inset` negativo) y con `filter:blur()`, en vez de ser el
+   `background` directo del contenedor. Al ya no estar recortado por
+   los límites exactos del div, no hay ninguna línea recta donde
+   "termina la caja y empieza el fondo" — el blur + el sobretamaño
+   son los que garantizan que lo único que se vea sea la mancha
+   difusa, nunca su borde.
+
+   Por qué esto SÍ es seguro para la legibilidad (a diferencia de lo
+   que hablamos del video): no es que el blur ya no importe aquí,
+   es que el degradado deja una meseta bien opaca y bien grande en el
+   centro (los primeros stops casi no bajan de opacidad hasta 45-50%)
+   ANTES de empezar a desvanecer — el blur difumina esa meseta hacia
+   afuera, pero el centro (justo donde vive el texto, gracias al
+   padding) se queda sólido. `isolation:isolate` en el contenedor
+   evita que el `z-index:-1` del `::before` se escape a pelear con
+   otras capas de la página — mismo mecanismo que `.video-destacado`.
+   Mismo color en los dos bloques (no uno por foto) — mismo criterio
+   de siempre: no contradecir la decisión de no variar colores por
+   sección. */
 .texto-bloque-bio {
-  padding: 28px 32px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    radial-gradient(circle at 18% 20%, rgba(56, 179, 250, 0.18), transparent 55%),
-    radial-gradient(circle at 82% 80%, rgba(155, 107, 220, 0.18), transparent 55%),
-    rgba(8, 8, 16, 0.6);
+  position: relative;
+  isolation: isolate;
+  padding: 40px 44px;
 }
 
+/* Custom property registrada (9 sept): esto es lo que hace posible
+   animar el COLOR de un gradiente directamente — sin @property, un
+   custom property normal (--x) no es interpolable, el navegador solo
+   sabe hacer "salto" de un valor a otro a la mitad del keyframe, no
+   transición gradual. Con `syntax:'<color>'` el navegador sí sabe
+   mezclar los canales rgba() paso a paso. Vive fuera de cualquier
+   selector/media query a propósito (así lo pide la spec). Si un
+   navegador no soporta @property, simplemente ignora esta regla y la
+   propiedad se queda fija en su initial-value — no rompe nada, solo
+   no anima el color (degradación segura). */
+@property --nebulosa-color-bio {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: rgba(56, 179, 250, 0.34);
+}
+
+/* v4 (9 sept, pedido de Mike): "se ve claro como si fuera blanco".
+   La causa real: dos capas de color TRASLÚCIDAS montadas una sobre
+   otra (azul + morado, ambos tonos claros) mezcladas por un blur
+   grande se leen como gris-lavanda pálido, no como un color rico —
+   entre más capas claras semitransparentes se encimen, más se acerca
+   a blanco. La solución no es solo estética, es estructural: UNA
+   sola capa de color a la vez (nunca las dos mezclándose), que
+   transiciona de azul a morado y de vuelta — más el blur reducido
+   (34px → 26px) y el alpha un poco más alto (0.3/0.28 → 0.34) para
+   que el color se sienta presente en vez de lavado.
+   La viñeta oscura (2ª capa) es idéntica a la v3 y sigue sin animar
+   nada — ni posición ni color — el núcleo de contraste del texto
+   queda intacto. */
+.texto-bloque-bio::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -22% -8%;
+  filter: blur(26px);
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(ellipse 60% 58%, var(--nebulosa-color-bio), transparent 70%),
+    radial-gradient(ellipse 62% 58%, rgba(8, 8, 16, 0.85) 0%, rgba(8, 8, 16, 0.8) 45%, transparent 92%);
+  background-position: 45% 35%, 50% 50%;
+}
+
+/* Dos animaciones independientes sobre el mismo ::before (se puede,
+   `animation` acepta una lista separada por comas, cada una corre su
+   propio timing): una mueve la POSICIÓN de la capa de color (misma
+   idea que v3 — la viñeta se queda fija en "50% 50%" en ambas capas
+   de la lista, nunca se mueve), la otra transiciona el COLOR de azul
+   a morado y de regreso. Duraciones distintas (11s vs 14s) para que
+   nunca queden sincronizadas — se ve más orgánico. El color se hizo
+   más lento a propósito (8s → 14s, pedido de Mike): menos "cambia"
+   y más "respira". Gated a prefers-reduced-motion, igual que el
+   resto del sitio. */
+@media (prefers-reduced-motion: no-preference) {
+  .texto-bloque-bio::before {
+    animation:
+      nebulosa-bio-deriva 11s ease-in-out infinite,
+      nebulosa-bio-color 14s ease-in-out infinite;
+  }
+
+  /* Bloque invertido (9 sept, pedido de Mike): "intercalar" los dos
+     bloques de Biografía para que no se vean como gemelos moviéndose
+     en espejo. Mismo par de animaciones, mismas keyframes — solo se
+     desfasa el DELAY de la animación de color (el segundo valor de
+     la lista; el de posición, primer valor, se deja en 0s para no
+     tocarlo). Un delay NEGATIVO de medio ciclo (-7s de 14s) hace que
+     la animación arranque como si ya llevara 7s corriendo, es decir,
+     empieza en el punto opuesto del degradado (morado→azul en vez de
+     azul→morado) — sin necesitar un segundo @keyframes. */
+  .bloque-bio--invertido .texto-bloque-bio::before {
+    animation-delay: 0s, -7s;
+  }
+}
+
+@keyframes nebulosa-bio-deriva {
+  0%, 100% { background-position: 45% 35%, 50% 50%; }
+  50%      { background-position: 55% 65%, 50% 50%; }
+}
+
+@keyframes nebulosa-bio-color {
+  0%, 100% { --nebulosa-color-bio: rgba(56, 179, 250, 0.34); }
+  50%      { --nebulosa-color-bio: rgba(155, 107, 220, 0.34); }
+}
+
+/* Refuerzo de legibilidad (9 sept, pedido de Mike): el contraste en
+   el CENTRO de la caja ya era alto (blanco sobre la meseta casi
+   negra de la viñeta), pero cerca de los bordes del padding —donde
+   la viñeta empieza a desvanecerse (stop 45%→92%)— el color animado
+   de atrás se asoma un poco más. Subimos blanco 0.85→0.93 (contraste
+   más duro en automático) y agregamos un text-shadow CORTO y oscuro
+   (nada de blur amplio tipo glow/neón — eso competiría con el blur
+   de la nebulosa de atrás) que blinda justo esa zona de borde sin
+   depender de qué tan oscuro esté el fondo en ese punto exacto del
+   ciclo de animación. Primera vez que se usa text-shadow en el
+   sitio — si el resultado convence, vale la pena repetirlo en otros
+   bloques de texto sobre fondo animado/oscuro, no solo aquí. */
 .texto-bloque-bio p {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.93);
   line-height: 1.7;
   font-size: 15px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
 }
 
 /* Entrada: foto y texto entran cada uno desde SU lado (la foto
@@ -1115,7 +1221,7 @@ body {
   }
 
   .texto-bloque-bio {
-    padding: 22px 20px; /* un poco menos que en desktop (28px/32px) — pantalla angosta */
+    padding: 30px 24px; /* un poco menos que en desktop (40px/44px) — pantalla angosta, pero suficiente para que el texto no llegue a la zona donde el degradado ya se desvanece */
   }
 
   .texto-bloque-bio p {
