@@ -67,7 +67,34 @@
    =================================================== */
 :root {
   --tam-sistema: 700px;
-  --tam-sol: 110px;
+  /* Subido de 110px a 180px (12 sept): con el placeholder plano (un
+     círculo con gradiente) 110px se veía bien, pero la imagen real
+     (cara + rayos de sol dibujados, PNG con transparencia) necesita
+     más espacio para que los rayos se lean — a 110px se verían
+     encimados/recortados. La cara en sí (el "núcleo" del PNG) queda
+     a un tamaño visual similar al placeholder anterior; lo que crece
+     es el aro de rayos alrededor.
+
+     Historial de ajustes del mismo día (12 sept) — el diagnóstico real
+     terminó siendo otro del que se pensó al principio, ver la nota
+     completa en `.sol` más abajo: 200px → 180px (diagnóstico impreciso
+     de por qué los rayos llegaban a la órbita de Mercurio, corregido
+     después) → Kevin pidió reducir el zoom porque SÍ tapaba a Mercurio
+     de verdad (causa real: un rayo diagonal llega 1.33x más lejos del
+     centro que uno horizontal/vertical — esa cuenta vive en
+     `background-size`, no en este tamaño de caja) → sintió que quedó
+     chico, se subió el zoom a un punto seguro → Kevin pidió DOS veces
+     seguidas "aumenta el tamaño un poco más y reduce el zoom un poco":
+     cada vez, esta caja crece un poco (más presencia/más aro de
+     resplandor) MIENTRAS `background-size` baja en proporción (ver
+     `.sol`), para que el alcance real de los rayos en px se mantenga
+     igual o mejor que antes en vez de empeorar — reverificado con
+     Playwright (9 anchos de mobile + desktop) en cada ronda. Una 3ª
+     vez pidió lo mismo pero "el doble de los valores que consideraste"
+     — mismo mecanismo, delta de caja y de `background-size` duplicados
+     respecto a las rondas anteriores (+40px en vez de +20px). Valor
+     actual: 260px. */
+  --tam-sol: 260px;
   /* Subido de 46px a 58px (12 sept): las 3 imágenes reales que llegaron
      para Presskit/Biografía/Newsletter tienen detalle real (texto en la
      pantalla del tamagotchi, ilustraciones del diario) que a 46px se
@@ -98,7 +125,9 @@
 @media (max-width: 600px) {
   :root {
     --tam-sistema: min(92vw, 420px);
-    --tam-sol: calc(var(--tam-sistema) * 0.16);
+    /* Misma proporción que desktop: 260/700 = 0.3714 (antes 0.16,
+       cuando --tam-sol era 110px). */
+    --tam-sol: calc(var(--tam-sistema) * 0.3714);
     /* Mismo aumento que en desktop (ver comentario en :root de arriba),
        tope subido de 46px a 58px — el mínimo/la fórmula de vw se quedan
        igual, esto solo levanta el techo en pantallas más anchas. */
@@ -1213,13 +1242,26 @@ body {
    keyframe, nunca se mueve). El bloque invertido corre la MISMA
    animación pero con un delay negativo de medio ciclo, para que los
    dos bloques tampoco se muevan en espejo perfecto — ya no cambian
-   de color, pero sí conviene que su desplazamiento esté desfasado. */
+   de color, pero sí conviene que su desplazamiento esté desfasado.
+
+   Gated a .en-vista (12 sept, fix de rendimiento a partir de reporte
+   de Mike de scroll "raro"/no fluido en mobile): antes la animación
+   corría SIEMPRE, aunque Biografía ni siquiera estuviera en pantalla
+   — cada bloque repinta un pseudo-elemento de ~55-58% del bloque,
+   con filter:blur(26px) encima (blur es de los filtros más caros de
+   repintar), y eso corriendo de fondo todo el tiempo le suma trabajo
+   al hilo principal justo cuando el navegador también está ocupado
+   compositando el scroll. `.bloque-bio`/`.bloque-bio--invertido` YA
+   reciben `.en-vista` vía IntersectionObserver (activarRevelado en
+   script.js) para el fade-in — se reutiliza esa misma clase para
+   prender/apagar esta animación: solo corre mientras el bloque
+   realmente se ve, cero cambio visual para quien lee la sección. */
 @media (prefers-reduced-motion: no-preference) {
-  .texto-bloque-bio::before {
+  .bloque-bio.en-vista .texto-bloque-bio::before {
     animation: nebulosa-bio-deriva 11s ease-in-out infinite;
   }
 
-  .bloque-bio--invertido .texto-bloque-bio::before {
+  .bloque-bio--invertido.en-vista .texto-bloque-bio::before {
     animation-delay: -5.5s;
   }
 }
@@ -1885,24 +1927,323 @@ body:active {
                    y viven en un contexto de apilamiento distinto */
 }
 
+/* Foto real de la artista (12 sept) — antes un círculo placeholder
+   con gradiente azul. Mismo criterio que ya se usó con los planetas
+   (ver comentario grande en .planeta más abajo): el PNG trae su
+   propia silueta con transparencia (cara + rayos de sol dibujados a
+   mano), así que ya NO se recorta en círculo (`border-radius`/
+   `clip-path`) ni se usa `cover` (recortaría los rayos que sobresalen
+   por los lados) — se usa `contain` + `filter:drop-shadow` para que
+   el brillo siga el contorno real de los rayos, no un círculo
+   invisible.
+
+   Kevin mandó 3 versiones (cara sola, rayos naranja, rayos
+   azul/verde-agua). Primero se probó solo la azul; pedido de Kevin
+   (12 sept): que el Sol vaya cambiando lentamente de la versión azul
+   a la naranja y de vuelta, sin dejar de girar. `.sol` ahora es el
+   CONTENEDOR que gira (ver @keyframes mecer-sol abajo) y también la
+   capa azul de base (su propio background-image); adentro vive
+   `.sol-capa-naranja`, del mismo tamaño exacto (position:absolute +
+   inset:0, con `.sol` como su bloque de referencia), que se desvanece
+   entrando y saliendo por encima. Al ser hija de `.sol`, el giro del
+   padre la arrastra automáticamente — no hace falta duplicar
+   `@keyframes mecer-sol` en la capa de arriba. */
+/* Resplandor circular detrás de cada imagen (12 sept, pedido de Kevin
+   tras ver que los rayos recortados se leían "cuadrados"): las barras
+   del dibujo de la artista tienen la punta plana (no se afinan como
+   un rayo triangular clásico), así que al acortarlas el contorno
+   general empieza a leerse más como una flor de dientes rectos que
+   como una corona solar redonda. En vez de recortar la imagen en
+   círculo (border-radius/clip-path — cortaría las puntas de los
+   rayos con un borde recto y artificial, el mismo problema que ya se
+   evitó con los planetas/meteoros reales), se agrega un SEGUNDO
+   `background` — un `radial-gradient` suave, más chico que el
+   alcance de los rayos — detrás de cada PNG. El ojo ancla ese círculo
+   como la forma principal y los rayos quedan como detalle encima.
+   Al vivir en el mismo `background` que cada imagen (list separada
+   por comas, más `background-size`/`-position` con un valor por
+   capa), el resplandor cruza de tono junto con su imagen sin
+   animación aparte.
+
+   `background-size` bajado de "contain"/65% a 42%/27% (12 sept,
+   Kevin: "reducir el zoom porque tapa la primera opción que orbita").
+   La causa real, verificada con un análisis en Python de los pixeles
+   con transparencia real de cada PNG: el punto más lejano de cualquier
+   rayo (en línea recta desde el centro de la imagen) queda a 1.33x la
+   mitad del ANCHO de la imagen — no a 1.0x. Un rayo diagonal puede
+   salirse más del cuadro que uno horizontal/vertical sin que el
+   "bounding box" (que solo limita ancho y alto por separado) lo
+   refleje — por eso la verificación anterior (comparar el ancho de la
+   caja de `.sol` contra el radio de la órbita) daba un margen que
+   parecía cómodo pero no medía el alcance real de los rayos en
+   diagonal. Con "contain" (~100%), ese alcance real llegaba a ~120px
+   en desktop — más allá incluso del anillo de la órbita de Mercurio
+   (110px de radio) y muy dentro del propio cuerpo de Mercurio (que al
+   orbitar SOBRE ese anillo, con su radio propio de --tam-planeta/2,
+   llega hasta ~79px del centro).
+
+   Subido después de 42%/27% a 45%/29% (mismo día, Kevin: "ahora
+   siento que quedó muy chico") — se midió la relación real
+   margen-de-Mercurio/tamaño-del-Sol en 9 anchos de mobile distintos
+   (360 a 600px, no solo uno) para encontrar el peor caso real antes
+   de subir el número: la proporción se mantiene estable (~0.663-0.676)
+   en todo ese rango, así que 45% dejaba un margen limpio de sobra
+   (~10% de margen relativo incluso en el ancho más ajustado, 360px).
+
+   Bajado a 40%/26% al mismo tiempo que `--tam-sol` subió de 180px a
+   200px (Kevin: "aumenta el tamaño un poco más y reduce el zoom un
+   poco") — son dos ajustes independientes que trabajan juntos: la
+   CAJA crece (más presencia/más aro de resplandor detrás), pero la
+   imagen real ocupa un porcentaje MENOR de esa caja más grande, así
+   que el alcance real de los rayos en px termina igual o mejor que
+   antes de subir la caja, no peor.
+
+   Kevin repitió el mismo pedido una 2ª vez ("aumenta el tamaño un
+   poco más y reduce el zoom un poco") — mismo mecanismo otra vez:
+   `--tam-sol` 200px→220px, `background-size` **36%/23%** (la
+   proporción P×(tam-sol/2) que define el alcance real se mantuvo
+   prácticamente igual a la ronda anterior, calculada antes de tocar
+   el archivo, no ajustada a ojo). Reverificado con Playwright en los
+   mismos 9 anchos de mobile + desktop en cada ronda — el margen
+   contra Mercurio se mantuvo en el mismo rango seguro desde 45%/180px
+   hasta esta versión.
+
+   3ª vuelta: Kevin pidió lo mismo otra vez pero "el doble de los
+   valores que consideraste aumentar o reducir" — el delta de caja
+   (+20px por ronda) y de `background-size` (~-4 puntos por ronda) se
+   duplicaron: `--tam-sol` 220px→260px, `background-size` 28%/18%.
+
+   **Error real encontrado en esta misma ronda (Kevin: "no estoy
+   viendo que la imagen aumente de tamaño" — tenía razón):** en las
+   3 vueltas anteriores, cada vez que `--tam-sol` (T) subía, bajé
+   `background-size` (P) en la MISMA proporción para mantener el
+   alcance real de los rayos (que depende del producto P×T, no de T
+   solo) igual o mejor que antes — con la intención de no perder
+   margen contra Mercurio. El efecto colateral, no anticipado: al
+   mantener P×T casi constante, el tamaño VISIBLE del Sol (rayos +
+   resplandor) se quedó prácticamente igual en las 3 rondas — lo único
+   que crecía era el margen transparente invisible alrededor, dentro
+   de una caja cada vez más grande. Kevin no estaba viendo mal, el Sol
+   de verdad no había crecido.
+
+   El límite real (esto sí es física del layout, no un bug): en el
+   ancho de mobile más angosto probado (360px), el borde interno de
+   Mercurio (que orbita centrado SOBRE su propio anillo) queda a
+   ~31.5px del centro del Sol — un techo fijo que no cambia sin importar
+   qué valores de `--tam-sol`/`background-size` se usen, porque depende
+   de `--radio-mercurio`/`--tam-planeta`, no del Sol. Ya se estaba
+   usando la mayoría de ese espacio disponible. Subido a
+   **33%/21%** (dejando `--tam-sol` en 260px) para que el alcance real
+   SÍ crezca de forma perceptible (~24px → ~28px en el ancho más
+   ajustado, confirmado con capturas antes/después lado a lado) con un
+   margen todavía positivo (~9%) contra Mercurio — más ajustado que las
+   rondas anteriores a propósito, porque ya no hay mucho más margen
+   que dar sin tocar la órbita de Mercurio. Si Kevin quiere un
+   crecimiento más dramático, la única forma real es mover
+   `--radio-mercurio` hacia afuera (Mercurio sigue siendo un
+   placeholder, no imagen real) para abrir más espacio — pendiente de
+   que lo pida explícitamente, es un cambio de layout, no solo del
+   Sol.
+
+   5ª vuelta (mismo día, Kevin pidió otra vez "aumentamos un poco más
+   y reducimos el zoom", aclarando que NO fuera el doble como la
+   última vez): aquí NO se tocó `--tam-sol` (se queda en 260px) — subir
+   la caja otra vez y bajar el porcentaje en proporción habría
+   reproducido exactamente el mismo bug de "0 crecimiento visible" que
+   se acaba de corregir arriba, porque lo que definía el margen contra
+   Mercurio siempre fue el alcance real en px (P×T/2), no cuánto mide
+   la caja por separado. Se verificó primero el techo físico real con
+   Playwright en los 9 anchos de mobile: al 0% de margen (contacto
+   directo con el borde de Mercurio) el `background-size` máximo en
+   360px sería ~36.3% — es decir que solo quedaban ~3.3 puntos de
+   colchón total desde el 33% anterior. Subido a **34%/22%**, un paso
+   pequeño a propósito (no un salto de ronda normal, que ronda +4-5
+   puntos) porque ya casi no queda margen: deja el margen contra
+   Mercurio en ~7% (bajó de ~9%). El crecimiento visible es real pero
+   pequeño, y es probable que sea el último ajuste posible sin tocar
+   `--radio-mercurio` — si Kevin pide otra vuelta de "más grande"
+   después de esta, la respuesta honesta es que ya no hay margen físico
+   para dártelo sin mover la órbita de Mercurio hacia afuera.
+
+   6ª vuelta (12 sept, "Mercurio pasa por encima del Sol" llevado a
+   producción): esto se probó primero en un artifact de prueba aparte
+   (copia completa del sitio) para validar dos cosas por separado: (1)
+   que Mercurio se dibuje ENCIMA del Sol cuando se tocan — bug de
+   z-index resuelto en `.pivote-mercurio` más abajo, no en `.mercurio`
+   — y (2) qué tan grande puede crecer el Sol antes de que la
+   superposición se vea exagerada. La prueba usó un valor extremo
+   (62%/40%) a propósito solo para que el cruce se viera innegable en
+   capturas; nunca fue pensado como valor final. Para producción se
+   recalculó desde cero con las imágenes actuales de 6% de recorte (ver
+   más arriba): el alcance real de las puntas de los rayos ya no es la
+   mitad del ancho de la caja, es ~1.28× ese valor (medido con numpy
+   sobre el canal alfa). Con eso, el borde interior de Mercurio mide
+   ~81px desde el centro del Sol en desktop (1440px), y `--tam-sol` son
+   271.6px renderizados. Se buscó el punto donde el Sol invade el borde
+   de Mercurio por un margen chico y visible (no exagerado): a
+   **50%/32%** el alcance real del rayo llega a ~87px, es decir ~6px
+   (~7%) dentro del borde de Mercurio — un cruce real pero sutil,
+   Mercurio se asoma por encima del rayo solo en el tramo más cercano
+   de su órbita, no se "traga" medio planeta como en la prueba
+   exagerada. Si Kevin quiere un cruce más notorio, subir a ~55-58% da
+   más superposición sin llegar al extremo de la prueba; si se ve
+   demasiado, bajar de vuelta a 34%/22% deja el Sol como estaba antes
+   (sin superposición, con ~27% de margen) y no requiere tocar el
+   z-index (ese fix no tiene efecto si nunca se tocan). */
 .sol {
   position: absolute;
   top: 50%;
   left: 50%;
   width: var(--tam-sol);
   height: var(--tam-sol);
-  border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 60px 20px rgba(100, 180, 255, 0.5);
   z-index: 10;
   transition: opacity 0.4s ease;
-  /* PLACEHOLDER local (sin depender de internet): gradiente que
-     simula una foto con tinte azul, como en el ejemplo. Cuando
-     llegue la foto real de la artista, reemplaza esta línea por:
-     background-image: url('ruta/a/foto-artista.jpg'); */
-  background: radial-gradient(circle at 40% 30%, #6fa8dc, #1c3f5f 70%);
-  background-size: cover;
-  background-position: center;
+  background-image:
+    url('assets/sol/sol-azul.png'),
+    radial-gradient(circle, rgba(100, 180, 255, 0.6) 0%, rgba(100, 180, 255, 0.28) 45%, rgba(100, 180, 255, 0) 72%);
+  background-size: 50% 50%, 32% 32%;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
+  background-color: transparent;
+  filter: drop-shadow(0 0 22px rgba(100, 180, 255, 0.55));
+}
+
+/* Capa naranja: mismo tratamiento que la azul (mismo `background-size`
+   42%/27%, resplandor + drop-shadow propios, tono cálido en vez de
+   azul) — así el brillo también cambia de color junto con la imagen,
+   en vez de quedarse azul mientras la cara ya se ve naranja debajo.
+   Arranca en opacity:0 (solo se ve la azul de abajo) — esta base sin
+   animación es también el estado con prefers-reduced-motion:reduce,
+   para no dejar el Sol a medio cruce congelado en una mezcla rara de
+   las dos imágenes. */
+.sol-capa-naranja {
+  position: absolute;
+  inset: 0;
+  background-image:
+    url('assets/sol/sol-naranja.png'),
+    radial-gradient(circle, rgba(255, 175, 90, 0.6) 0%, rgba(255, 175, 90, 0.28) 45%, rgba(255, 175, 90, 0) 72%);
+  background-size: 50% 50%, 32% 32%;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
+  filter: drop-shadow(0 0 22px rgba(255, 175, 90, 0.55));
+  opacity: 0;
+}
+
+/* Cruce lento entre azul y naranja (12 sept, a pedido de Kevin).
+   36s de ciclo — deliberadamente mucho más largo que el giro (14s) de
+   `.sol`, para que se sienta como una deriva de fondo, no un parpadeo
+   sincronizado con el giro. Se sostiene un momento en cada extremo
+   (0-15% y 85-100% en opacity:0, 50% en opacity:1) en vez de cruzar
+   sin pausa, para que la mayor parte del tiempo el Sol se vea en un
+   tono limpio (azul o naranja) y solo una fracción del ciclo esté a
+   medio camino — igual que ya se hizo con el vapor de Presskit y la
+   nebulosa de Biografía (animaciones de fondo lentas, nunca abruptas). */
+@media (prefers-reduced-motion: no-preference) {
+  .sol-capa-naranja {
+    animation: cruzar-tono-sol 36s ease-in-out infinite;
+  }
+}
+
+@keyframes cruzar-tono-sol {
+  0%, 15%   { opacity: 0; }
+  50%       { opacity: 1; }
+  85%, 100% { opacity: 0; }
+}
+
+/* Giro leve del Sol completo (12 sept, a pedido de Kevin — "el efecto
+   que mencionaste": ver conversación). Nota honesta: la cara y los
+   rayos vienen dibujados juntos en un solo PNG (Kevin no mandó los
+   rayos como capa aparte) — no es posible girar SOLO los rayos
+   dejando la cara fija sin ese archivo separado. Este giro mueve el
+   PNG completo, un poco hacia cada lado, dando la sensación de "vivo"
+   sin la complejidad/riesgo de separar capas a mano. Si más adelante
+   Kevin manda los rayos como PNG aparte, esto se puede dividir en 2
+   capas (cara fija + rayos girando) sin tocar el resto del diseño.
+
+   `rotate` como propiedad independiente (no `transform: rotate()`):
+   `.sol` YA usa `transform` para centrarse (`translate(-50%,-50%)`) —
+   si el giro viviera en `transform`, la animación se lo comería
+   (mismo problema ya resuelto antes con `.boton-contacto`), sacando
+   al Sol de su posición central. Con `rotate` aparte, ambos conviven
+   sin conflicto. Ángulo chico (±4deg) y ciclo largo (14s) para que se
+   sienta como una respiración/mecida, no un giro mecánico — y, como
+   toda animación puramente decorativa del sitio, respeta
+   prefers-reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .sol {
+    animation: mecer-sol 14s ease-in-out infinite;
+  }
+}
+
+@keyframes mecer-sol {
+  0%, 100% { rotate: -4deg; }
+  50%      { rotate: 4deg; }
+}
+
+/* Sol en mobile — foto real de la cara, sin rayos ni cruce de color
+   (12 sept, a pedido de Kevin: "sustituir en mobile el sol azul y
+   naranja por la otra donde solo sale su cara, para que se vea más el
+   rostro"). De las 3 imágenes originales que mandó Kevin, esta es la
+   que no se había usado (cara con brillitos, sin rayos dibujados, sin
+   tinte de color) — a diferencia de las versiones azul/naranja, esta
+   NO tiene una pareja de otro tono, así que en mobile se pierde el
+   cruce lento azul↔naranja (Kevin confirmó explícitamente que prefiere
+   así: reemplazar por la foto real en vez de mantener rayos+color con
+   solo más zoom, o intentar simular el cruce con un halo de color
+   sobre la foto). Desktop NO cambia — se queda con las 2 versiones
+   ilustradas (rayos + cruce de tono), esto es solo para el ancho de
+   celular.
+
+   `background-size: auto <alto>%` en vez de un solo porcentaje para
+   ambos ejes: esta foto es vertical (382×500px, no cuadrada como los
+   PNG de rayos), así que un mismo % en ancho y alto la habría
+   deformado dentro de la caja cuadrada de `.sol` — "auto" en el ancho
+   deja que el navegador calcule el ancho real a partir del alto para
+   mantener su proporción original.
+
+   Mismo error que ya se cometió y corrigió con los rayos, aplicado
+   aquí a tiempo: medí primero cuánto se aleja del centro el punto de
+   la foto más lejano (las moñas de pelo llegan en diagonal a ~1.36x
+   la mitad del ancho de la imagen, no 1.0x) antes de fijar el
+   porcentaje, en vez de probarlo a ojo. Con eso + los mismos 9 anchos
+   de mobile verificados con Playwright, el techo real (margen 0%) da
+   ~47% de alto — se dejó en 41% (margen ~12%) para no repetir el
+   patrón de ir subiendo el número en rondas sucesivas hasta casi
+   tocar a Mercurio. El resplandor circular (42%) se dejó apenas un
+   poco más grande que la foto para dar sensación de halo, pero sin
+   acercarse al límite (es un degradado suave, mucho más tolerante a
+   quedar cerca del borde que contenido sólido).
+
+   Subido a **44%/45%** (12 sept, v73): Kevin preguntó si convenía
+   hacer en mobile lo mismo que la prueba de "Mercurio pasa por
+   encima" en desktop. Se le recomendó NO extender esa parte a esta
+   foto (aquí lo que pasaría por encima de Mercurio sería un pedazo
+   de una cara real, no líneas delgadas de rayos — se ve invasivo, no
+   decorativo) pero SÍ crecerla un poco dentro del margen que ya
+   existía sin tocar el overlap. Techo real sigue en ~47%; subido a
+   44% deja ~6% de margen contra Mercurio (bajó de ~12%) — crecimiento
+   real y perceptible, verificado con Playwright en los mismos 9
+   anchos de mobile, sin acercarse al límite físico.
+
+   La capa naranja se apaga por completo en mobile (`animation: none`)
+   — como su `opacity` base ya es 0 y nunca se le puso otra imagen de
+   fondo aquí, simplemente se queda invisible sin necesidad de tocar
+   su `background-image`. El giro leve (`mecer-sol`) SÍ se dejó activo
+   — la foto se mece igual que la versión de rayos; si a Kevin no le
+   gusta el efecto sobre una foto real (en vez de una ilustración), es
+   un cambio de una sola línea quitarlo solo en mobile. */
+@media (max-width: 600px) {
+  .sol {
+    background-image:
+      url('assets/sol/cara-galactica.png'),
+      radial-gradient(circle, rgba(100, 180, 255, 0.6) 0%, rgba(100, 180, 255, 0.28) 45%, rgba(100, 180, 255, 0) 72%);
+    background-size: auto 44%, 45% 45%;
+  }
+
+  .sol-capa-naranja {
+    animation: none;
+  }
 }
 
 .orbita {
@@ -1946,7 +2287,15 @@ body:active {
   animation-play-state: paused;
 }
 
-.pivote-mercurio { width: var(--radio-mercurio); height: var(--radio-mercurio); animation-duration: 10s; }
+/* z-index aquí (no en .mercurio): este div ya crea su propio contexto
+   de apilamiento (transform + animación de giro de la órbita), así que
+   un z-index puesto en el hijo (.mercurio) no puede "escapar" de ese
+   contexto para competir contra el z-index:10 del Sol, que es hermano
+   de ESTE div. Con 11 (por encima del Sol), Mercurio pasa por ENCIMA
+   cuando su órbita cruza el radio del Sol, en vez de quedar tapado
+   detrás (12 sept, aplicado a producción — probado antes en un
+   artifact de prueba aparte). */
+.pivote-mercurio { width: var(--radio-mercurio); height: var(--radio-mercurio); animation-duration: 10s; z-index: 11; }
 .pivote-venus    { width: var(--radio-venus); height: var(--radio-venus); animation-duration: 18s; }
 .pivote-tierra   { width: var(--radio-tierra); height: var(--radio-tierra); animation-duration: 26s; }
 .pivote-marte    { width: var(--radio-marte); height: var(--radio-marte); animation-duration: 36s; }
@@ -2299,13 +2648,18 @@ body:active {
    a sus hijos. */
 .meteoro {
   position: fixed;
+  /* top/left FIJOS en 0 (12 sept, fix de rendimiento — ver comentario
+     grande en las @keyframes ruta1/2/3 más abajo): el recorrido ya
+     NO se anima con top/left, se anima con `translate`. */
+  top: 0;
+  left: 0;
   width: var(--tam-meteoro);
   height: var(--tam-meteoro);
   z-index: 1; /* muy por debajo de los planetas (z-index: 5) y el sol (z-index: 10) */
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  pointer-events: none; /* ya no reacciona al mouse, y tampoco bloquea clics en lo que esté encima */
-  transition: transform 0.3s ease-out; /* suaviza el "jalón" magnético */
+  pointer-events: none; /* no bloquea clics en lo que esté encima — el efecto magnético de abajo no necesita pointer-events, lee la posición del mouse a nivel document */
+  transition: transform 0.3s ease-out; /* suaviza el "jalón" magnético (Sección 6 de script.js, solo en dispositivos con mouse real) — NO choca con la nueva animación de ruta (esa usa `translate`, esta usa `transform`, son propiedades independientes) */
   /* Mismo criterio que .planeta: drop-shadow (no box-shadow) porque
      sigue la silueta real del gato (canal alfa del PNG), no un
      círculo/cuadro invisible — reemplaza el box-shadow circular que
@@ -2369,15 +2723,59 @@ body:active {
    ni un valor, las mismas 3 rutas que ya traían los meteoros 1/3/5
    originales — incluida la ruta1 ya verificada (11 sept) para no
    pasar sobre el wordmark "GALÁCTICA". Solo se renombraron a
-   ruta1/ruta2/ruta3 para que coincidan con la nueva numeración. */
+   ruta1/ruta2/ruta3 para que coincidan con la nueva numeración.
+
+   `translate` en vez de `top`/`left` (12 sept, fix de rendimiento —
+   reporte de Mike de scroll "raro"/no fluido en mobile). Animar
+   `top`/`left` obliga al navegador a recalcular LAYOUT en cada frame
+   (son propiedades de posición del flujo normal, aunque el elemento
+   sea `position:fixed`) — con 3 meteoros corriendo SIEMPRE, en TODA
+   la página, eso compite por el hilo principal justo cuando el
+   navegador también está ocupado compositando el scroll, y en mobile
+   (CPU/GPU más débil) se siente como el "se buguea"/no-smooth que
+   reportó Mike. `translate` es una propiedad compuesta (mismo motor
+   que `transform`) — el navegador la anima en la GPU sin tocar
+   layout. Los VALORES no cambiaron (mismos vw/vh, mismos puntos de
+   entrada/salida) — el trayecto visual es idéntico, incluida la
+   verificación de colisión con el wordmark de ruta1 (comentario
+   original más abajo, sigue aplicando: depende de los valores
+   espaciales, no de qué propiedad los anima). Verificado con
+   Playwright + CPU throttling (Emulation.setCPUThrottlingRate) y
+   Long Tasks API: pausar/quitar los meteoros del DOM bajaba los
+   frames >33ms de ~31% a ~17-21% durante un scroll simulado — con
+   `translate` se recupera esa diferencia sin perder el efecto. */
 
 /* Velocidad bajada de 18s a 24s (12 sept, a pedido de Kevin — el michi
    verde se sentía muy rápido). Mismo trayecto (ruta1) sin tocar — solo
    cambia cuánto tarda en recorrerlo, así que la verificación de
    colisión con el wordmark (11 sept, ver comentario en @keyframes
    ruta1 abajo) sigue aplicando igual: esa revisión depende de los
-   valores espaciales del keyframe, no de la duración. */
-.meteoro-1 { animation-name: ruta1; animation-duration: 24s; }
+   valores espaciales del keyframe, no de la duración.
+
+   Gated a prefers-reduced-motion (12 sept) — hallazgo real durante la
+   verificación del fix de rendimiento de arriba: a diferencia de TODA
+   otra animación decorativa del sitio (estrella, vapor de Presskit,
+   nebulosa de Biografía, vibración del botón de Contacto), los 3
+   meteoros nunca habían tenido este guard — corrían siempre, incluso
+   con esa preferencia activada. No relacionado con el bug de scroll
+   que reportó Kevin, pero es una inconsistencia real de accesibilidad
+   con el resto del sitio — se corrige de paso ya que se estaba
+   tocando esta misma sección. */
+@media (prefers-reduced-motion: no-preference) {
+  .meteoro-1 { animation-name: ruta1; animation-duration: 24s; }
+  .meteoro-2 { animation-name: ruta2; animation-duration: 30s; animation-delay: -10s; }
+  .meteoro-3 { animation-name: ruta3; animation-duration: 26s; animation-delay: -7s; }
+}
+
+/* Con reduced-motion, quitar solo la animación dejaría los 3 meteoros
+   clavados en top:0/left:0 (esquina superior izquierda) — a diferencia
+   del resto de animaciones del sitio, un meteoro no tiene una posición
+   de "reposo" natural (su razón de ser es viajar por la pantalla), así
+   que la opción correcta es ocultarlos por completo, no solo pausarlos. */
+@media (prefers-reduced-motion: reduce) {
+  .meteoro { display: none; }
+}
+
 @keyframes ruta1 {
   /* Punto de entrada corrido de left:-10vw a left:-30vw (11 sept,
      backlog de code review) — con -10vw el meteoro pasaba por encima
@@ -2389,18 +2787,16 @@ body:active {
      fuera de pantalla por la izquierda hasta que ya bajó más allá
      de la altura del wordmark, en todos los anchos probados. Mismo
      punto de llegada (110vh/110vw) — solo cambió el de salida. */
-  from { top: -10vh; left: -30vw; }
-  to   { top: 110vh; left: 110vw; }
+  from { translate: -30vw -10vh; }
+  to   { translate: 110vw 110vh; }
 }
 
-.meteoro-2 { animation-name: ruta2; animation-duration: 30s; animation-delay: -10s; }
 @keyframes ruta2 {
-  from { top: 20vh; left: 110vw; }
-  to   { top: 80vh; left: -20vw; }
+  from { translate: 110vw 20vh; }
+  to   { translate: -20vw 80vh; }
 }
 
-.meteoro-3 { animation-name: ruta3; animation-duration: 26s; animation-delay: -7s; }
 @keyframes ruta3 {
-  from { top: -10vh; left: 30vw; }
-  to   { top: 110vh; left: 70vw; }
+  from { translate: 30vw -10vh; }
+  to   { translate: 70vw 110vh; }
 }
