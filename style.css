@@ -107,6 +107,25 @@
    como un deslizamiento suave en vez de un salto brusco */
 html {
   scroll-behavior: smooth;
+  /* Bug real reportado por Kevin (12 sept): scroll horizontal +
+     "espacio" al lado del fondo del Presskit en mobile. La causa
+     NO estaba en .moodboard-presskit (medí con Playwright: ese
+     bloque cae exacto de borde a borde, 0 a 100% del viewport,
+     en 360/375/390/393/412/430px) — estaba aquí. .meteoro usa
+     position:fixed y viaja con left/top en vw desde fuera de la
+     pantalla (left:-30vw) hacia el lado opuesto, a propósito (ver
+     rutas más abajo). overflow-x:hidden en <body> NO contiene
+     elementos position:fixed — esos se miden contra <html>, no
+     contra body. Resultado: html.scrollWidth quedaba ~8-15px más
+     ancho que el viewport en TODA la página (confirmado con
+     document.documentElement.scrollWidth), y ese margen de scroll
+     es lo que corría el viewport y dejaba ver una franja sin foto
+     al lado del Presskit. Con overflow-x:hidden también en html
+     (además del que ya tenía body) el navegador no puede scrollear
+     ese sobrante — los meteoros se ven exactamente igual (siguen
+     naciendo y muriendo fuera de la pantalla), pero ya no hay
+     scroll horizontal posible en toda la página. */
+  overflow-x: hidden;
 }
 
 body {
@@ -114,8 +133,8 @@ body {
   /* Ya NO tiene height:100vh + overflow:hidden — eso bloqueaba
      el scroll de TODA la página. Ese comportamiento de "una sola
      pantalla fija" ahora vive en .hero, que envuelve solo el
-     sistema solar. overflow-x sigue oculto para evitar scroll
-     horizontal accidental. */
+     sistema solar. overflow-x sigue oculto acá también (ver
+     el de html arriba: hacen falta los dos, por motivos distintos). */
   overflow-x: hidden;
   /* Antes sans-serif genérico. 'Montserrat' primero (fuente real de
      la artista, ver @font-face arriba); sans-serif se queda como
