@@ -79,30 +79,35 @@
   <!-- ===== METEOROS ===== -->
   <!-- Cada uno tiene contenido fijo: fecha, o una imagen de fondo -->
 
+  <!-- Colores de cada núcleo (11 sept, backlog de code review): antes
+       vivían inline (style="background...") en cada div — se movieron
+       a style.css como .meteoro-N .meteoro-nucleo, cero cambio visual,
+       solo orden de código (mismo criterio que ya sigue el resto del
+       sitio: nada de estilos inline). -->
   <div class="meteoro meteoro-1">
-    <div class="meteoro-nucleo" style="background-color:#3d3d5c;">
+    <div class="meteoro-nucleo">
       15 Nov<br>CDMX
     </div>
   </div>
 
   <div class="meteoro meteoro-2">
-    <div class="meteoro-nucleo" style="background: linear-gradient(135deg, #5a7fa6, #2c3e5c);">
+    <div class="meteoro-nucleo">
     </div>
   </div>
 
   <div class="meteoro meteoro-3">
-    <div class="meteoro-nucleo" style="background-color:#5c3d4a;">
+    <div class="meteoro-nucleo">
       22 Nov<br>GDL
     </div>
   </div>
 
   <div class="meteoro meteoro-4">
-    <div class="meteoro-nucleo" style="background: linear-gradient(135deg, #6b9e7f, #2d4a3a);">
+    <div class="meteoro-nucleo">
     </div>
   </div>
 
   <div class="meteoro meteoro-5">
-    <div class="meteoro-nucleo" style="background-color:#3d5c4a;">
+    <div class="meteoro-nucleo">
       05 Dic<br>MTY
     </div>
   </div>
@@ -144,20 +149,31 @@
   <section class="seccion-scroll" id="presskit">
     <div class="contenedor-presskit">
 
-      <!-- MOODBOARD: 8 medios (foto/video) en posiciones irregulares que
-           se revelan uno por uno al hacer scroll (ver Sección 8 de
-           script.js). Título+subtítulo y la cita ahora van EN FLUJO
-           NORMAL, arriba de las fotos (.cabecera-moodboard) — como
-           en Biografía/Contacto — en vez de flotar encimadas a la
-           mitad del collage. Las fotos (.medios-presskit) son las
-           únicas que se posicionan sueltas/irregulares debajo.
-           data-tipo distingue foto de video solo para mostrar el
-           ícono de play — no cambia el comportamiento del scroll.
+      <!-- MOODBOARD: 8 fotos en posiciones irregulares que se revelan
+           una por una al hacer scroll (ver Sección 8 de script.js).
+           Título+subtítulo y la cita van EN FLUJO NORMAL, arriba de
+           las fotos (.cabecera-moodboard) — como en Biografía/Contacto
+           — en vez de flotar encimadas a la mitad del collage. Las
+           fotos (.medios-presskit) son las únicas que se posicionan
+           sueltas/irregulares debajo. Antes había 3 placeholders de
+           video en las esquinas; Kevin decidió (11 sept) dejar el
+           moodboard de puras fotos, así que se reemplazaron también
+           por material real — ver style.css para el detalle. El
+           video real de la artista ("Quiero") sigue presente en el
+           sitio, pero en su propio bloque grande más abajo
+           (.video-destacado), no aquí en el collage.
 
-           .medios-presskit envuelve solo las 8 fotos/video porque en
-           mobile ESTE envoltorio es el que se convierte en carrusel
-           horizontal (scroll-snap) — si la cabecera estuviera
-           adentro, se deslizaría como si fuera una foto más. -->
+           .medios-presskit envuelve las 8 fotos, que solo se ven en
+           desktop (el collage irregular). En mobile (max-width:700px)
+           .medios-presskit se oculta por completo (12 sept, a pedido
+           de Kevin — antes era un carrusel horizontal con scroll-snap,
+           antes de eso 8 tarjetas apiladas) y .moodboard-presskit
+           muestra en su lugar una foto de fondo fija (Galáctica
+           cantando en vivo, luz azul de escenario — assets/presskit/
+           fondo-mobile-presskit.jpg, mismo momento que medio-5 pero
+           exportada a mayor calidad porque aquí es fondo de pantalla
+           completa, no una miniatura de 270px) detrás del título+cita
+           — ver style.css para el detalle completo. -->
       <div class="moodboard-presskit" id="moodboardPresskit">
 
         <!-- TEXTO DE PRUEBA -->
@@ -177,48 +193,45 @@
         </div>
 
         <div class="medios-presskit">
-          <!-- FOTOS/VIDEO DE PRUEBA: bloques de color en vez de material
-               real. Cuando llegue, cada .medio-presskit se convierte en
-               <img> o <video> (quitando el div.icono-play en fotos).
-               Los 3 VIDEOS van en 1, 2 y 6 — las esquinas del collage,
-               posiciones que en style.css quedan fuera de la franja
-               horizontal que ocupa el título/cita (siempre visibles,
-               completos). Las 5 FOTOS (3,4,5,7,8) sí se meten debajo
-               del texto a propósito — el hover las jala hacia afuera
-               (ver style.css). -->
-          <div class="medio-presskit medio-1" data-tipo="video">
-            <span class="icono-play">▶</span>
-          </div>
-          <div class="medio-presskit medio-2" data-tipo="video">
-            <span class="icono-play">▶</span>
-          </div>
-          <div class="medio-presskit medio-3" data-tipo="foto"></div>
-          <div class="medio-presskit medio-4" data-tipo="foto"></div>
-          <div class="medio-presskit medio-5" data-tipo="foto"></div>
-          <div class="medio-presskit medio-6" data-tipo="video">
-            <span class="icono-play">▶</span>
-          </div>
-          <div class="medio-presskit medio-7" data-tipo="foto"></div>
-          <div class="medio-presskit medio-8" data-tipo="foto"></div>
+          <!-- FOTOS REALES (11 sept) — decisión de Kevin: el moodboard se
+               queda de PURAS FOTOS, sin video (los 3 placeholders de video
+               que ocupaban las esquinas se reemplazaron también por fotos
+               reales). Los 8 .medio-presskit son <img> ahora — data-tipo
+               se deja en "foto" en los 8 por consistencia con el selector
+               de hover en style.css, aunque ya no distingue nada (no hay
+               ningún data-tipo="video" en el sitio). El ícono de play
+               (.icono-play) se eliminó del CSS por quedar sin uso — si
+               algún día vuelve el video, es fácil traerlo de vuelta del
+               historial de git. Posiciones/rotación/hover (--jx/--jy)
+               igual que antes, ver style.css. -->
+          <img class="medio-presskit medio-1" data-tipo="foto" src="assets/presskit/ciudad-carton.jpg" alt="Galáctica sentada frente a un set de cartón iluminado simulando una ciudad de noche">
+          <img class="medio-presskit medio-2" data-tipo="foto" src="assets/presskit/sala-guitarra.jpg" alt="Galáctica sentada en un sillón junto a una guitarra acústica">
+          <img class="medio-presskit medio-3" data-tipo="foto" src="assets/presskit/ventana-cdmx.jpg" alt="Galáctica de pie frente a una ventana con vista a la Ciudad de México">
+          <img class="medio-presskit medio-4" data-tipo="foto" src="assets/presskit/retrato-bn.jpg" alt="Retrato en blanco y negro de Galáctica">
+          <img class="medio-presskit medio-5" data-tipo="foto" src="assets/presskit/vivo-microfono.jpg" alt="Galáctica cantando en vivo con luz azul de escenario">
+          <img class="medio-presskit medio-6" data-tipo="foto" src="assets/presskit/setlist-en-vivo.jpg" alt="Galáctica de espaldas con el setlist pegado a su ropa durante un show en vivo">
+          <img class="medio-presskit medio-7" data-tipo="foto" src="assets/presskit/banda-grupo.jpg" alt="Galáctica junto a su banda backstage en un festival">
+          <img class="medio-presskit medio-8" data-tipo="foto" src="assets/presskit/backstage-teclado.jpg" alt="Galáctica en backstage frente a un teclado durante una filmación">
         </div>
 
       </div>
 
-      <!-- VIDEO DESTACADO (9 sept, simplificado el mismo día) — antes
-           había 4 iframes chicos de YouTube; se redujo a UNO grande
-           (el más reciente con video musical real, "Quiero"). Kevin
-           pidió después quitar TODO el texto alrededor (etiqueta,
-           caption, links a los otros 4 videos) para que el video sea
-           el único foco de la sección — sin nada que compita por
-           atención. Los otros 4 videos reales de la artista (VYQSgHsJq5U,
-           pNlquwSaUeA, RzOg2PfQrJs, 1OJQMN-B6g0) quedan sin un lugar en
-           el sitio por ahora — el lugar natural para ellos es el ícono
-           de YouTube del footer/menú flotante una vez que apunte al
-           canal real de la artista (hoy sigue en "#", placeholder) en
-           vez de agregarlos de vuelta aquí. Efecto "nebulosa" en vez de
-           anillo giratorio: ver comentario en .video-destacado en
-           style.css — el motivo de por qué se reemplazó un efecto por
-           el otro (no se dejaron los dos) también está ahí. -->
+      <!-- VIDEO DESTACADO (9 sept, simplificado el mismo día; decisión
+           final 10 sept) — antes había 4 iframes chicos de YouTube; se
+           redujo a UNO grande (el más reciente con video musical real,
+           "Quiero"). Kevin pidió quitar TODO el texto alrededor
+           (etiqueta, caption, links a los otros 4 videos) para que el
+           video sea el único foco de la sección — sin nada que compita
+           por atención. Los otros 4 videos reales de la artista
+           (VYQSgHsJq5U, pNlquwSaUeA, RzOg2PfQrJs, 1OJQMN-B6g0) se
+           descartaron por completo (10 sept, decisión explícita de
+           Kevin) — no se van a insertar en ningún otro punto del sitio.
+           Quien quiera ver el resto del catálogo llega por el ícono de
+           YouTube del footer/menú flotante, que ya apunta al canal real
+           (youtube.com/@galactica.x). Efecto "nebulosa" en vez de anillo
+           giratorio: ver comentario en .video-destacado en style.css —
+           el motivo de por qué se reemplazó un efecto por el otro (no
+           se dejaron los dos) también está ahí. -->
       <div class="videos-presskit">
         <div class="video-destacado">
           <iframe class="video-embed video-embed--destacado" src="https://www.youtube-nocookie.com/embed/ElybzAn1NgQ" title="Quiero — video oficial en YouTube" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>

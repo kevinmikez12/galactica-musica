@@ -1,3 +1,57 @@
+/* ===================================================
+   TIPOGRAFÍA DE MARCA (11 sept)
+   Antes el sitio usaba sans-serif genérico (la fuente por default
+   del sistema de quien esté viendo la página) en todo. Kevin mandó
+   las 2 tipografías reales de la artista:
+   - "Galáctica" — logotipo/fuente propia de la artista (ella
+     confirmó que es suya, sin restricción de licencia). Se usa
+     puntual, donde el sitio necesita leerse como SU marca (el
+     wordmark fijo arriba a la izquierda) — no como fuente de
+     lectura general, un logotipo no está pensado para párrafos.
+   - Montserrat — de uso libre (SIL Open Font License), la
+     tipografía de lectura del sitio. Kevin mencionó Regular o
+     Light — se registran las DOS variantes bajo el mismo
+     font-family ("Montserrat"), cada una en su propio @font-face
+     con su font-weight correspondiente (400/300): así, poner
+     font-weight:300 en cualquier elemento cambia automáticamente
+     al archivo Light, sin necesitar una segunda familia con otro
+     nombre. Por ahora el body usa 400 (Regular) en todos lados;
+     el peso 300 (Light) queda disponible para cuando se quiera dar
+     más jerarquía a taglines/citas, no aplicado todavía.
+
+   Los 2 archivos se auto-hospedan como .woff2 en assets/fonts/ —
+   mismo criterio de "cero dependencias externas" que ya se usó con
+   los íconos de redes: nada de linkear al CDN de Google Fonts (que
+   además filtra la IP de cada visitante a Google — motivo real,
+   no solo preferencia, de por qué NUNCA se usó ese link). woff2 es
+   el formato comprimido está­ndar para fuentes web (bastante más
+   chico que el .ttf original: Montserrat pasó de ~200KB a ~85KB
+   por variante) y ya lo soportan todos los navegadores modernos —
+   no hace falta fallback a .ttf/.woff. */
+@font-face {
+  font-family: 'Galactica';
+  src: url('assets/fonts/Galactica-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap; /* muestra el texto con la fuente de respaldo mientras esta carga, en vez de dejarlo invisible */
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('assets/fonts/Montserrat-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('assets/fonts/Montserrat-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -63,7 +117,12 @@ body {
      sistema solar. overflow-x sigue oculto para evitar scroll
      horizontal accidental. */
   overflow-x: hidden;
-  font-family: sans-serif;
+  /* Antes sans-serif genérico. 'Montserrat' primero (fuente real de
+     la artista, ver @font-face arriba); sans-serif se queda como
+     respaldo final por si el archivo .woff2 no cargara por algún
+     motivo (conexión lenta antes de que font-display:swap resuelva,
+     bloqueo de red, etc.) — nunca deja al visitante sin texto. */
+  font-family: 'Montserrat', sans-serif;
   /* ===== CURSOR CUSTOM (normal) ===== */
   /* Usamos un SVG como cursor. El "16 16" al final le dice al navegador
      qué punto del cursor es el "punto activo" (el centro, en este caso) */
@@ -194,7 +253,11 @@ body {
 
 .nota-seccion {
   font-size: 12px;
-  opacity: 0.4;
+  /* Subido de 0.4 a 0.5 (11 sept, backlog de code review) — con
+     opacity:0.4 sobre el fondo #0d0d1a el contraste real era 3.80:1,
+     no pasa WCAG AA (mínimo 4.5:1 para texto normal). En 0.5 da
+     5.33:1, ya pasa con margen. */
+  opacity: 0.5;
   margin-top: 16px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -220,7 +283,7 @@ body {
 }
 
 /* ===================================================
-   MOODBOARD: fotos/video en posiciones irregulares que se
+   MOODBOARD: fotos en posiciones irregulares que se
    revelan escalonadas al hacer scroll (JS: Sección 8).
 
    Técnica: cada .medio-presskit arranca invisible y desplazado
@@ -280,6 +343,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* object-fit/position solo aplican a las 5 FOTOS, que ahora son
+     <img> reales (11 sept) — recortan la foto al tamaño de la caja
+     sin deformarla, centrado. No afecta a los 3 VIDEOS, que siguen
+     siendo <div> de color placeholder. */
+  object-fit: cover;
+  object-position: center;
 
   /* Estado inicial (invisible, desplazado hacia abajo y un poco
      chico). rotate() se queda fijo en var(--angulo) todo el
@@ -338,21 +407,23 @@ body {
 .moodboard-presskit.en-vista .medio-7 { transition-delay: 0.9s,  0.9s,  0.9s,  0s, 0s; }
 .moodboard-presskit.en-vista .medio-8 { transition-delay: 1.05s, 1.05s, 1.05s, 0s, 0s; }
 
-/* HOVER: solo en FOTOS, no en video (data-tipo="foto"). Al pasar el
-   cursor, la foto se JALA hacia afuera del texto — cada una tiene su
-   propia dirección de escape (--jx/--jy, definidas junto a su
-   posición más abajo) que apunta hacia donde está el hueco vacío
-   más cercano, alejándola de la zona del título/cita. También
+/* HOVER: el selector sigue filtrando por [data-tipo="foto"] aunque
+   las 8 sean foto ahora (11 sept) — se deja así a propósito, es
+   menos cambio que tocar el selector, y si algún día vuelve un
+   video con otro data-tipo, el filtro ya está listo para excluirlo
+   otra vez sin tocar nada más. Al pasar el cursor, la foto se JALA
+   hacia afuera del texto — cada una tiene su propia dirección de
+   escape (--jx/--jy, definidas junto a su posición más abajo) que
+   apunta hacia donde está el hueco vacío más cercano, alejándola de
+   la zona del título/cita. Las 3 que viven en las esquinas (1, 2, 6)
+   no definen --jx/--jy porque ya están despejadas del texto — ahí
+   el hover solo escala y profundiza la sombra, sin jalón. También
    crece un poco y su sombra se hace más profunda.
 
    z-index:3 la sube por encima de las demás fotos con las que se
    traslapa (que se quedan en 1), pero OJO: sigue siendo menor que
    el z-index:5 del título/cita — a propósito, para que la foto
-   nunca tape el texto, ni jalándose hacia afuera.
-
-   Los videos no lo llevan: ya tienen su propio indicador de
-   interacción (el ícono de play) y ahora viven en las esquinas,
-   siempre visibles, sin necesitar este truco. */
+   nunca tape el texto, ni jalándose hacia afuera. */
 .medio-presskit[data-tipo="foto"]:hover {
   transform: translate(var(--jx, 0px), var(--jy, 0px)) scale(1.06);
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.6);
@@ -360,42 +431,31 @@ body {
   cursor: pointer;
 }
 
-/* Posiciones y colores de prueba — mismos gradientes que ya usas
-   en los meteoros para mantener la paleta consistente. Cuando
-   llegue material real, aquí es donde se ajustan tamaños/lugares
-   según las fotos/videos que mande la artista.
+/* Posiciones — ya no hay colores de prueba, las 8 son fotos reales
+   (11 sept, decisión de Kevin: "puras fotos", se quitaron los 3
+   placeholders de video que vivían en las esquinas 1, 2 y 6).
 
-   Los 3 VIDEOS (1, 2 y 6) van en las esquinas — fuera de la franja
-   horizontal ~28%-72% que ocupa .cabecera-moodboard — para que
-   siempre se vean completos, sin taparse con el título/cita. Las
-   5 FOTOS (3, 4, 5, 7, 8) sí se meten debajo del texto a propósito
-   (efecto collage) y cada una trae su dirección de "jalón" hacia
-   afuera (--jx/--jy) para el hover de arriba: apunta hacia el
-   espacio libre más cercano, alejándola del texto. */
-.medio-1 { top: 0%;   left: 0%;  width: 250px; height: 250px; --angulo: -6deg; background: linear-gradient(135deg, #5a7fa6, #2c3e5c); } /* video: esquina sup-izq */
-.medio-2 { top: 2%;   left: 76%; width: 220px; height: 190px; --angulo: 3deg;  background: linear-gradient(135deg, #6b9e7f, #2d4a3a); } /* video: esquina sup-der */
-.medio-3 { top: 2%;   left: 33%; width: 270px; height: 215px; --angulo: -4deg; --jx: 20px;  --jy: -30px; background: linear-gradient(135deg, #9a6b8f, #3d2a4a); }
-.medio-4 { top: 28%;  left: 10%; width: 235px; height: 230px; --angulo: 4deg;  --jx: -32px; --jy: 6px;   background: linear-gradient(135deg, #3d3d5c, #1a1a2e); }
-.medio-5 { top: 32%;  left: 62%; width: 265px; height: 225px; --angulo: -3deg; --jx: 36px;  --jy: -8px;  background: linear-gradient(135deg, #5c3d4a, #2a1520); }
-.medio-6 { top: 58%;  left: 0%;  width: 245px; height: 225px; --angulo: 5deg;  background: linear-gradient(135deg, #3d5c4a, #152a1e); } /* video: esquina inf-izq */
-.medio-7 { top: 60%;  left: 30%; width: 220px; height: 195px; --angulo: -5deg; --jx: -6px;  --jy: 34px;  background: linear-gradient(135deg, #6b7f9e, #2a3d4a); }
-.medio-8 { top: 56%;  left: 60%; width: 250px; height: 250px; --angulo: 3deg;  --jx: 32px;  --jy: 28px;  background: linear-gradient(135deg, #7f6b9e, #3d2a4a); }
+   1, 2 y 6 se quedan FUERA de la franja horizontal ~28%-72% que
+   ocupa .cabecera-moodboard (por eso nunca necesitaron --jx/--jy:
+   ya están despejadas del texto, el hover ahí solo escala+sombra,
+   sin jalón). Las otras 5 (3, 4, 5, 7, 8) sí se meten debajo del
+   texto a propósito (efecto collage) y cada una trae su dirección
+   de "jalón" hacia afuera (--jx/--jy) para el hover de arriba:
+   apunta hacia el espacio libre más cercano, alejándola del texto. */
+.medio-1 { top: 0%;   left: 0%;  width: 250px; height: 250px; --angulo: -6deg; } /* foto real (11 sept) */
+.medio-2 { top: 2%;   left: 76%; width: 220px; height: 190px; --angulo: 3deg;  } /* foto real (11 sept) */
+.medio-3 { top: 2%;   left: 33%; width: 270px; height: 215px; --angulo: -4deg; --jx: 20px;  --jy: -30px; } /* foto real (11 sept) */
+.medio-4 { top: 28%;  left: 10%; width: 235px; height: 230px; --angulo: 4deg;  --jx: -32px; --jy: 6px;   } /* foto real (11 sept) */
+.medio-5 { top: 32%;  left: 62%; width: 265px; height: 225px; --angulo: -3deg; --jx: 36px;  --jy: -8px;  } /* foto real (11 sept) */
+.medio-6 { top: 58%;  left: 0%;  width: 245px; height: 225px; --angulo: 5deg;  } /* foto real (11 sept) */
+.medio-7 { top: 60%;  left: 30%; width: 220px; height: 195px; --angulo: -5deg; --jx: -6px;  --jy: 34px;  } /* foto real (11 sept) */
+.medio-8 { top: 56%;  left: 60%; width: 250px; height: 250px; --angulo: 3deg;  --jx: 32px;  --jy: 28px;  } /* foto real (11 sept) */
 
-/* Ícono de play: distingue los medios data-tipo="video" de las
-   fotos sin necesitar una etiqueta de texto */
-.icono-play {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  padding-left: 3px; /* centra visualmente el triángulo ▶, que no es simétrico */
-}
+/* .icono-play se eliminó (11 sept) — vivía aquí, distinguía los
+   medios data-tipo="video" de las fotos. Con el moodboard ahora de
+   puras fotos (decisión de Kevin) no queda ningún data-tipo="video"
+   en el sitio, así que la clase quedó sin uso. Si el video real
+   regresa más adelante, está completa en el historial de git. */
 
 /* ===================================================
    TÍTULO Y CITA: dos contenedores separados (siguen siendo dos
@@ -853,68 +913,89 @@ body {
    de arriba (una sola clase), así que ganan por venir después en el
    archivo — por eso este bloque va al final, no antes. */
 @media (max-width: 700px) {
+  /* Carrusel eliminado (12 sept, a pedido de Kevin) — reemplazado por
+     una foto de fondo fija detrás del título+cita (ver .moodboard-presskit
+     más abajo). display:none en vez de borrar el HTML: el markup de las
+     8 fotos se queda intacto (lo sigue usando el collage de desktop,
+     misma media query no aplica ahí), solo se oculta en mobile. */
   .medios-presskit {
-    /* el height:580px de desktop ya no aplica: en el carrusel la
-       altura la define .medio-presskit (220px) + el padding, no
-       un valor fijo del contenedor */
-    height: auto;
+    display: none;
+  }
+
+  /* .moodboard-presskit pasa de ser un contenedor "vacío" (solo
+     position:relative para anclar el collage) a ser el hero con foto
+     de fondo. Se rompe el padding lateral de 24px de .seccion-scroll
+     con márgenes negativos para que la foto llegue de borde a borde
+     de la pantalla (full-bleed) — el padding interno de aquí abajo
+     es el que evita que el texto quede pegado a los bordes.
+     overflow:hidden recorta el ::before de la foto exactamente a
+     este rectángulo. min-height le da a la foto suficiente alto para
+     leerse como fondo (antes esa altura la daba el carrusel de 220px
+     + el padding, ahora no hay nada más aportando alto). */
+  .moodboard-presskit {
+    margin-left: -24px;
+    margin-right: -24px;
+    width: calc(100% + 48px);
+    min-height: 560px;
     display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 16px;
-    /* padding a los lados (no solo arriba/abajo) deja ver un
-       pedacito de la siguiente foto — es la pista visual de que
-       se puede deslizar, sin necesitar flechas ni texto explicando */
-    padding: 8px 40px 16px;
-    -webkit-overflow-scrolling: touch; /* scroll con inercia en iOS */
+    flex-direction: column; /* eje principal vertical: justify-content
+      centra en Y. OJO: NO usar align-items:center aquí — el eje
+      cruzado (horizontal) necesita su default (stretch), si no
+      .cabecera-moodboard deja de estirarse a lo ancho completo y
+      se encoge a su contenido, desbordando el texto por la derecha
+      en vez de centrarlo/envolverlo (bug real, encontrado con
+      Playwright antes de publicar esta versión). */
+    justify-content: center;
+    overflow: hidden;
+    padding: 40px 24px;
   }
 
-  .medio-presskit {
-    position: relative;
-    top: auto;
-    left: auto;
-    /* cada foto ocupa 78% del ancho de pantalla: se alcanza a ver
-       una rebanada de la siguiente, como en el padding de arriba */
-    flex: 0 0 78%;
-    width: auto;
-    height: 220px;
-    scroll-snap-align: center;
-    /* en el carrusel no rotamos ni deslizamos hacia arriba — se ven
-       derechas, como tarjetas, no como el pizarrón de desktop.
-       ("transform" ya no hace falta tocarlo aquí: en desktop ahora
-       solo lo usa el hover, la entrada usa translate/scale/rotate) */
-    translate: none;
-    scale: 1;
-    rotate: 0deg;
-    transition-delay: 0s; /* sin cascada individual: aparecen juntas */
-  }
-
-  .moodboard-presskit.en-vista .medio-presskit {
-    translate: none;
-    scale: 1;
-  }
-
-  /* Sin hover en mobile: aquí no hay cursor, y en pantallas táctiles
-     un :hover que se queda "atorado" tras el primer toque se ve raro. */
-  .medio-presskit[data-tipo="foto"]:hover {
-    transform: none;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  /* Foto real (12 sept): Galáctica cantando en vivo con luz azul de
+     escenario (medio-5 del collage de desktop, mismo archivo fuente
+     pero exportado a mayor resolución/calidad para uso de fondo — ver
+     nota en index.html sobre .medios-presskit). Gradiente oscuro
+     encima (mismo tono #0d0d1a del fondo del sitio) no por legibilidad
+     — el título ya lleva su caja blanca sólida (.texto-resaltado) y
+     la cita su propia tarjeta opaca (#0d0d1a sólido), ninguna de las
+     dos depende del contraste de la foto — sino para que la foto no
+     compita visualmente con el resto de la página oscura/monocromática,
+     mismo criterio que ya se sigue en todo el sitio. object-position
+     favorece la parte de arriba (rostro/micrófono) del encuadre. */
+  .moodboard-presskit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(180deg, rgba(13, 13, 26, 0.35), rgba(13, 13, 26, 0.8) 75%),
+      url('assets/presskit/fondo-mobile-presskit.jpg');
+    background-size: cover;
+    background-position: center 20%;
   }
 
   /* Deshace el position:absolute de desktop: en mobile la cabecera
-     vuelve a flujo normal, arriba del carrusel — que es justo como
-     ya te gustó cómo se ve. */
+     vuelve a flujo normal, ya no encima del collage (que ya no está)
+     sino encima de la foto de fondo — position:relative + z-index:1
+     es lo que la deja por encima del ::before (z-index:0). */
   .cabecera-moodboard {
-    position: static;
+    position: relative;
+    z-index: 1;
+    /* top:24% y left:50% de la regla de desktop (position:absolute)
+       seguían activos aquí porque position:relative TAMBIÉN respeta
+       esos offsets (a diferencia de position:static, que los ignora
+       por completo — así se libraba de este problema la versión
+       anterior). Sin este reset el bloque se desplazaba a la mitad
+       de la pantalla y se salía por la derecha (bug real, encontrado
+       con Playwright antes de publicar esta versión). */
+    top: auto;
+    left: auto;
     transform: none;
     width: auto;
     max-width: 100%;
-    margin-bottom: 24px;
   }
 
   .titulo-moodboard {
-    margin-top: 28px;
+    margin-top: 0;
   }
 
   .texto-moodboard {
@@ -2058,10 +2139,28 @@ body:active {
   top: 24px;
   left: 24px;
   color: white;
+  /* Logotipo real de la artista (11 sept) — antes heredaba el
+     Montserrat del body. Se usa SOLO aquí a propósito: el archivo
+     no trae glifos de números (los dígitos se ven como recuadros
+     vacíos), así que no debe aplicarse a nada que pueda mostrar
+     fechas u otros números — fuera de este wordmark fijo, el resto
+     del sitio se queda en Montserrat. En mayúsculas se lee mejor
+     (ver comparación hecha antes de aplicarlo) — combina bien con
+     el text-transform:uppercase que ya traía esta regla. */
+  font-family: 'Galactica', 'Montserrat', sans-serif;
   /* mismo criterio de clamp() que en .boton-contacto: en pantallas
      angostas el título se achica junto con el botón para que no
-     se encimen (se comprobó el choque real en un viewport de 320px) */
-  font-size: clamp(13px, 4vw, 18px);
+     se encimen (se comprobó el choque real en un viewport de 320px).
+     Subido (11 sept) de un tope de 21px a 30px para que el wordmark
+     se distinga más — con clamp(15px,4.6vw,21px) el valor efectivo
+     era 21px fijo en casi cualquier pantalla >460px de ancho (el
+     4.6vw superaba el tope casi de inmediato). Bajado de nuevo (12
+     sept, a pedido de Mike) de 30px a 25px — 30px se sentía ya
+     grande, se perdía el look sutil que tenía antes; 25px queda a
+     medio camino entre el 21px original y el 30px de la ronda
+     anterior. Reverificado en 320/360/390/768/1280/1920px que sigue
+     sin chocar con .boton-contacto (misma fila fija arriba). */
+  font-size: clamp(15px, 5vw, 25px);
   letter-spacing: clamp(1px, 0.6vw, 3px);
   text-transform: uppercase;
   opacity: 0.85;
@@ -2113,6 +2212,17 @@ body:active {
   box-shadow: 0 0 10px 2px rgba(255,255,255,0.3);
 }
 
+/* Color de cada núcleo (11 sept, backlog de code review) — antes
+   vivían inline en el HTML (style="background-color:..."), se
+   movieron aquí por consistencia con el resto del sitio (cero
+   estilos inline en ningún otro elemento). Mismos valores exactos
+   que antes, cero cambio visual. */
+.meteoro-1 .meteoro-nucleo { background-color: #3d3d5c; }
+.meteoro-2 .meteoro-nucleo { background: linear-gradient(135deg, #5a7fa6, #2c3e5c); }
+.meteoro-3 .meteoro-nucleo { background-color: #5c3d4a; }
+.meteoro-4 .meteoro-nucleo { background: linear-gradient(135deg, #6b9e7f, #2d4a3a); }
+.meteoro-5 .meteoro-nucleo { background-color: #3d5c4a; }
+
 /* ===== RUTAS DE CADA METEORO (diagonales distintas) ===== */
 /* Cada uno nace fuera de la pantalla en una esquina y viaja
    a la esquina opuesta. Usamos vw/vh (% del ancho/alto de
@@ -2120,7 +2230,17 @@ body:active {
 
 .meteoro-1 { animation-name: ruta1; animation-duration: 18s; }
 @keyframes ruta1 {
-  from { top: -10vh; left: -10vw; }
+  /* Punto de entrada corrido de left:-10vw a left:-30vw (11 sept,
+     backlog de code review) — con -10vw el meteoro pasaba por encima
+     del wordmark "GALÁCTICA" (fixed, arriba a la izquierda) durante
+     los primeros ~2 segundos de cada ciclo de 18s. Verificado con
+     la fórmula real del keyframe (top/left son lineales en vh/vw)
+     contra el bounding box del wordmark en 5 anchos de pantalla
+     distintos (320 a 1920px): con -30vw el meteoro sigue totalmente
+     fuera de pantalla por la izquierda hasta que ya bajó más allá
+     de la altura del wordmark, en todos los anchos probados. Mismo
+     punto de llegada (110vh/110vw) — solo cambió el de salida. */
+  from { top: -10vh; left: -30vw; }
   to   { top: 110vh; left: 110vw; }
 }
 
