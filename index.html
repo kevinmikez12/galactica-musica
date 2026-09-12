@@ -76,40 +76,32 @@
 
   <h1 class="titulo">Galáctica</h1>
 
-  <!-- ===== METEOROS ===== -->
-  <!-- Cada uno tiene contenido fijo: fecha, o una imagen de fondo -->
-
-  <!-- Colores de cada núcleo (11 sept, backlog de code review): antes
-       vivían inline (style="background...") en cada div — se movieron
-       a style.css como .meteoro-N .meteoro-nucleo, cero cambio visual,
-       solo orden de código (mismo criterio que ya sigue el resto del
-       sitio: nada de estilos inline). -->
+  <!-- ===== METEOROS ("michimeteoros") =====
+       Reducidos de 5 a 3 (12 sept, a pedido de Kevin — "mucho ruido en
+       pantalla"). Se quitaron los 2 que eran puramente decorativos (sin
+       fecha real, meteoro-2 y meteoro-4 originales); los 3 que quedan
+       son justo los que sí llevan una fecha de show real, renumerados
+       1-2-3. .meteoro-nucleo ya no es un círculo de color — es una foto
+       real de gato con transparencia (mandada por Kevin, 3 tonos
+       duotono distintos) del tamaño/forma real de la imagen, mismo
+       tratamiento que las fotos de los planetas (ver .planeta en
+       style.css): sin clip-path ni border-radius, el PNG trae su
+       propia silueta. La fecha ya NO va encimada sobre la foto (se
+       perdía legibilidad contra el detalle de la imagen) — ahora es
+       una etiqueta aparte, pegada debajo de cada meteoro. -->
   <div class="meteoro meteoro-1">
-    <div class="meteoro-nucleo">
-      15 Nov<br>CDMX
-    </div>
+    <div class="meteoro-nucleo"></div>
+    <span class="meteoro-fecha">15 Nov<br>CDMX</span>
   </div>
 
   <div class="meteoro meteoro-2">
-    <div class="meteoro-nucleo">
-    </div>
+    <div class="meteoro-nucleo"></div>
+    <span class="meteoro-fecha">22 Nov<br>GDL</span>
   </div>
 
   <div class="meteoro meteoro-3">
-    <div class="meteoro-nucleo">
-      22 Nov<br>GDL
-    </div>
-  </div>
-
-  <div class="meteoro meteoro-4">
-    <div class="meteoro-nucleo">
-    </div>
-  </div>
-
-  <div class="meteoro meteoro-5">
-    <div class="meteoro-nucleo">
-      05 Dic<br>MTY
-    </div>
+    <div class="meteoro-nucleo"></div>
+    <span class="meteoro-fecha">05 Dic<br>MTY</span>
   </div>
 
   <!-- ===== HERO: envuelve el sistema solar en una pantalla completa ===== -->
@@ -123,6 +115,10 @@
       <div class="orbita orbita-tierra"></div>
       <div class="orbita orbita-marte"></div>
 
+      <!-- Mercurio/Shows: sigue con el placeholder de "disco" (ver .mercurio
+           en style.css) — Kevin todavía no manda una imagen real para esta,
+           a diferencia de Presskit/Biografía/Newsletter (12 sept, ver más
+           abajo). No tocar hasta que llegue esa imagen. -->
       <div class="pivote pivote-mercurio">
         <button type="button" class="planeta mercurio" data-nombre="Shows" data-tipo="modal" title="Shows"></button>
       </div>
@@ -363,9 +359,13 @@
       <div class="bloque-bio">
         <!-- FOTO DE PRUEBA -->
         <div class="foto-bloque-bio"></div>
-        <!-- TEXTO DE PRUEBA -->
+        <!-- Texto real de biografía (12 sept, mandado por Mike). <mark>
+             en azul (color base de .texto-bloque-bio mark) sobre las
+             2 frases que mejor resumen la identidad de la propuesta:
+             la premisa del proyecto ("experimento de honestidad") y
+             el detalle personal más memorable/citable para prensa. -->
         <div class="texto-bloque-bio">
-          <p>Texto de prueba: aquí va el primer párrafo de la biografía — de dónde viene la <mark>artista</mark>, cómo empezó en la música y qué la distingue de otras propuestas.</p>
+          <p>Galáctica es un <mark>experimento de honestidad</mark>: es el lugar donde muestro lo que me inquieta y esas partes de mí que a veces avergüenzan, pero puestas en canciones. Escribo desde la sensibilidad, con la naturaleza como refugio y <mark>mis gatos como mejores amigos</mark>. Dedicarme a la vida artística es enteramente culpa de Hannah Montana.</p>
         </div>
       </div>
 
@@ -376,9 +376,14 @@
       <div class="bloque-bio bloque-bio--invertido">
         <!-- FOTO DE PRUEBA -->
         <div class="foto-bloque-bio"></div>
-        <!-- TEXTO DE PRUEBA -->
+        <!-- Texto real de biografía (12 sept). <mark> aquí sale morado
+             (ver .bloque-bio--invertido .texto-bloque-bio mark en
+             style.css) — mismo criterio que ya usa el fondo de
+             nebulosa: los 2 bloques intercalan azul/morado para que
+             no se sientan gemelos. Frases marcadas: la metáfora
+             central del proyecto y el cierre emocional de la bio. -->
         <div class="texto-bloque-bio">
-          <p>Segundo párrafo de prueba: logros destacados, colaboraciones importantes, o el proyecto más reciente que quiere posicionar.</p>
+          <p>Hacer música es mi manera de construir <mark>un puente entre mi mundo interno y el tuyo</mark>. Escribo desde pequeña, fue la primera forma que encontré para entender lo que sentía. Hoy uso mi música para abrazar lo imperfecto, lo sensible y lo bonito de estar vivos. Si alguna vez te sientes fuera de lugar, espero que en mis canciones encuentres <mark>un rincón seguro</mark>.</p>
         </div>
       </div>
 
@@ -433,8 +438,14 @@
     <p class="pie-copyright">© 2026 Galáctica. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- ===== BOTÓN DE CONTACTO (fijo, esquina superior derecha) ===== -->
-  <a href="#contacto" class="boton-contacto">Contáctanos</a>
+  <!-- ===== BOTÓN DE CONTACTO (fijo, esquina superior derecha) =====
+       Corrección de Kevin (12 sept): el celular NO es un planeta más del
+       sistema solar — reemplaza el ícono/contenido de ESTE botón fijo,
+       que se queda exactamente en su lugar de siempre (no orbita nada).
+       aria-label conserva el texto "Contáctanos" para lectores de
+       pantalla y como title/tooltip, ya que visualmente ya no queda
+       texto — mismo criterio que los íconos de redes del footer. -->
+  <a href="#contacto" class="boton-contacto" aria-label="Contáctanos" title="Contáctanos"></a>
 
   <!-- ===== FONDO OSCURO COMPARTIDO POR AMBOS MODALES ===== -->
   <div class="fondo-modal" id="fondoModal"></div>

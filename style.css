@@ -68,7 +68,16 @@
 :root {
   --tam-sistema: 700px;
   --tam-sol: 110px;
-  --tam-planeta: 46px;
+  /* Subido de 46px a 58px (12 sept): las 3 imágenes reales que llegaron
+     para Presskit/Biografía/Newsletter tienen detalle real (texto en la
+     pantalla del tamagotchi, ilustraciones del diario) que a 46px se
+     perdía casi por completo. El aumento aplica parejo a los 4 planetas
+     (incluido Mercurio, que sigue con su placeholder) — más espacio de
+     sobra que el mínimo necesario contra los ~100px de separación entre
+     órbitas, verificado con Playwright (ver comentario de .planeta más
+     abajo). El celular (Contacto) NO es un planeta — reemplaza el botón
+     fijo de la esquina, ver .boton-contacto más abajo. */
+  --tam-planeta: 58px;
   --radio-mercurio: 220px;
   --radio-venus: 320px;
   --radio-tierra: 420px;
@@ -90,7 +99,10 @@
   :root {
     --tam-sistema: min(92vw, 420px);
     --tam-sol: calc(var(--tam-sistema) * 0.16);
-    --tam-planeta: clamp(34px, calc(var(--tam-sistema) * 0.11), 46px);
+    /* Mismo aumento que en desktop (ver comentario en :root de arriba),
+       tope subido de 46px a 58px — el mínimo/la fórmula de vw se quedan
+       igual, esto solo levanta el techo en pantallas más anchas. */
+    --tam-planeta: clamp(34px, calc(var(--tam-sistema) * 0.11), 58px);
     --radio-mercurio: calc(var(--tam-sistema) * 0.314);
     --radio-venus: calc(var(--tam-sistema) * 0.457);
     --radio-tierra: calc(var(--tam-sistema) * 0.6);
@@ -1249,14 +1261,23 @@ body {
       directo sobre la nebulosa animada — el alpha más alto hace que
       el highlight no dependa de qué tan oscuro esté el fondo en ese
       punto exacto del ciclo.
-   Por ahora solo se usa una vez, en una palabra, nada más para ver
-   cómo se ve — falta el texto final de la biografía para decidir
-   qué frases vale la pena resaltar de verdad. */
+   Con el texto real de biografía (12 sept) ya se resaltan frases de
+   verdad (ver index.html) — este es el color BASE (azul), usado en
+   el bloque 1. */
 .texto-bloque-bio mark {
   background: rgba(56, 179, 250, 0.55);
   color: white;
   padding: 0 4px;
   border-radius: 3px;
+}
+
+/* Bloque 2 (--invertido): mark en morado en vez de azul (12 sept,
+   pedido de Mike) — mismo criterio que ya usa el fondo de nebulosa
+   de este bloque (.bloque-bio--invertido .texto-bloque-bio::before,
+   más abajo): los 2 bloques intercalan azul/morado para que no se
+   sientan gemelos. Mismo alpha (0.55), solo cambia el color base. */
+.bloque-bio--invertido .texto-bloque-bio mark {
+  background: rgba(155, 107, 220, 0.55);
 }
 
 /* Entrada: foto y texto entran cada uno desde SU lado (la foto
@@ -1646,34 +1667,80 @@ svg[hidden] {
 
 /* ===================================================
    BOTÓN DE CONTACTO (esquina superior derecha)
+   Hasta el 12 sept era una píldora con el texto "Contáctanos". Corrección
+   de Kevin el mismo día: el celular real que mandó NO es un planeta más
+   (se había malentendido así en la primera pasada) — reemplaza el
+   CONTENIDO de este botón fijo, que se queda en su lugar de siempre.
+   Mismo trato visual que un .planeta (imagen real con transparencia +
+   drop-shadow que sigue su silueta + el mismo hover de agrandado), pero
+   fuera del sistema solar y sin animación de órbita.
    =================================================== */
 .boton-contacto {
   position: fixed;
   top: 24px;
   right: 24px;
-  /* clamp(mínimo, preferido, máximo): en vez de un breakpoint fijo,
-     el padding y el texto se achican de forma continua según el
-     ancho de pantalla (vw). Esto evita que se encime con .titulo
-     en pantallas muy angostas (320px), sin afectar desktop. */
-  padding: clamp(8px, 3vw, 12px) clamp(14px, 5vw, 24px);
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(6px);
-  color: white;
-  font-size: clamp(10px, 3vw, 13px);
-  font-weight: bold;
-  letter-spacing: clamp(0.3px, 0.4vw, 1px);
-  text-transform: uppercase;
-  text-decoration: none;
+  /* clamp(mínimo, preferido, máximo): en vez de un breakpoint fijo, el
+     tamaño se achica de forma continua según el ancho de pantalla (vw).
+     Esto evita que se encime con .titulo en pantallas muy angostas
+     (320px), sin afectar desktop. Mismo rango que --tam-planeta. */
+  width: clamp(40px, 8vw, 58px);
+  height: clamp(40px, 8vw, 58px);
+  background-image: url('assets/planetas/celular-contacto.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+  border: none;
   cursor: pointer;
   z-index: 200;
-  transition: background 0.3s ease, transform 0.3s ease;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.4));
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .boton-contacto:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 14px rgba(255,255,255,0.8));
+}
+
+/* Vibración periódica (12 sept, a pedido de Kevin): el celular "suena"
+   y se queda quieto 10s, en loop. Truco clave para que esto no pelee
+   con el hover de arriba: la vibración anima `rotate`/`translate`
+   como propiedades CSS INDEPENDIENTES (soporte moderno, separadas de
+   `transform` desde CSS Transforms Level 2) en vez de meterlas dentro
+   de `transform`. Si hubiera usado `transform` aquí, la animación
+   habría ganado SIEMPRE sobre el `transform: scale()` del :hover (una
+   animación corriendo le gana a cualquier otra declaración de la
+   misma propiedad, no solo durante el instante de la sacudida) y el
+   botón habría dejado de agrandar al pasar el mouse. Con propiedades
+   separadas, ambos efectos se combinan sin conflicto: puede vibrar Y
+   agrandarse al mismo tiempo si el mouse pasa justo en ese instante.
+   Como toda animación puramente decorativa del sitio, respeta
+   prefers-reduced-motion — con esa preferencia el celular se queda
+   perfectamente quieto. */
+@media (prefers-reduced-motion: no-preference) {
+  .boton-contacto {
+    animation: vibrarCelular 11.5s ease-in-out infinite;
+  }
+}
+
+@keyframes vibrarCelular {
+  /* 1.5s de vibración fuerte (los primeros ~13% de los 11.5s) + 10s
+     quieto (el resto) — vibración alargada y más brusca a pedido de
+     Kevin (12 sept): más amplitud (hasta 4px / 10deg, antes 2px/6deg)
+     y más sacudidas dentro de la ventana (10, antes 5) para que se
+     sienta como un golpeteo real y no un temblor suave. Las últimas
+     2 sacudidas bajan de amplitud a propósito (imita cómo un celular
+     real pierde fuerza al terminar de vibrar, en vez de cortar en seco). */
+  0%, 13%, 100% { translate: 0 0; rotate: 0deg; }
+  1.3%          { translate: -4px 2px;  rotate: -10deg; }
+  2.6%          { translate: 4px -2px;  rotate: 10deg; }
+  3.9%          { translate: -4px 2px;  rotate: -10deg; }
+  5.2%          { translate: 4px -2px;  rotate: 9deg; }
+  6.5%          { translate: -3px 2px;  rotate: -8deg; }
+  7.8%          { translate: 3px -2px;  rotate: 8deg; }
+  9.1%          { translate: -2px 1px;  rotate: -5deg; }
+  10.4%         { translate: 2px -1px;  rotate: 5deg; }
+  11.7%         { translate: -1px 1px;  rotate: -2deg; }
 }
 
 
@@ -1891,17 +1958,30 @@ body:active {
 
 .planeta {
   /* Mercurio y Marte son <button> (disparan una acción de JS: abrir
-     modal), Venus y Tierra siguen siendo <a href="#seccion"> (navegan
-     de verdad a un ancla) — cada uno usa el elemento HTML correcto
-     para lo que hace. Este reset solo le quita a <button> sus estilos
-     nativos (borde, fondo, padding, fuente) para que se vea igual que
-     el <a>; en <a> estas propiedades no hacen nada porque ya son así
-     por defecto. */
+     modal), Venus, Tierra y Contacto siguen siendo <a href="#seccion">
+     (navegan de verdad a un ancla) — cada uno usa el elemento HTML
+     correcto para lo que hace. Este reset solo le quita a <button> sus
+     estilos nativos (borde, fondo, padding, fuente) para que se vea
+     igual que el <a>; en <a> estas propiedades no hacen nada porque ya
+     son así por defecto. */
   appearance: none;
   border: none;
   padding: 0;
   margin: 0;
   font-family: inherit;
+  /* Bug real (12 sept, reportado por Kevin como "cuadro gris" detrás
+     del sobre de Newsletter): Mercurio y Marte son <button>, y todo
+     <button> trae un background-color gris (rgb(239,239,239) en Chrome)
+     de fábrica del navegador — el reset de arriba (appearance/border/
+     padding/margin) NO lo quita. Mientras Mercurio/Marte usaban
+     `background: <gradient>` (shorthand completo) esto no se notaba,
+     porque el shorthand también resetea background-color. Al pasar
+     Marte a `background-image` solo (para la foto real del sobre) ese
+     gris de fábrica quedó expuesto detrás de las partes transparentes
+     del PNG. Venus/Tierra no lo sufrían por ser <a>, que no trae ese
+     default — pero se resetea aquí para los 4 por igual, no solo en
+     el que lo mostró. */
+  background-color: transparent;
 
   position: absolute;
   top: 0;
@@ -1921,7 +2001,14 @@ body:active {
   transition: transform 0.3s ease, filter 0.3s ease;
   z-index: 5;
   pointer-events: auto;
-  background-size: cover;
+  /* contain, no cover (12 sept): cover era correcto mientras las 4 eran
+     gradientes recortados con clip-path (llenaban el cuadro completo a
+     propósito); las imágenes reales que llegaron NO son cuadradas —
+     cover las recortaría por los lados, contain las encoge completas
+     sin cortar nada. Mercurio (el único que sigue en placeholder de
+     gradiente) se ve exactamente igual con contain que con cover,
+     porque un gradiente no tiene "bordes" que recortar. */
+  background-size: contain;
   background-position: center;
   /* drop-shadow (en vez de box-shadow) porque sigue la FORMA real
      de la imagen recortada, no un rectángulo/círculo invisible */
@@ -1934,45 +2021,52 @@ body:active {
   z-index: 20;
 }
 
-/* ===== FORMAS IRREGULARES CON clip-path =====
-   clip-path recorta la imagen cuadrada en una silueta específica.
-   polygon() dibuja formas con puntos (x% y%) conectados entre sí;
-   circle()/ellipse() son formas redondas más simples.
-   Esto es PLACEHOLDER — cuando lleguen los PNGs reales con
-   transparencia (disco, sobre, gatos), se puede quitar el
-   clip-path y dejar que el PNG mismo traiga su silueta. */
+/* ===== FORMAS/IMÁGENES DE CADA PLANETA =====
+   Hasta el 11 sept, las 4 usaban clip-path (polygon()/circle() recortan
+   un gradiente cuadrado en una silueta a mano) como PLACEHOLDER, tal
+   como anticipaba el comentario que vivía aquí: "cuando lleguen los
+   PNGs reales con transparencia, se puede quitar el clip-path y dejar
+   que el PNG mismo traiga su silueta". Eso ya pasó (12 sept) para
+   Presskit/Biografía/Newsletter — Mercurio/Shows es el único que sigue
+   en placeholder, a la espera de que Kevin mande su imagen. (Contacto
+   NO es un planeta — el celular vive en .boton-contacto, más abajo.)
+   background-size:contain (no cover) porque estas 3 imágenes NO son
+   cuadradas — cover las recortaría, contain las encoge completas
+   dentro del cuadro de .planeta sin cortar nada. El filter:drop-shadow
+   de .planeta (ver arriba) sigue funcionando igual de bien aquí que con
+   clip-path: sigue el canal alfa real del PNG, no un cuadro invisible. */
 
-/* Disco (círculo simple con un "agujero" simulado en el centro) */
+/* Disco (círculo simple con un "agujero" simulado en el centro) —
+   sigue siendo placeholder, Kevin no ha mandado la imagen real de Shows */
 .mercurio {
   background: radial-gradient(circle, #e8e8e8 20%, #b8b8d0 40%, #7878a0 70%, #e8e8e8 100%);
   clip-path: circle(50%);
 }
 
-/* Sobre/carta — forma de pentágono simulando un sobre */
+/* Presskit — tamagotchi real de Kevin, pantalla dice "press kit" (12 sept) */
 .venus {
-  background: linear-gradient(135deg, #f5f0e0, #d8cfa8);
-  clip-path: polygon(0% 20%, 50% 55%, 100% 20%, 100% 100%, 0% 100%);
+  background-image: url('assets/planetas/tamagotchi-presskit.png');
+  background-repeat: no-repeat;
 }
 
-/* Silueta tipo "cabeza de gato" con orejas triangulares */
+/* Biografía — diario/scrapbook real de Kevin (12 sept) */
 .tierra {
-  background: linear-gradient(160deg, #b565a7, #7a3a70);
-  clip-path: polygon(
-    20% 0%, 35% 25%, 65% 25%, 80% 0%,
-    100% 40%, 100% 80%, 50% 100%, 0% 80%, 0% 40%
-  );
+  background-image: url('assets/planetas/diario-biografia.png');
+  background-repeat: no-repeat;
 }
 
-/* Caja/paquete — hexágono simulando una caja vista en 3D */
+/* Newsletter — sobre abierto real de Kevin (12 sept) */
 .marte {
-  background: linear-gradient(160deg, #d9a066, #a66b35);
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background-image: url('assets/planetas/sobre-newsletter.png');
+  background-repeat: no-repeat;
 }
 
 /* .jupiter y .saturno se eliminaron (7 sept): no se usaban en el HTML.
    Decisión de Kevin: el sistema solar se queda en 4 planetas (mercurio,
    venus, tierra, marte) — con más se satura el diseño y afecta la UX,
-   así que no se reservan clases para planetas futuros. */
+   así que no se reservan clases para planetas futuros. Contacto (12
+   sept) no es una excepción a esto: nunca fue un planeta de verdad,
+   vive en .boton-contacto, fijo fuera del sistema solar. */
 
 /* ===== CLASE "ENFOCADO" ===== */
 /* Esta es la clase mágica: cuando JS se la pone a un planeta,
@@ -2199,7 +2293,10 @@ body:active {
 
 /* Contenedor de cada meteoro: viaja en diagonal por toda
    la pantalla. Usamos position: fixed porque su recorrido
-   es relativo a TODA la ventana, no al sistema solar. */
+   es relativo a TODA la ventana, no al sistema solar. Además
+   sirve de ancla para .meteoro-fecha (position:absolute, ver
+   abajo) — por eso NO lleva overflow:hidden ni nada que recorte
+   a sus hijos. */
 .meteoro {
   position: fixed;
   width: var(--tam-meteoro);
@@ -2209,45 +2306,78 @@ body:active {
   animation-iteration-count: infinite;
   pointer-events: none; /* ya no reacciona al mouse, y tampoco bloquea clics en lo que esté encima */
   transition: transform 0.3s ease-out; /* suaviza el "jalón" magnético */
+  /* Mismo criterio que .planeta: drop-shadow (no box-shadow) porque
+     sigue la silueta real del gato (canal alfa del PNG), no un
+     círculo/cuadro invisible — reemplaza el box-shadow circular que
+     tenía .meteoro-nucleo cuando era un círculo de color plano. */
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
 }
 
 /* La cola del meteoro se quitó — ahora solo se ve el círculo/imagen */
 
-/* El círculo/imagen visible del meteoro */
+/* La foto de gato (12 sept: antes un círculo de color con la fecha
+   encimada — ver el bloque de fechas .meteoro-fecha más abajo).
+   contain + transparent, mismo motivo que las fotos de los planetas:
+   estas 3 imágenes NO son círculos perfectos, cover las recortaría. */
 .meteoro-nucleo {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
   background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 11px;
-  font-weight: bold;
-  text-align: center;
-  overflow: hidden;
-  box-shadow: 0 0 10px 2px rgba(255,255,255,0.3);
+  background-color: transparent;
 }
 
-/* Color de cada núcleo (11 sept, backlog de code review) — antes
-   vivían inline en el HTML (style="background-color:..."), se
-   movieron aquí por consistencia con el resto del sitio (cero
-   estilos inline en ningún otro elemento). Mismos valores exactos
-   que antes, cero cambio visual. */
-.meteoro-1 .meteoro-nucleo { background-color: #3d3d5c; }
-.meteoro-2 .meteoro-nucleo { background: linear-gradient(135deg, #5a7fa6, #2c3e5c); }
-.meteoro-3 .meteoro-nucleo { background-color: #5c3d4a; }
-.meteoro-4 .meteoro-nucleo { background: linear-gradient(135deg, #6b9e7f, #2d4a3a); }
-.meteoro-5 .meteoro-nucleo { background-color: #3d5c4a; }
+/* Imagen de cada meteoro — 3 gatos reales de Kevin, cada uno en un
+   tono duotono distinto (verde/azul/morado, ya vienen así de la
+   imagen, no es un filtro CSS). Asignación arbitraria en el orden en
+   que llegaron — avisar si Kevin quiere un tono específico por meteoro. */
+.meteoro-1 .meteoro-nucleo { background-image: url('assets/meteoros/michi-verde.png'); }
+.meteoro-2 .meteoro-nucleo { background-image: url('assets/meteoros/michi-azul.png'); }
+.meteoro-3 .meteoro-nucleo { background-image: url('assets/meteoros/michi-morado.png'); }
 
-/* ===== RUTAS DE CADA METEORO (diagonales distintas) ===== */
-/* Cada uno nace fuera de la pantalla en una esquina y viaja
-   a la esquina opuesta. Usamos vw/vh (% del ancho/alto de
-   la ventana) para que funcione en cualquier tamaño de pantalla. */
+/* Fecha de cada show (12 sept): antes vivía centrada DENTRO del
+   círculo de color; ahora que el núcleo es una foto real con su
+   propio detalle visual, poner texto blanco encima se volvía
+   ilegible. Se sacó a una etiqueta aparte, pegada justo debajo del
+   meteoro — position:absolute con .meteoro (fixed) como ancla.
+   pointer-events:none: mismo criterio que .meteoro, esto tampoco
+   debe bloquear clics en lo que esté detrás/debajo. */
+.meteoro-fecha {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+  padding: 2px 6px;
+  background: rgba(13, 13, 26, 0.85);
+  border-radius: 6px;
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
 
-.meteoro-1 { animation-name: ruta1; animation-duration: 18s; }
+/* ===== RUTAS DE CADA METEORO (diagonales distintas) =====
+   Cada uno nace fuera de la pantalla en una esquina y viaja a la
+   esquina opuesta. Usamos vw/vh (% del ancho/alto de la ventana)
+   para que funcione en cualquier tamaño de pantalla. Los 3 que
+   quedan (12 sept, ver comentario en index.html) son, sin cambiar
+   ni un valor, las mismas 3 rutas que ya traían los meteoros 1/3/5
+   originales — incluida la ruta1 ya verificada (11 sept) para no
+   pasar sobre el wordmark "GALÁCTICA". Solo se renombraron a
+   ruta1/ruta2/ruta3 para que coincidan con la nueva numeración. */
+
+/* Velocidad bajada de 18s a 24s (12 sept, a pedido de Kevin — el michi
+   verde se sentía muy rápido). Mismo trayecto (ruta1) sin tocar — solo
+   cambia cuánto tarda en recorrerlo, así que la verificación de
+   colisión con el wordmark (11 sept, ver comentario en @keyframes
+   ruta1 abajo) sigue aplicando igual: esa revisión depende de los
+   valores espaciales del keyframe, no de la duración. */
+.meteoro-1 { animation-name: ruta1; animation-duration: 24s; }
 @keyframes ruta1 {
   /* Punto de entrada corrido de left:-10vw a left:-30vw (11 sept,
      backlog de code review) — con -10vw el meteoro pasaba por encima
@@ -2263,26 +2393,14 @@ body:active {
   to   { top: 110vh; left: 110vw; }
 }
 
-.meteoro-2 { animation-name: ruta2; animation-duration: 24s; animation-delay: -4s; }
+.meteoro-2 { animation-name: ruta2; animation-duration: 30s; animation-delay: -10s; }
 @keyframes ruta2 {
-  from { top: -10vh; left: 60vw; }
-  to   { top: 110vh; left: -20vw; }
-}
-
-.meteoro-3 { animation-name: ruta3; animation-duration: 30s; animation-delay: -10s; }
-@keyframes ruta3 {
   from { top: 20vh; left: 110vw; }
   to   { top: 80vh; left: -20vw; }
 }
 
-.meteoro-4 { animation-name: ruta4; animation-duration: 21s; animation-delay: -14s; }
-@keyframes ruta4 {
-  from { top: 110vh; left: 20vw; }
-  to   { top: -20vh; left: 90vw; }
-}
-
-.meteoro-5 { animation-name: ruta5; animation-duration: 26s; animation-delay: -7s; }
-@keyframes ruta5 {
+.meteoro-3 { animation-name: ruta3; animation-duration: 26s; animation-delay: -7s; }
+@keyframes ruta3 {
   from { top: -10vh; left: 30vw; }
   to   { top: 110vh; left: 70vw; }
 }
