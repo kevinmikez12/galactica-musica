@@ -166,13 +166,30 @@
            .medios-presskit se oculta por completo (12 sept, a pedido
            de Kevin — antes era un carrusel horizontal con scroll-snap,
            antes de eso 8 tarjetas apiladas) y .moodboard-presskit
-           muestra en su lugar una foto de fondo fija (Galáctica
-           cantando en vivo, luz azul de escenario — assets/presskit/
-           fondo-mobile-presskit.jpg, mismo momento que medio-5 pero
-           exportada a mayor calidad porque aquí es fondo de pantalla
-           completa, no una miniatura de 270px) detrás del título+cita
-           — ver style.css para el detalle completo. -->
+           muestra en su lugar un VIDEO de fondo (13 sept — reel
+           musical real, mudo/loop/autoplay, ver .video-fondo-presskit
+           más abajo) con la foto de Galáctica cantando en vivo
+           (assets/presskit/fondo-mobile-presskit.jpg) como poster/
+           fallback detrás si el video no carga o si el usuario tiene
+           prefers-reduced-motion activado — ver style.css para el
+           detalle completo de las capas. -->
       <div class="moodboard-presskit" id="moodboardPresskit">
+
+        <!-- Video de fondo (13 sept, mobile) — reel musical real que
+             Kevin comprimió con ffmpeg (h264, ~2MB). Reemplaza la foto
+             estática como fondo detrás del título+cita, ver detalle
+             completo de las capas (foto/video/gradiente) en
+             .moodboard-presskit del style.css. muted+playsinline son
+             obligatorios para que autoplay funcione en iOS sin pedir
+             pantalla completa; loop lo repite indefinidamente ya que
+             es más corto que el tiempo que alguien pasa leyendo esta
+             sección. poster = la misma foto que queda de fallback en
+             ::before, para que se vea algo idéntico mientras el video
+             carga. aria-hidden porque es puramente decorativo (el
+             título y la cita ya llevan su propio texto accesible). -->
+        <video class="video-fondo-presskit" autoplay muted loop playsinline aria-hidden="true" poster="assets/presskit/fondo-mobile-presskit.jpg">
+          <source src="assets/video/galactica-presskit-bg.mp4" type="video/mp4">
+        </video>
 
         <!-- TEXTO DE PRUEBA -->
         <!-- Efecto "marcador" (.texto-resaltado) también aquí, mismo
@@ -186,7 +203,20 @@
           </div>
 
           <div class="texto-moodboard">
-            <p class="texto-cita-moodboard">Una propuesta que mezcla <mark>influencias muy propias</mark> con una identidad visual distinta — de lo más interesante que ha salido de la escena local este año.</p>
+            <!-- Texto real (13 sept, a pedido de Kevin: "cree una de
+                 acuerdo a lo que tenemos, creativo y llamativo").
+                 IMPORTANTE — esto sigue siendo una frase de EFECTO sin
+                 atribuir a ningún medio o periodista real (igual que
+                 la de prueba que reemplaza), no una cita de prensa de
+                 verdad. Se escribió a partir del tono ya establecido
+                 en Biografía (vulnerabilidad/honestidad, ver <mark>
+                 de esa sección) + el nombre "Galáctica" (motivo
+                 cósmico ya presente en todo el sitio). Cuando llegue
+                 una reseña/mención real de un medio, esta línea debe
+                 reemplazarse por esa cita real con su atribución
+                 (nombre del medio/persona) — no dejar esta pasando
+                 por una cita real de prensa. -->
+            <p class="texto-cita-moodboard">Composiciones que no le temen a la vulnerabilidad — <mark>un pop confesional con estética de otro planeta</mark>, de lo más fresco que ha salido de la escena independiente este año.</p>
           </div>
         </div>
 
@@ -367,6 +397,20 @@
              la premisa del proyecto ("experimento de honestidad") y
              el detalle personal más memorable/citable para prensa. -->
         <div class="texto-bloque-bio">
+          <!-- Textura decorativa de fondo (13 sept, idea de Kevin del
+               11 sept, retomada ahora que hay texto real): repite la
+               misma frase que ya lleva <mark> abajo, aria-hidden
+               porque el lector de pantalla ya tiene el texto real en
+               el <p> — ver .textura-bio en style.css. -->
+          <!-- 13 sept — la cantidad de repeticiones YA NO se escribe
+               a mano aquí (ver historial: primero 3, después 6 —
+               cada cambio de tamaño de fuente o de ancho de pantalla
+               volvía a dejar corta o de sobra la cantidad fija).
+               data-frase guarda la frase UNA sola vez; llenarTexturasBio()
+               en script.js la repite las veces que hagan falta según
+               el alto real de la tarjeta en el navegador de quien
+               esté viendo — ver esa función para el detalle. -->
+          <div class="textura-bio" aria-hidden="true" data-frase="EXPERIMENTO DE HONESTIDAD"></div>
           <p>Galáctica es un <mark>experimento de honestidad</mark>: es el lugar donde muestro lo que me inquieta y esas partes de mí que a veces avergüenzan, pero puestas en canciones. Escribo desde la sensibilidad, con la naturaleza como refugio y <mark>mis gatos como mejores amigos</mark>. Dedicarme a la vida artística es enteramente culpa de Hannah Montana.</p>
         </div>
       </div>
@@ -385,6 +429,17 @@
              no se sientan gemelos. Frases marcadas: la metáfora
              central del proyecto y el cierre emocional de la bio. -->
         <div class="texto-bloque-bio">
+          <!-- Textura decorativa de fondo (13 sept) — mismo mecanismo
+               que el bloque 1, con la frase de cierre de ESTE bloque
+               (ver .bloque-bio--invertido .textura-bio en style.css
+               para el cambio de color a morado). -->
+          <!-- 13 sept — mismo mecanismo que el bloque 1 de arriba:
+               data-frase con la frase una sola vez, llenarTexturasBio()
+               en script.js decide cuántas veces repetirla según el
+               alto real de ESTA tarjeta (que además es distinto al
+               del bloque 1, porque el párrafo real es más corto/más
+               largo) — se acabó el ajuste manual de repeticiones. -->
+          <div class="textura-bio" aria-hidden="true" data-frase="UN RINCÓN SEGURO"></div>
           <p>Hacer música es mi manera de construir <mark>un puente entre mi mundo interno y el tuyo</mark>. Escribo desde pequeña, fue la primera forma que encontré para entender lo que sentía. Hoy uso mi música para abrazar lo imperfecto, lo sensible y lo bonito de estar vivos. Si alguna vez te sientes fuera de lugar, espero que en mis canciones encuentres <mark>un rincón seguro</mark>.</p>
         </div>
       </div>

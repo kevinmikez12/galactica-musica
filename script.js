@@ -74,7 +74,15 @@ pantallaCarga.addEventListener('click', () => {
   //    que es continuo). Aquí es la herramienta correcta porque solo
   //    queremos que pase una vez, con un retraso.
   setTimeout(() => {
-    nucleoBigbang.style.opacity = '0'; // escondemos el núcleo original
+    // 13 sept — antes: nucleoBigbang.style.opacity = '0'. No servía de
+    // nada: la animación `respirar` (CSS, en curso) le sigue ganando a
+    // un opacity puesto por JS vía estilo inline normal, así que el
+    // núcleo seguía "respirando" visible durante todo el fundido final
+    // (bug real que reportó Kevin: "se sigue viendo la estrella después
+    // de la explosión"). classList.add en vez de .style: la clase trae
+    // animation:none, que sí apaga la animación que estaba ganando la
+    // pelea — ver .nucleo-bigbang.desvanecido en style.css.
+    nucleoBigbang.classList.add('desvanecido');
     flashExplosion.classList.add('explotando'); // disparamos la expansión
   }, 600);
 
@@ -448,6 +456,15 @@ function activarRevelado(selector, threshold = 0.2) {
 // (~780px) — con un threshold más alto no disparaba en mobile.
 activarRevelado('#moodboardPresskit', 0.1);
 
+// Presskit, video destacado (13 sept, fix de rendimiento — ver
+// PENDIENTES #18 del doc del proyecto): el efecto de "vapor"
+// (::before/::after con blur(45px)) corría siempre, sin importar si
+// esta sección estaba en pantalla, mismo patrón ya corregido en v60
+// para meteoros y la nebulosa de Biografía. threshold default (0.2):
+// el bloque no cambia tanto de alto entre mobile/desktop como el
+// moodboard de arriba.
+activarRevelado('.video-destacado');
+
 // Biografía: la intro (tagline) y cada uno de los 2 bloques
 // foto+texto se revela cuando ÉL entra en pantalla — no cuando
 // entra la sección completa. threshold default (0.2): aquí no hay
@@ -457,6 +474,90 @@ activarRevelado('.bloque-bio');
 
 // ============================================================
 // FIN SECCIÓN 8
+// ============================================================
+
+
+// ============================================================
+// SECCIÓN 8B: TEXTURA DECORATIVA DE BIOGRAFÍA — auto-relleno
+// ============================================================
+// .textura-bio (los 2 bloques de Biografía) repite una frase corta
+// como "papel tapiz" muy tenue detrás del párrafo real — ver
+// style.css para el resto del efecto. La cantidad de repeticiones
+// vivía escrita a mano en el HTML (primero 3 copias de la frase,
+// después 6) — bug real que reportó Kevin dos veces seguidas: cada
+// vez que cambiaba el tamaño de fuente de la textura o el ancho de
+// pantalla, esa cantidad fija dejaba de alcanzar (dejaba un hueco
+// sin frase) o sobraba de forma distinta en cada bloque (uno se veía
+// "completo", el otro no) — porque el alto real de cada tarjeta
+// depende de cuánto ocupa el párrafo REAL de cada bloque, que no es
+// igual entre los dos ni se puede saber de antemano.
+//
+// En vez de seguir ajustando el número a mano cada vez, esta función
+// mide el alto real de la tarjeta en el navegador de quien esté
+// viendo el sitio y repite la frase las veces que hagan falta para
+// llenarlo con margen de sobra — funciona igual sin importar el
+// ancho de pantalla, el tamaño de fuente que se use en el futuro, o
+// cuánto texto real tenga cada bloque.
+function llenarTexturasBio() {
+  document.querySelectorAll('.textura-bio').forEach((el) => {
+    // La frase base vive en data-frase (una sola copia) en vez de en
+    // el texto visible directamente — así esta función siempre sabe
+    // cuál es la unidad a repetir, sin importar cuántas copias haya
+    // dejado puestas una corrida anterior (por ejemplo, después de
+    // un resize).
+    const frase = el.dataset.frase;
+    if (!frase) return;
+
+    // .textura-bio es position:absolute + inset:0, así que su propio
+    // alto YA es igual al de su contenedor (.texto-bloque-bio) incluso
+    // sin contenido — medimos el contenedor directamente, más claro
+    // que depender de ese detalle.
+    const alturaObjetivo = el.parentElement.getBoundingClientRect().height;
+
+    let texto = frase;
+    el.textContent = texto;
+
+    // Límite de 80 vueltas: red de seguridad para nunca quedar en un
+    // loop infinito si algo raro pasa con la medición (por ejemplo,
+    // el elemento todavía no es visible y alturaObjetivo da 0) — no
+    // el número real que se espera usar. (Con 40 de tope, la frase
+    // más corta —"UN RINCÓN SEGURO"— llegó a topar el límite en
+    // algunos anchos de pantalla antes de alcanzar el margen de 1.3x
+    // de abajo, verificado con Playwright; 80 deja bastante aire de
+    // sobra sin arriesgar un loop largo de verdad — cada vuelta es
+    // barata, solo mide scrollHeight.)
+    let vueltas = 0;
+    // ×1.3: no solo "alcanzar" el alto exacto (ahí quedaría el último
+    // renglón justo al ras, fácil que un cambio mínimo de ancho lo
+    // deje corto de nuevo) sino pasarse con margen real, para que
+    // vuelva a sobrar texto incluso si la tarjeta crece un poco.
+    while (el.scrollHeight < alturaObjetivo * 1.3 && vueltas < 80) {
+      texto += ' ' + frase;
+      el.textContent = texto;
+      vueltas++;
+    }
+  });
+}
+
+// window.load (no solo al final del <script>): esta medición depende
+// de cuánto ocupa el párrafo real ya con la fuente Montserrat
+// self-hosted aplicada — si corriera antes de que esa fuente termine
+// de cargar, el navegador mediría con la fuente de reemplazo
+// (distinto ancho de letra = distinto conteo de renglones reales) y
+// el resultado podría quedar corto una vez que la fuente real entra.
+window.addEventListener('load', llenarTexturasBio);
+
+// Las tarjetas cambian de alto al cambiar el ancho de pantalla (el
+// párrafo real envuelve distinto) — recalculamos, con un debounce
+// simple de 200ms para no correr esto en cada pixel que dispara el
+// evento resize.
+let temporizadorResizeTextura;
+window.addEventListener('resize', () => {
+  clearTimeout(temporizadorResizeTextura);
+  temporizadorResizeTextura = setTimeout(llenarTexturasBio, 200);
+});
+// ============================================================
+// FIN SECCIÓN 8B
 // ============================================================
 
 

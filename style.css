@@ -58,6 +58,40 @@
   box-sizing: border-box;
 }
 
+/* Acento verde GLOBAL (13 sept, a pedido de Kevin: integrar más el
+   verde sin repetir el patrón de "un color por sección" que ya se
+   descartó el 8 sept). En vez de tocar los hovers de mouse que ya
+   existen en todo el sitio (planetas, botones, redes — TODOS usan
+   blanco a propósito: glow/drop-shadow/opacity, nunca color), el
+   verde se usa como color de foco de TECLADO (:focus-visible) en
+   cualquier link o botón del sitio. Antes no había NINGÚN estilo de
+   foco definido — dependía del azul/negro default del navegador, que
+   además se ve roto o invisible sobre elementos con `clip-path`/
+   `transform` como los planetas. Esto es un acento realmente global
+   (toca cada elemento interactivo por igual, no una sección en
+   particular), no compite con los hovers de mouse existentes
+   (:focus-visible solo se activa navegando con teclado en
+   navegadores modernos) y de paso resuelve un hueco real de
+   accesibilidad. Mismo verde que ya usa el `<mark>` de Presskit
+   (#6b9e7f, la versión sólida de `rgba(107, 158, 127, ...)`) — sigue
+   siendo un placeholder sin confirmar contra la paleta real de
+   marca; cuando lleguen los hex definitivos, este es el valor a
+   actualizar. */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #6b9e7f;
+  outline-offset: 3px;
+}
+
+/* Video de fondo de Presskit (13 sept) — oculto por defecto (desktop
+   no lo usa, ahí sigue el collage de 8 fotos). Se enciende SOLO
+   dentro de la media query mobile (max-width:700px) Y dentro de
+   prefers-reduced-motion:no-preference — ver .moodboard-presskit
+   más abajo para el resto de las capas (foto de fondo + gradiente). */
+.video-fondo-presskit {
+  display: none;
+}
+
 /* ===================================================
    VARIABLES DE TAMAÑO DEL SISTEMA SOLAR
    Definir los tamaños como variables (en vez de escribir
@@ -287,6 +321,16 @@ body {
      título+tagline. */
   font-size: 19px;
   line-height: 1.7;
+  /* Montserrat Light (13 sept, prueba a pedido de Kevin — la
+     variante ya estaba registrada desde antes, sin usar en ningún
+     lado). Un peso más delgado le da un aire más editorial al
+     tagline, en contraste con el h2 en negrita de arriba — mismo
+     criterio en los 2 taglines del sitio (este y .tagline-biografia)
+     para que compartan la misma jerarquía tipográfica que ya
+     comparten en tamaño. Legible sin problema aquí porque el texto
+     vive DENTRO de .texto-resaltado (texto negro sobre fondo blanco
+     sólido) — el contraste no depende del peso de la fuente. */
+  font-weight: 300;
   /* Antes opacity:0.6 (texto plano atenuado). Ahora lleva el span
      .texto-resaltado adentro (fondo blanco sólido) en sus 2 únicos
      usos del sitio (Presskit y Contacto) — con opacity:0.6 en el
@@ -680,16 +724,28 @@ body {
   background: radial-gradient(circle at 72% 65%, rgba(155, 107, 220, 0.5), transparent 60%);
 }
 
+/* Gated a .en-vista (13 sept, fix de rendimiento pendiente desde el
+   fix de scroll mobile de v60 — ver PENDIENTES #18 del doc del
+   proyecto): antes las 3 animaciones corrían SIEMPRE, aunque Presskit
+   ni siquiera estuviera en pantalla — el blur(45px) de las 2 manchas
+   es de los filtros más caros de repintar, exactamente el mismo
+   patrón que ya se corrigió en los meteoros y en la nebulosa de
+   Biografía (v60). `.video-destacado` no tenía IntersectionObserver
+   propio todavía — se agregó uno con el mismo helper genérico
+   `activarRevelado()` que ya usan Presskit/Biografía (ver script.js,
+   Sección 8). Cero cambio visual para quien ve la sección: el estado
+   base (sin `.en-vista`) ya deja el box-shadow y las 2 manchas fijos
+   en su posición/opacidad de reposo, en vez de animar. */
 @media (prefers-reduced-motion: no-preference) {
-  .video-destacado {
+  .video-destacado.en-vista {
     animation: laten-nebulosa 5s ease-in-out infinite;
   }
 
-  .video-destacado::before {
+  .video-destacado.en-vista::before {
     animation: vapor-deriva-1 7s ease-in-out infinite;
   }
 
-  .video-destacado::after {
+  .video-destacado.en-vista::after {
     animation: vapor-deriva-2 9s ease-in-out infinite 2s; /* delay distinto: nunca coincide con la de ::before */
   }
 }
@@ -997,69 +1053,176 @@ body {
     margin-right: -24px;
     width: calc(100% + 48px);
     min-height: 560px;
-    display: flex;
-    flex-direction: column; /* eje principal vertical: justify-content
-      centra en Y. OJO: NO usar align-items:center aquí — el eje
-      cruzado (horizontal) necesita su default (stretch), si no
-      .cabecera-moodboard deja de estirarse a lo ancho completo y
-      se encoge a su contenido, desbordando el texto por la derecha
-      en vez de centrarlo/envolverlo (bug real, encontrado con
-      Playwright antes de publicar esta versión). */
-    justify-content: center;
     overflow: hidden;
-    padding: 40px 24px;
+    /* 13 sept — ya no es flex/centrado: el título y la cita se
+       posicionan cada uno `absolute` por separado (ver
+       .cabecera-moodboard/.titulo-moodboard/.texto-moodboard más
+       abajo) para que uno viva arriba y el otro abajo, dejando el
+       centro del video libre — a pedido de Kevin, para que se vea
+       más el video real en vez de taparlo con el texto centrado.
+       Por eso tampoco lleva padding ya: el gutter de 24px ahora lo
+       da cada caja de texto por separado, no el contenedor. */
   }
 
   /* Foto real (12 sept): Galáctica cantando en vivo con luz azul de
      escenario (medio-5 del collage de desktop, mismo archivo fuente
      pero exportado a mayor resolución/calidad para uso de fondo — ver
-     nota en index.html sobre .medios-presskit). Gradiente oscuro
-     encima (mismo tono #0d0d1a del fondo del sitio) no por legibilidad
-     — el título ya lleva su caja blanca sólida (.texto-resaltado) y
-     la cita su propia tarjeta opaca (#0d0d1a sólido), ninguna de las
-     dos depende del contraste de la foto — sino para que la foto no
-     compita visualmente con el resto de la página oscura/monocromática,
-     mismo criterio que ya se sigue en todo el sitio. object-position
-     favorece la parte de arriba (rostro/micrófono) del encuadre. */
+     nota en index.html sobre .medios-presskit). object-position
+     favorece la parte de arriba (rostro/micrófono) del encuadre.
+
+     13 sept — ahora esta foto es solo la capa DE ABAJO DE TODO
+     (z-index:0): sirve de "poster" instantáneo mientras el video
+     de .video-fondo-presskit carga, y de fallback completo si el
+     usuario tiene prefers-reduced-motion (el video ni siquiera se
+     pinta, ver más abajo) o si el navegador no puede reproducir el
+     video.
+
+     MISMO DÍA, 2º ajuste: top/bottom pasaron de 0 (inset:0 completo)
+     a 24px — deja una franja de 24px arriba y abajo SIN foto/video,
+     donde el fondo que se ve es el de la página (#05050f, casi
+     idéntico al #0d0d1a de la tarjeta de la cita — por eso esa
+     franja se siente parte del mismo diseño, no un corte brusco).
+     Esa franja es lo que le da a .titulo-moodboard/.texto-moodboard
+     espacio real para "salirse" del video (ver esas 2 reglas más
+     abajo) en vez de quedar SIEMPRE encimados sobre la imagen — a
+     pedido de Kevin, para que el video (la parte más interesante,
+     al centro) quede libre de texto/degradado encima. */
   .moodboard-presskit::before {
     content: '';
     position: absolute;
-    inset: 0;
+    top: 24px;
+    right: 0;
+    bottom: 24px;
+    left: 0;
     z-index: 0;
-    background-image:
-      linear-gradient(180deg, rgba(13, 13, 26, 0.35), rgba(13, 13, 26, 0.8) 75%),
-      url('assets/presskit/fondo-mobile-presskit.jpg');
+    background-image: url('assets/presskit/fondo-mobile-presskit.jpg');
     background-size: cover;
     background-position: center 20%;
   }
 
-  /* Deshace el position:absolute de desktop: en mobile la cabecera
-     vuelve a flujo normal, ya no encima del collage (que ya no está)
-     sino encima de la foto de fondo — position:relative + z-index:1
-     es lo que la deja por encima del ::before (z-index:0). */
+  /* Video real del reel musical (13 sept, a pedido de Kevin — ver
+     .video-fondo-presskit en index.html): mudo, en loop, autoplay,
+     playsinline (obligatorio en iOS para que autoplay funcione sin
+     pantalla completa). Vive ENCIMA de la foto de ::before
+     (z-index:1 > 0) y DEBAJO del gradiente de ::after (z-index:2,
+     ver abajo) y de .cabecera-moodboard (z-index:5, ya heredado de
+     la regla de desktop más arriba — no se repite aquí). object-fit
+     cover + object-position igual que la foto para que el encuadre
+     sea consistente entre el poster y el video. display:none por
+     defecto (ver regla base de .video-fondo-presskit en el reset
+     de más abajo) — aquí solo se activa dentro de
+     prefers-reduced-motion:no-preference, así que un usuario con
+     "reducir movimiento" activado nunca llega a pintar el video y
+     se queda viendo la foto fija de ::before.
+
+     top/right/bottom/left en vez de inset:0 + width/height:100%
+     (mismo ajuste de 24px que ::before, ver nota arriba) — para un
+     elemento reemplazado como <video>, dejar SOLO los 4 offsets
+     (sin declarar width/height aparte) es lo que evita el conflicto
+     de tener width/height Y los 4 offsets fijados a la vez. */
+  @media (prefers-reduced-motion: no-preference) {
+    .video-fondo-presskit {
+      display: block;
+      position: absolute;
+      top: 24px;
+      left: 0;
+      z-index: 1;
+      /* width/height explícitos en vez de dejar que el 4º offset
+         (right/bottom) los calcule solo — real bug encontrado con
+         Playwright: en un elemento reemplazado (<video>), dejar los
+         4 offsets (top/right/bottom/left) sin declarar width/height
+         hace que Chromium use el ratio intrínseco del video (1080×
+         1350) para calcular el alto en vez de respetar `bottom`, y
+         el video termina mucho más alto que su contenedor, saliendo
+         de la pantalla por debajo. width:100% + height con calc()
+         (restando los 24px de arriba Y de abajo) fuerza el tamaño
+         real sin ambigüedad — object-fit:cover sigue encargándose
+         de recortar el video para llenar esa caja sin deformarlo. */
+      width: 100%;
+      height: calc(100% - 48px);
+      object-fit: cover;
+      object-position: center 20%;
+    }
+  }
+
+  /* Gradiente oscuro (13 sept, reducido de golpe): antes cubría casi
+     todo el cuadro (necesario cuando el título+cita vivían centrados
+     ENCIMA del video/foto). Ahora que ambos textos se movieron a sus
+     propias cajas sólidas arriba/abajo (ver .titulo-moodboard/
+     .texto-moodboard) y el centro del video queda libre a propósito,
+     el degradado se redujo a un viñeteado angosto solo en el
+     borde superior e inferior (18% de cada lado) — el 64% del medio
+     queda sin oscurecer, que es justo el "se vea más el video" que
+     pidió Kevin. pointer-events:none para no bloquear ningún tap. */
+  .moodboard-presskit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background-image: linear-gradient(
+      180deg,
+      rgba(13, 13, 26, 0.55) 0%,
+      rgba(13, 13, 26, 0) 18%,
+      rgba(13, 13, 26, 0) 82%,
+      rgba(13, 13, 26, 0.6) 100%
+    );
+  }
+
+  /* .cabecera-moodboard pasa a ser el "marco" completo del video
+     (mismo tamaño que .moodboard-presskit, borde a borde — NO el
+     mismo tamaño reducido del video/foto de 24px) — es dentro de
+     este marco donde .titulo-moodboard (arriba) y .texto-moodboard
+     (abajo) se posicionan cada uno independiente, ver esas 2 reglas
+     abajo. width/max-width:100% cancelan el max-width:480px +
+     centrado por transform de la regla de desktop (arriba) — sin
+     esto el header quedaría angosto y pegado a la izquierda en vez
+     de ocupar todo el ancho disponible para sus hijos absolutos. */
   .cabecera-moodboard {
-    position: relative;
-    z-index: 1;
-    /* top:24% y left:50% de la regla de desktop (position:absolute)
-       seguían activos aquí porque position:relative TAMBIÉN respeta
-       esos offsets (a diferencia de position:static, que los ignora
-       por completo — así se libraba de este problema la versión
-       anterior). Sin este reset el bloque se desplazaba a la mitad
-       de la pantalla y se salía por la derecha (bug real, encontrado
-       con Playwright antes de publicar esta versión). */
-    top: auto;
-    left: auto;
-    transform: none;
-    width: auto;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    width: 100%;
     max-width: 100%;
+    /* transform:none cancela el translateX(-50%) de la regla de
+       desktop (arriba) — real bug encontrado con Playwright: sin
+       este reset, el translateX se sigue aplicando (no es algo que
+       "left" por sí solo pueda cancelar) y desplazaba TODO el header
+       -195px en un viewport de 390px (la mitad de su propio ancho,
+       ya que aquí ocupa el 100%), sacándolo de pantalla por
+       completo. */
+    transform: none;
   }
 
+  /* Título+subtítulo: pegado al borde SUPERIOR de .cabecera-moodboard
+     (top:0) — como el video empieza 24px más abajo (ver ::before/
+     .video-fondo-presskit arriba), los primeros ~24px de esta caja
+     quedan sobre la franja sin video (fondo de página) y el resto
+     de su alto real (variable, según cuánto envuelva el texto) cae
+     encima del video — ese es el efecto "se sale un poco arriba del
+     video" que pidió Kevin. left/right + margin:0 auto centran el
+     bloque dentro del gutter de 24px, igual que antes. */
   .titulo-moodboard {
-    margin-top: 0;
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    margin: 0 auto;
   }
 
+  /* Cita: mismo mecanismo, espejado hacia el borde INFERIOR
+     (bottom:0) — sus últimos ~24px quedan sobre la franja sin video
+     de abajo, el resto (la mayor parte de la tarjeta, que es más
+     alta que el título por ser un párrafo) se sobrepone al video.
+     La tarjeta ya trae su propio fondo sólido #0d0d1a (ver regla
+     base más arriba) — por eso se lee limpia tanto sobre el video
+     como sobre el fondo de página, sin depender del degradado. */
   .texto-moodboard {
-    margin-top: 16px;
+    position: absolute;
+    bottom: 0;
+    left: 24px;
+    right: 24px;
+    margin: 0 auto;
   }
 }
 
@@ -1103,6 +1266,9 @@ body {
   line-height: 1.7; /* un poco más alto que antes (1.6) para que los
                         renglones resaltados de abajo no se peguen
                         entre sí verticalmente */
+  /* Montserrat Light (13 sept) — ver nota completa en
+     .subtitulo-seccion, mismo criterio en los 2 taglines del sitio. */
+  font-weight: 300;
   color: rgba(255, 255, 255, 0.85);
   max-width: 560px;
   margin: 0 auto;
@@ -1283,7 +1449,67 @@ body {
    ciclo de animación. Primera vez que se usa text-shadow en el
    sitio — si el resultado convence, vale la pena repetirlo en otros
    bloques de texto sobre fondo animado/oscuro, no solo aquí. */
+/* Textura decorativa de fondo (13 sept, idea de Kevin del 11 sept,
+   pausada hasta tener texto real de biografía — ver PENDIENTES #16
+   del doc del proyecto — retomada ahora que ese texto ya es real
+   desde v59). Repite la MISMA frase que ya lleva <mark> en el párrafo
+   de cada bloque, como textura tipográfica muy tenue detrás del
+   texto real — no un tercer color/frase inventada, para no competir
+   con lo que ya se resaltó a propósito. Estática (sin animación de
+   posición ni de color, pedido explícito) — no suma costo de
+   repintado ni compite con la nebulosa que ya se mueve detrás.
+   Orden de capas dentro de `.texto-bloque-bio` (isolation:isolate):
+   nebulosa `::before` (z-index:-1, ver arriba) → esta textura
+   (z-index:0) → párrafo real (z-index:1, ver regla de abajo).
+   `aria-hidden` porque es puramente decorativo — el lector de
+   pantalla ya tiene el texto real en el `<p>`. */
+.textura-bio {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  /* Bajado de clamp(24px,4vw,40px) a esto (13 sept, a pedido de
+     Kevin: "se ven cortados"). Con el tamaño grande anterior, cada
+     renglón medía ~30-52px de alto — la tarjeta rara vez tiene una
+     altura que sea múltiplo exacto de eso, así que el renglón de
+     arriba/abajo casi siempre terminaba a la mitad, cortando una
+     palabra completa a simple vista. Con texto más chico cada
+     renglón mide ~17-23px — el sobrante que se recorta en el borde
+     es una franja angosta de una palabra corta en vez de media
+     palabra grande, mucho menos notorio. letter-spacing/word-spacing
+     bajados en la misma proporción que el tamaño (si no, con texto
+     chico y el espaciado grande de antes el efecto se ve raro/
+     desarmado, como si le sobrara aire entre letras).
+     Además (refuerzo, no lo pidió Kevin pero resuelve el problema de
+     raíz sin depender de que el tamaño ya case perfecto con el alto
+     de cada tarjeta en cada ancho de pantalla): mask-image en
+     degradado difumina los primeros/últimos ~14px de la tarjeta — el
+     renglón que SÍ quede a la mitad ya no se ve "cortado a cuchillo",
+     se desvanece solo, como una viñeta. */
+  font-size: clamp(13px, 1.6vw, 18px);
+  line-height: 1.3;
+  letter-spacing: 1.5px;
+  word-spacing: 6px;
+  color: rgba(56, 179, 250, 0.045);
+  mask-image: linear-gradient(180deg, transparent 0, black 14px, black calc(100% - 14px), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, black 14px, black calc(100% - 14px), transparent 100%);
+}
+
+/* Bloque 2 (--invertido): morado en vez de azul — mismo criterio de
+   siempre en Biografía (mark, nebulosa) para que los 2 bloques no se
+   sientan gemelos. */
+.bloque-bio--invertido .textura-bio {
+  color: rgba(155, 107, 220, 0.045);
+}
+
 .texto-bloque-bio p {
+  position: relative; /* por encima de .textura-bio (ver z-index:1 abajo) */
+  z-index: 1;
   color: rgba(255, 255, 255, 0.93);
   line-height: 1.7;
   font-size: 15px;
@@ -1867,10 +2093,25 @@ html.sin-intro .pantalla-carga {
   }
 }
 
-@keyframes respirar {
-  0%   { transform: scale(1);   opacity: 0.7; }
-  50%  { transform: scale(1.8); opacity: 1;   }
-  100% { transform: scale(1);   opacity: 0.7; }
+/* Fix real (13 sept, Kevin reportó "se sigue viendo la estrella
+   después de la explosión" — tenía razón). El JS (Sección 2 de
+   script.js) apagaba el núcleo con `nucleoBigbang.style.opacity='0'`,
+   pero eso NUNCA se veía: una animación CSS en curso (`respirar`,
+   arriba) le gana en la cascada a un opacity puesto por JS vía estilo
+   inline normal — cada ciclo de la animación lo volvía a subir a
+   ~0.7-1.0, así que la estrella seguía "respirando" a casi opacidad
+   completa durante TODO el segundo del fundido final de
+   .pantalla-carga.oculta, cruzándose visualmente con el sistema solar
+   que ya empezaba a aparecer debajo. Confirmado midiendo el
+   computedOpacity real con Playwright (no solo leyendo el código):
+   se quedaba en ~0.8-0.99 en vez de bajar a 0.
+   Fix: esta clase (que el JS agrega en vez de tocar .style.opacity)
+   apaga la animación con `animation:none` — sin animación compitiendo,
+   el opacity:0 de aquí sí se queda fijo. Más específica que la base
+   y que .tension, así que gana sin necesitar !important. */
+.nucleo-bigbang.desvanecido {
+  animation: none;
+  opacity: 0;
 }
 
 /* El flash de la explosión: un círculo blanco que se expande
@@ -1888,9 +2129,20 @@ html.sin-intro .pantalla-carga {
   animation: explotar 0.8s ease-out forwards;
 }
 
+/* Fix real (13 sept, mismo hallazgo que el de arriba): antes esta
+   animación bajaba opacity de 1 a 0 A LA VEZ que escalaba de 1 a 300
+   — es decir, el flash se iba haciendo TRANSPARENTE just cuando más
+   grande (y más necesario para tapar la pantalla) se ponía, en vez de
+   quedarse blanco sólido mientras cubre todo. Contradecía el propio
+   comentario de arriba ("el flash blanco ya cubra la pantalla justo
+   cuando empezamos a desvanecer esta capa"). Como .flash-explosion es
+   hijo de .pantalla-carga (que se desvanece sola con su propia
+   transition de 1s al agregar .oculta, ver arriba), el flash no
+   necesita apagarse por su cuenta — se queda blanco sólido mientras
+   crece, y desaparece junto con el resto de la pantalla de carga. */
 @keyframes explotar {
   0%   { transform: scale(1);    opacity: 1; }
-  100% { transform: scale(300);  opacity: 0; }
+  100% { transform: scale(300);  opacity: 1; }
 }
 
 .texto-carga {
@@ -2626,6 +2878,9 @@ body:active {
   letter-spacing: clamp(1px, 0.6vw, 3px);
   text-transform: uppercase;
   opacity: 0.85;
+  /* Se probó una sombra de marca (azul, luego morada) el 12 sept a
+     pedido de Kevin — descartada el mismo día: se ve mejor sutil, sin
+     halo de color. Wordmark se queda como estaba antes de la prueba. */
   transition: opacity 0.4s ease;
   z-index: 200; /* mismo nivel que el botón de contacto y redes,
                     para que conviva bien con esos elementos fijos */
@@ -2665,6 +2920,18 @@ body:active {
      círculo/cuadro invisible — reemplaza el box-shadow circular que
      tenía .meteoro-nucleo cuando era un círculo de color plano. */
   filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
+  /* opacity 0.55 (13 sept, a pedido de Kevin): los 3 michimeteoros a
+     opacidad completa competían visualmente con los planetas (las
+     opciones clicables reales) por atención — colores saturados +
+     glow, cruzando la pantalla todo el tiempo. Esto no es un fix de
+     z-index (los meteoros ya vivían en z-index:1, muy por debajo de
+     los planetas en z-index:5 — nunca los tapaban de verdad) sino de
+     jerarquía visual: bajarles opacidad los deja leyéndose como
+     "ambiente de fondo" en vez de competir con lo que sí importa que
+     se note (los planetas). pointer-events ya en none, así que esto
+     tampoco afecta si se pueden "clickear" (nunca se pudo, es
+     decorativo). */
+  opacity: 0.55;
 }
 
 /* La cola del meteoro se quitó — ahora solo se ve el círculo/imagen */
