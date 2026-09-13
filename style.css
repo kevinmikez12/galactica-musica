@@ -2093,6 +2093,12 @@ html.sin-intro .pantalla-carga {
   }
 }
 
+@keyframes respirar {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  50%  { transform: scale(1.8); opacity: 1;   }
+  100% { transform: scale(1);   opacity: 0.7; }
+}
+
 /* Fix real (13 sept, Kevin reportó "se sigue viendo la estrella
    después de la explosión" — tenía razón). El JS (Sección 2 de
    script.js) apagaba el núcleo con `nucleoBigbang.style.opacity='0'`,
