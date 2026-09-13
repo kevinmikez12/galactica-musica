@@ -562,6 +562,58 @@ window.addEventListener('resize', () => {
 
 
 // ============================================================
+// SECCIÓN 8C: EASTER EGG DE BIOGRAFÍA — foto de niña al tocar
+// "pequeña" (13 sept, pedido de Kevin, opción 3)
+// ============================================================
+// El CSS (.disparador-easteregg:hover / :focus-visible, ver
+// style.css) ya resuelve mouse y teclado solos, sin JS. Lo que falta
+// aquí es SOLO el caso táctil: en mobile no hay ":hover" confiable
+// (un tap dispara hover y se queda "pegado" hasta el siguiente tap en
+// cualquier otro lado, comportamiento inconsistente entre navegadores)
+// así que el popup se controla a mano con una clase (.activo) en
+// touch, y se cierra al tocar fuera de la palabra — patrón estándar
+// de "tooltip táctil".
+const disparadorEasteregg = document.querySelector('.disparador-easteregg');
+
+if (disparadorEasteregg) {
+  const alternarEasteregg = (mostrar) => {
+    disparadorEasteregg.classList.toggle('activo', mostrar);
+    disparadorEasteregg.setAttribute('aria-expanded', String(mostrar));
+  };
+
+  disparadorEasteregg.addEventListener('click', (evento) => {
+    // preventDefault + stopPropagation: sin esto, este mismo click
+    // llegaría de inmediato al listener de "click fuera" de abajo
+    // (los eventos hacen bubbling) y cerraría el popup en el mismo
+    // toque que lo abrió.
+    evento.preventDefault();
+    evento.stopPropagation();
+    alternarEasteregg(!disparadorEasteregg.classList.contains('activo'));
+  });
+
+  // Tocar/hacer click en cualquier otra parte de la página cierra el
+  // popup si estaba abierto — mismo patrón que ya usa el menú de
+  // redes flotantes (Sección 1) para su propio "click fuera".
+  document.addEventListener('click', () => {
+    alternarEasteregg(false);
+  });
+
+  // Esc cierra el popup si está abierto y tenía el foco — accesibilidad
+  // básica de teclado, mismo criterio que los modales de Mercurio/
+  // Newsletter (Sección 6/7).
+  disparadorEasteregg.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape') {
+      alternarEasteregg(false);
+      disparadorEasteregg.blur();
+    }
+  });
+}
+// ============================================================
+// FIN SECCIÓN 8C
+// ============================================================
+
+
+// ============================================================
 // SECCIÓN 9: BOTÓN STICKY → "VOLVER ARRIBA" AL LLEGAR AL FOOTER
 // ============================================================
 // El mismo botón redondo de redes sociales (Sección 1) se transforma

@@ -1308,18 +1308,30 @@ body {
   flex-direction: row-reverse;
 }
 
+/* Fotos reales de la artista (13 sept, mandadas por Kevin) —
+   reemplazan el degradado placeholder que vivía aquí desde el
+   principio (ver historial abajo: 2 tonos distintos solo para
+   distinguir los 2 bloques mientras no había foto real). Bloque 1:
+   la artista en un parque con patos; Bloque 2: retrato posando
+   contra una pared blanca — mismo orden en que Kevin las mandó, fácil
+   de invertir si prefiere lo contrario, es solo cambiar el nombre del
+   archivo en las 2 reglas de abajo. object-fit:cover (ambas fotos
+   son verticales, ~675×900, más altas que anchas) recorta por los
+   lados/arriba-abajo según haga falta para llenar la caja de 260×320
+   sin deformar la imagen — mismo criterio que ya usan las fotos de
+   Presskit. */
 .foto-bloque-bio {
   flex: 0 0 260px;
   height: 320px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  /* Oscurecidas un poco (9 sept, pedido de Mike) — mismo tono, nomás
-     bajando la luminosidad de cada color. */
-  background: linear-gradient(135deg, #2e2e47, #131320);
+  background-image: url('assets/biografia/artista-parque-patos.jpg');
+  background-size: cover;
+  background-position: center;
 }
 
 .bloque-bio--invertido .foto-bloque-bio {
-  background: linear-gradient(135deg, #472e39, #1c0f16); /* color distinto: ayuda a distinguir los 2 bloques mientras es placeholder */
+  background-image: url('assets/biografia/artista-retrato-pared.jpg');
 }
 
 /* ===== Fondo "nebulosa" detrás del texto — v3, sin silueta (9 sept,
@@ -1546,6 +1558,109 @@ body {
    sientan gemelos. Mismo alpha (0.55), solo cambia el color base. */
 .bloque-bio--invertido .texto-bloque-bio mark {
   background: rgba(155, 107, 220, 0.55);
+}
+
+/* Easter egg (13 sept, pedido de Kevin — opción 3 de las que se le
+   plantearon): la palabra "pequeña" dentro de "Escribo desde
+   pequeña" (bloque 2) revela, al pasar el mouse o dar tap/foco, una
+   foto real de la artista de niña haciendo la MISMA seña de rock que
+   ya usa de adulta en las fotos del sitio — el gesto es el gancho.
+   Solo vive en este bloque (no en el 1) porque es donde está esa
+   frase exacta.
+
+   Mecanismo: `.disparador-easteregg` es el `<span>` que envuelve la
+   palabra, con `position:relative` para anclar el popup absoluto
+   encima. Se abre por 3 caminos a la vez, sin JS necesario para
+   desktop:
+   - `:hover` → mouse.
+   - `:focus-visible` → teclado (tab hasta la palabra + Enter/Espacio
+     ya la enfoca de por sí; el CSS solo necesita reaccionar al foco).
+   - `.activo` → clase que pone script.js en tap/click, para mobile
+     (donde `:hover` no es confiable/no hay forma de "quitar" el
+     hover sin tocar otra cosa) con cierre al tocar fuera. Ver
+     Sección 8C de script.js.
+   `tabindex="0" role="button" aria-expanded` en el HTML lo hacen
+   real para teclado/lector de pantalla, no decorativo.
+
+   Estética "polaroid" (franja blanca abajo + cinta arriba, tal como
+   pediría un diario/scrapbook — mismo lenguaje visual que ya usa el
+   ícono de Tierra=Biografía) en vez de un tooltip genérico: es un
+   easter egg, se vale que se sienta como un objeto físico
+   encontrado, no como una notificación de UI. */
+.disparador-easteregg {
+  position: relative;
+  cursor: pointer;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.55);
+  transition: border-color 0.2s ease;
+}
+
+.disparador-easteregg:hover,
+.disparador-easteregg:focus-visible,
+.disparador-easteregg.activo {
+  border-color: rgba(155, 107, 220, 0.9);
+  outline: none;
+}
+
+/* Franja blanca tipo polaroid, foto arriba + margen tipo "reverso"
+   abajo. Ancho fijo chico (140px): a este tamaño el recorte de la
+   foto real (cara + mano con la seña) se sigue leyendo bien sin que
+   el popup compita en tamaño con la tarjeta de texto que lo rodea. */
+.popup-easteregg {
+  position: absolute;
+  bottom: calc(100% + 18px);
+  left: 50%;
+  width: 140px;
+  padding: 8px 8px 16px;
+  background: #f7f3ea;
+  border-radius: 3px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55);
+  transform: translateX(-50%) translateY(10px) rotate(-5deg) scale(0.85);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  z-index: 30;
+}
+
+/* "Cinta adhesiva" pegando la foto arriba — puro CSS, un rectángulo
+   girado encima del borde superior. Sutil (blanco translúcido) para
+   que lea como cinta y no como una barra de color rara. */
+.popup-easteregg::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 46px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transform: translateX(-50%) rotate(-3deg);
+}
+
+.popup-easteregg img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1px;
+}
+
+.disparador-easteregg:hover .popup-easteregg,
+.disparador-easteregg:focus-visible .popup-easteregg,
+.disparador-easteregg.activo .popup-easteregg {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) rotate(-5deg) scale(1);
+  pointer-events: auto;
+}
+
+/* Mobile (mismo corte de 700px que ya usa el resto del sitio para
+   este tipo de ajuste): el popup a 140px de ancho centrado sobre la
+   palabra puede salirse del viewport si la palabra cae cerca del
+   borde de una pantalla angosta — se limita el ancho con `vw` y se
+   fuerza a no desbordar con clamp, en vez de un ancho fijo. */
+@media (max-width: 700px) {
+  .popup-easteregg {
+    width: clamp(120px, 42vw, 140px);
+  }
 }
 
 /* Entrada: foto y texto entran cada uno desde SU lado (la foto
