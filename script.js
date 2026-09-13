@@ -653,3 +653,62 @@ if (piePagina) {
 // ============================================================
 // FIN SECCIÓN 9
 // ============================================================
+
+
+// ============================================================
+// SECCIÓN 10: WIDGET DEL SENCILLO — reproducir/pausar por clic
+// ============================================================
+// El disco de la esquina inferior izquierda (13 sept, idea de Kevin)
+// reproduce el sencillo más nuevo. A propósito NO autoplay: TODOS los
+// navegadores (Chrome, Safari, Firefox) bloquean el audio con sonido
+// que arranca solo, sin excepción y sin ningún truco de código que lo
+// evite — es una política de la plataforma, no algo que dependa de
+// cómo se escriba el JS. Por eso el disco solo suena cuando alguien le
+// da clic: ESE clic es el "gesto del usuario" que los navegadores
+// exigen antes de dejar sonar cualquier audio con volumen.
+const botonDisco = document.getElementById('botonDisco');
+const audioSencillo = document.getElementById('audioSencillo');
+
+if (botonDisco && audioSencillo) {
+  const marcarReproduciendo = (reproduciendo) => {
+    botonDisco.classList.toggle('reproduciendo', reproduciendo);
+    botonDisco.setAttribute('aria-pressed', String(reproduciendo));
+    botonDisco.setAttribute(
+      'aria-label',
+      reproduciendo ? 'Pausar La Invitada de la Temporada' : 'Reproducir La Invitada de la Temporada'
+    );
+  };
+
+  botonDisco.addEventListener('click', () => {
+    if (audioSencillo.paused) {
+      // .play() devuelve una Promise — puede rechazarse si el
+      // navegador decide bloquearla por algún motivo (poco probable
+      // aquí, ya viene de un clic real, pero mejor no dejarlo sin
+      // atrapar: sin este .catch(), un rechazo se vería como un error
+      // rojo en consola aunque visualmente no pase nada raro).
+      audioSencillo.play().catch((error) => {
+        console.warn('No se pudo reproducir el sencillo:', error);
+      });
+    } else {
+      audioSencillo.pause();
+    }
+  });
+
+  // El estado del ícono/disco (girando o quieto, triángulo o barras)
+  // se sincroniza con los eventos REALES del <audio>, no con el clic
+  // directamente — así se queda correcto incluso si algo más pausa o
+  // reproduce el audio por otro camino (por ejemplo, controles nativos
+  // si algún navegador los llegara a mostrar).
+  audioSencillo.addEventListener('play', () => marcarReproduciendo(true));
+  audioSencillo.addEventListener('pause', () => marcarReproduciendo(false));
+
+  // Al terminar la canción: la dejamos lista para volver a sonar desde
+  // el inicio en el próximo clic, en vez de quedarse "pausada a la
+  // mitad" de forma invisible para quien la escuchó completa.
+  audioSencillo.addEventListener('ended', () => {
+    audioSencillo.currentTime = 0;
+  });
+}
+// ============================================================
+// FIN SECCIÓN 10
+// ============================================================

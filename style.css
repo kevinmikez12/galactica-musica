@@ -218,9 +218,22 @@ body {
      bloqueo de red, etc.) — nunca deja al visitante sin texto. */
   font-family: 'Montserrat', sans-serif;
   /* ===== CURSOR CUSTOM (normal) ===== */
-  /* Usamos un SVG como cursor. El "16 16" al final le dice al navegador
-     qué punto del cursor es el "punto activo" (el centro, en este caso) */
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="6" fill="white" opacity="0.8"/></svg>') 16 16, auto;
+  /* Reemplaza el punto blanco placeholder por la varita real que mandó
+     Kevin (13 sept) — recortada a su contenido real (745×893 original).
+     Bajada en 3 rondas a pedido de Kevin: 56×67 → 42×50 ("reducir un
+     poco el tamaño") → **24×29px, tamaño final** ("bájalo al mínimo
+     que aún se distingan los picos"). Se probaron 36/32/28/24/20px uno
+     por uno (reescalado directo desde el recorte original de alta
+     resolución, no desde una versión ya reducida, para no acumular
+     borrosidad) — a 24px los 8 picos de la estrella todavía se
+     distinguen por separado; a 20px ya empiezan a fundirse entre sí.
+     El "8 1" es el hotspot: el punto de la imagen que el navegador usa
+     como "punta del cursor" para saber dónde cae el click — se calculó
+     para caer justo en la punta de arriba de la estrella (el pico que
+     apunta hacia arriba-izquierda), no en el centro/esquina de la
+     imagen. Recalculado en la misma proporción cada vez que cambie el
+     tamaño de este PNG. */
+  cursor: url('assets/cursor/varita-normal.png') 8 1, auto;
 }
 
 /* ===================================================
@@ -1964,11 +1977,49 @@ svg[hidden] {
 .redes-flotantes.abierto .icono-red:nth-child(3) { transition-delay: 0.05s; }
 .redes-flotantes.abierto .icono-red:nth-child(4) { transition-delay: 0s; }
 
-/* ===== Las 3 principales, siempre visibles (fuera del toggle) ===== */
+/* ===== Las principales, siempre visibles (fuera del toggle) =====
+   Bajado de 3 (TikTok/Spotify/Instagram) a 2 (13 sept, a pedido de
+   Kevin para hacer espacio al widget del sencillo en mobile — ver
+   media query de abajo). Elegidas por popularidad real, no al azar:
+   Instagram como red social (alcance general más amplio para seguir
+   a la artista) + Spotify como plataforma de streaming — confirmado
+   con datos de Similarweb (sept 2026) que Spotify es la app de
+   música #1 en México, con margen amplio sobre Apple Music (#7) y
+   Amazon Music (#9); YouTube Music aparece #2 pero YouTube ya vive
+   aparte como plataforma de VIDEO en el sitio (video destacado en
+   Presskit), así que no sumaba tanto aquí. TikTok pasa al grupo
+   colapsado (detrás del "+") — sigue siendo real y alcanzable, solo
+   ya no ocupa espacio fijo en la fila. */
 .icono-red.siempre-visible {
   opacity: 1;
   transform: translateX(0) scale(1);
   pointer-events: auto;
+}
+
+/* Mobile angosto (mismo corte de 700px de siempre): los íconos NO
+   marcados .siempre-visible ya estaban siempre presentes en el HTML
+   (para la animación de apertura, que las hace aparecer con
+   opacity+transform) — pero por más invisibles/encogidos que estén
+   cuando el menú está cerrado, un elemento flex SIN display:none
+   sigue reservando su espacio real en la fila (confirmado con
+   Playwright: aun cerrado, el contenedor completo medía 296px en un
+   viewport de 390px, no los ~116px que se ven a simple vista). Eso
+   era lo que de verdad chocaba con el widget del sencillo en la
+   esquina opuesta. Aquí, SOLO en mobile, se sacan por completo del
+   flujo con `display:none` mientras el menú está cerrado — se
+   pierde el desliz/fundido escalonado de esos 5 íconos al abrir en
+   mobile (aparecen de golpe en vez de en cascada), pero es la forma
+   correcta de liberar el espacio real, no un ajuste cosmético que
+   deja el problema de fondo intacto. Desktop no se toca — ahí nunca
+   hubo problema de espacio, y se conserva la animación completa. */
+@media (max-width: 700px) {
+  .icono-red:not(.siempre-visible) {
+    display: none;
+  }
+
+  .redes-flotantes.abierto .icono-red:not(.siempre-visible) {
+    display: flex;
+  }
 }
 
 /* ===================================================
@@ -2047,6 +2098,276 @@ svg[hidden] {
 .redes-flotantes.modo-volver-arriba .boton-redes:hover::before {
   transform: translate(-50%, -70%);
 }
+
+/* ===================================================
+   WIDGET FIJO: SENCILLO (esquina inferior izquierda)
+   13 sept, idea de Kevin. Mismo offset (24px) y mismo z-index (200)
+   que .redes-flotantes de arriba — es su espejo en la esquina
+   contraria, incluso desktop/mobile lo tratan igual (esa regla
+   tampoco tiene ajuste especial por ancho de pantalla).
+   `transition: bottom` es para el ajuste de abajo (menú de redes
+   abierto en mobile angosto) — se anima igual de suave en los dos
+   sentidos, no solo al subir. */
+.widget-sencillo {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: bottom 0.3s ease;
+}
+
+/* Con las 2 esquinas ya a la misma altura en reposo (ver más abajo),
+   queda un último caso real: en mobile angosto (<700px), cuando
+   alguien ABRE el menú de redes con el botón "+", ese menú se
+   expande a los 7 íconos completos (~296px) — y a 320-390px de
+   ancho (verificado con Playwright, el rango de teléfonos más
+   común) esa expansión SÍ alcanza a tocar el disco, aunque en
+   reposo (cerrado) ya no se toquen. En vez de dejarlo o de volver a
+   subir el widget SIEMPRE (perdiendo la misma altura que pidió
+   Kevin), se sube SOLO mientras el menú de redes está abierto —
+   combinador `~` porque en el HTML `.redes-flotantes` viene ANTES
+   que `.widget-sencillo`. Se resuelve solo al cerrar el menú. */
+@media (max-width: 700px) {
+  .redes-flotantes.abierto ~ .widget-sencillo {
+    bottom: 84px;
+  }
+}
+
+.disco-sencillo {
+  position: relative;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.55));
+  /* cursor:pointer de respaldo por si el PNG del cursor no cargara —
+     mismo criterio que el resto de botones del sitio. El arcoíris real
+     al pasar el mouse ya lo cubre .disco-sencillo:hover, agregado a la
+     lista de selectores del cursor custom (ver más arriba, bloque
+     "CURSOR CUSTOM (hover sobre elementos clickeables)"). */
+  cursor: pointer;
+}
+
+.disco-sencillo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  /* El disco SOLO gira mientras suena — quieto de por sí es la señal
+     de "no está sonando", girando es "esto está sonando ahora", sin
+     necesitar leer ningún texto. 2.6s/vuelta: suficientemente rápido
+     para leerse como "algo animado" de inmediato, no tan rápido que
+     maree. animation-play-state (no display/opacity) es lo que permite
+     pausarla exactamente donde iba en vez de reiniciar el giro cada
+     vez que se le da play otra vez. */
+  animation: girar-disco-sencillo 2.6s linear infinite;
+  animation-play-state: paused;
+}
+
+.disco-sencillo.reproduciendo img {
+  animation-play-state: running;
+}
+
+@keyframes girar-disco-sencillo {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Ícono play/pausa centrado ENCIMA del disco — 2 formas (triángulo /
+   2 barras) que se turnan mostrándose según `.reproduciendo`, en vez
+   de dibujar una sola forma que cambia de path (mismo criterio simple
+   que ya usa el sitio en otras partes, por ejemplo el "+/×" de
+   .boton-redes). */
+.icono-estado {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.triangulo-play {
+  /* margin-left compensa la asimetría visual de un triángulo apuntando
+     a la derecha — sin esto se ve corrido hacia la izquierda dentro
+     del círculo. */
+  margin-left: 3px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 0 8px 13px;
+  border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+.barras-pausa {
+  display: none;
+  gap: 4px;
+}
+
+.barras-pausa span {
+  display: block;
+  width: 4px;
+  height: 16px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+.disco-sencillo.reproduciendo .triangulo-play {
+  display: none;
+}
+
+.disco-sencillo.reproduciendo .barras-pausa {
+  display: flex;
+}
+
+.info-sencillo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nombre-sencillo {
+  margin: 0;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* Utilidad genérica (13 sept, primer uso en el sitio): oculta visualmente
+   sin ocultar de lectores de pantalla — técnica estándar ("visually
+   hidden"), a diferencia de display:none/aria-hidden que sí lo esconden
+   de todos. Sirve para el nombre real del sencillo (ver marquee de abajo)
+   y queda disponible para el resto del sitio si hace falta a futuro. */
+.oculto-visual {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Marquee del nombre del sencillo — SOLO en mobile angosto y SOLO si
+   el visitante no pidió "reducir movimiento" (ver @media de abajo).
+   Por default (aquí, fuera del @media) el contenedor no tiene ancho
+   fijo ni overflow recortado, y la 2ª copia del texto está oculta —
+   así en tablet/desktop (o con reduced-motion) el nombre se ve
+   completo, fijo, normal, sin ningún ancho artificial de por medio. */
+.marquee-pista {
+  display: inline-flex;
+}
+
+.marquee-pista span:last-child {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Ancho fijo elegido para que "disco + gap + este ancho" quepa
+       con margen real contra las redes sociales — medido con
+       Playwright antes de fijar el número (nunca a ojo). 130px es
+       seguro desde 375px de ancho en adelante; abajo de eso (320-
+       374px, celulares angostos reales) el hueco libre contra
+       `.redes-flotantes` se encoge mucho y 130px SÍ choca — se achica
+       más en el breakpoint de abajo (374px) solo para ese rango. */
+    .nombre-sencillo {
+      width: 130px;
+      overflow: hidden;
+    }
+
+    /* 320-374px: el hueco libre baja de 131px (a 375px) a apenas 76px
+       (a 320px, el celular más angosto que se prueba en el sitio) —
+       se usa el valor más chico (76px) para TODO este rango, seguro
+       en el peor caso en vez de un ajuste fino por cada ancho.
+
+       Con Playwright se encontró que achicar SOLO `.nombre-sencillo`
+       no bastaba: `.info-sencillo` es flex-direction:column, y sin un
+       ancho propio se estira al hijo MÁS ancho — que a partir de aquí
+       ya no es el nombre (recortado a 76px) sino el link "Ver
+       discografía →" (~90px), así que el widget completo seguía
+       chocando por ese link, no por el nombre. Se fija el mismo ancho
+       en `.info-sencillo` y se recorta el link con ellipsis (sigue
+       siendo 100% clickeable, solo se ve truncado). */
+    @media (max-width: 374px) {
+      .nombre-sencillo {
+        width: 76px;
+      }
+
+      .info-sencillo {
+        width: 76px;
+      }
+
+      .enlace-discografia-widget {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .marquee-pista {
+      /* white-space:nowrap en el span real de abajo es lo que evita
+         que el texto envuelva a una 2ª línea ANTES de empezar a
+         animar — sin esto, a 130px de ancho "La Invitada de la
+         Temporada" se partiría en varias líneas en vez de deslizarse. */
+      animation: marquee-sencillo 8s linear infinite;
+    }
+
+    .marquee-pista span {
+      white-space: nowrap;
+      padding-right: 24px; /* aire entre el final de una copia y el inicio de la siguiente */
+    }
+
+    /* La 2ª copia SÍ se muestra aquí (a diferencia de la regla base de
+       arriba) — es lo que hace que el loop se vea continuo: cuando la
+       animación llega a -50% (el final exacto de la 1ª copia + su
+       padding), la 2ª copia ya está exactamente donde empezó la 1ª,
+       así que el corte de "vuelta al inicio" es invisible. */
+    .marquee-pista span:last-child {
+      display: inline;
+    }
+  }
+}
+
+@keyframes marquee-sencillo {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.enlace-discografia-widget {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  width: fit-content;
+}
+
+.enlace-discografia-widget:hover {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Mobile angosto (mismo corte de 700px que ya usa el resto del sitio):
+   antes (13 sept, primera ronda) aquí se escondía TODO `.info-sencillo`
+   (nombre + link a discografía) porque el texto completo no cabía sin
+   chocar con `.redes-flotantes` en anchos de celular comunes
+   (360-414px). Esa reserva de espacio de `.redes-flotantes` ya se
+   corrigió de raíz (ver `.icono-red:not(.siempre-visible)` arriba) y,
+   sobre todo, el nombre ya NO necesita su ancho completo: el marquee
+   de arriba (`.nombre-sencillo` / `.marquee-pista`) lo recorta a un
+   ancho fijo de 130px y lo hace deslizarse en loop — por eso ya NO
+   hace falta esconder `.info-sencillo`, el link "Ver discografía →"
+   vuelve a mostrarse también en mobile. */
 
 /* ===================================================
    BOTÓN DE CONTACTO (esquina superior derecha)
@@ -2286,9 +2607,71 @@ html.sin-intro .pantalla-carga {
 }
 
 /* ===== CURSOR CUSTOM (al hacer clic) ===== */
-/* :active se activa SOLO durante el instante que mantienes el clic presionado */
+/* :active se activa SOLO durante el instante que mantienes el clic
+   presionado. Antes era el mismo punto pero en naranja — ahora es la
+   MISMA varita de arriba con un degradado arcoíris aplicado sobre su
+   forma real (conserva el relieve/sombreado metálico original, solo
+   cambia el color — "holográfico" en vez de un tinte plano), pedido
+   explícito de Kevin (13 sept): "hasta arcoíris se podrá?". Mismas
+   dimensiones y mismo hotspot que la versión normal — así el cursor
+   no "salta" de posición en el instante del clic, solo cambia de
+   color. Versión ANIMADA (arcoíris que cicla en vivo mientras se
+   mantiene presionado) NO es posible con esta técnica — un cursor
+   nativo vía `cursor:url()` es siempre una imagen estática, nunca se
+   le puede aplicar una animación CSS en vivo; eso requeriría
+   reemplazar el cursor del sistema por un elemento HTML que siga al
+   mouse con JS (arquitectura mucho más grande, discutida con Kevin y
+   pospuesta a propósito por ahora).
+
+   Kevin preguntó después si en vez del clic convenía activar el
+   arcoíris al pasar el mouse sobre algo clickeable (afordance en vez
+   de feedback) — se le explicó la diferencia (ver más abajo, bloque
+   "CURSOR CUSTOM (hover sobre elementos clickeables)") y decidió
+   quedarse con LAS DOS cosas ("deja ambas"): este bloque de clic
+   sigue igual, sin tocar. */
 body:active {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="10" fill="orange" opacity="0.9"/></svg>') 16 16, auto;
+  cursor: url('assets/cursor/varita-rainbow.png') 8 1, auto;
+}
+
+/* ===== CURSOR CUSTOM (hover sobre elementos clickeables) ===== */
+/* Mismo arcoíris de arriba, pero como AFORDANCE en vez de feedback:
+   se activa apenas el mouse pasa sobre algo con lo que se puede
+   interactuar (planetas, botones, links reales) — "esto se puede
+   tocar" —, no solo en el instante del clic. Mismo archivo/hotspot
+   que las 2 reglas de arriba, ningún PNG nuevo.
+
+   Selectores elegidos: son los mismos elementos que YA tenían
+   `cursor: pointer;` puesto a mano en este archivo (agregado tiempo
+   atrás, a pedido de Kevin, para reforzar hover/interacción en
+   botones y links de todo el sitio — ver ese cursor: pointer; en cada
+   regla de abajo, que se deja intacto como respaldo por si el PNG no
+   cargara por algún motivo) más los `<a>`/`<button>` reales que
+   dependían del cursor nativo del navegador (enlace de contacto,
+   botones tipo "pill" de Spotify/Boletos, el botón fijo de Contacto)
+   — en conjunto, cubre planetas, botones de modal/redes/newsletter,
+   el easter egg de Biografía, y los links reales del sitio.
+
+   13 sept (2ª ronda): Kevin reportó que en las redes sociales del
+   FOOTER la varita no cambiaba a arcoíris. Causa: el footer usa su
+   propia fila `.pie-redes a` (nav aparte, línea ~485 del HTML),
+   totalmente distinta del menú flotante `.icono-red` de la esquina
+   — se me había quedado fuera de esta lista por descuido. Se agrega
+   aquí `.pie-redes a:hover`. */
+.planeta:hover,
+.boton-contacto:hover,
+.boton-redes:hover,
+.icono-red:hover,
+.pie-redes a:hover,
+.enlace-contacto:hover,
+.boton-pill:hover,
+.cerrar-modal:hover,
+.boton-suscribir:hover,
+.disparador-easteregg:hover,
+.medio-presskit[data-tipo="foto"]:hover,
+.pantalla-carga:hover,
+.disco-sencillo:hover,
+.enlace-discografia-widget:hover {
+  cursor: url('assets/cursor/varita-rainbow.png') 8 1, pointer;
 }
 
 .sistema-solar {

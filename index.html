@@ -273,7 +273,7 @@
            las tres usan un link/botón que saca directo a la app/web,
            en vez de una cajita angosta que además casi siempre solo
            reproduce preview. Seguimos ese mismo patrón aquí. -->
-      <div class="discografia-presskit">
+      <div class="discografia-presskit" id="discografia">
         <p class="etiqueta-bloque"><span class="texto-resaltado">Discografía</span></p>
 
         <!-- ===== ronda 4 (9 sept): "modal" apilado =====
@@ -558,10 +558,70 @@
     <a href="https://music.amazon.com.mx/artists/B003YK5SQY" target="_blank" rel="noopener" class="icono-red" title="Amazon Music" aria-label="Amazon Music"><svg class="svg-icono" aria-hidden="true"><use href="#icono-amazon"></use></svg></a>
     <a href="https://music.apple.com/us/artist/gal%C3%A1ctica/1833128457" target="_blank" rel="noopener" class="icono-red" title="Apple Music" aria-label="Apple Music"><svg class="svg-icono" aria-hidden="true"><use href="#icono-applemusic"></use></svg></a>
     <a href="https://www.youtube.com/@galactica.x" target="_blank" rel="noopener" class="icono-red" title="YouTube" aria-label="YouTube"><svg class="svg-icono" aria-hidden="true"><use href="#icono-youtube"></use></svg></a>
-    <a href="https://www.tiktok.com/@soygalactica" target="_blank" rel="noopener" class="icono-red siempre-visible" title="TikTok" aria-label="TikTok"><svg class="svg-icono" aria-hidden="true"><use href="#icono-tiktok"></use></svg></a>
+    <a href="https://www.tiktok.com/@soygalactica" target="_blank" rel="noopener" class="icono-red" title="TikTok" aria-label="TikTok"><svg class="svg-icono" aria-hidden="true"><use href="#icono-tiktok"></use></svg></a>
     <a href="https://open.spotify.com/artist/7ahVxIZJi50T8AG0xjWuuh" target="_blank" rel="noopener" class="icono-red siempre-visible" title="Spotify" aria-label="Spotify"><svg class="svg-icono" aria-hidden="true"><use href="#icono-spotify"></use></svg></a>
     <a href="https://www.instagram.com/galactica.x" target="_blank" rel="noopener" class="icono-red siempre-visible" title="Instagram" aria-label="Instagram"><svg class="svg-icono" aria-hidden="true"><use href="#icono-instagram"></use></svg></a>
     <button class="boton-redes" id="botonRedes" aria-label="Abrir redes sociales">+</button>
+  </div>
+
+  <!-- ===== WIDGET FIJO: SENCILLO (fijo, esquina inferior izquierda) =====
+       13 sept, idea de Kevin a partir de una imagen de CD que mandó
+       ("una canción que se reproduzca... el disco girando... link a la
+       discografía"). Reproducción SOLO por clic — nunca autoplay: todos
+       los navegadores bloquean audio con sonido sin que haya un gesto
+       real del usuario primero, así que el primer clic en el disco ES
+       ese gesto (ver script.js, Sección 10, para el porqué no se puede
+       evitar esto con ningún truco de código). Por eso es un <button>
+       real (ejecuta play()/pause() por JS), no un link.
+       El link a "Ver discografía" vive SEPARADO del disco a propósito
+       (se lo expliqué a Kevin antes de construir esto): el disco es
+       "escúchala aquí mismo, sin salir de la página", el link es "quiero
+       ver/comprar el catálogo completo" — dos intenciones distintas, no
+       deben competir por el mismo clic. Apunta a #discografia (id nuevo
+       en .discografia-presskit, dentro de Presskit) en vez de #presskit
+       para caer justo en la lista, no solo en el inicio de la sección.
+       "La Invitada de la Temporada" (13 sept, confirmado por Kevin) es
+       la canción real del mp3 — ya vive también como fila normal en la
+       lista de abajo (.lista-discografia, no en .lanzamiento-destacado,
+       que sigue destacando "Dejé de Buscar" como último sencillo, cosas
+       distintas) — si cambia, es cambiar el texto de .nombre-sencillo
+       + el aria-label de abajo. -->
+  <div class="widget-sencillo">
+    <button type="button" class="disco-sencillo" id="botonDisco" aria-label="Reproducir La Invitada de la Temporada" aria-pressed="false">
+      <img src="assets/cd/disco-sencillo.png" alt="" aria-hidden="true">
+      <span class="icono-estado" aria-hidden="true">
+        <span class="triangulo-play"></span>
+        <span class="barras-pausa"><span></span><span></span></span>
+      </span>
+    </button>
+    <div class="info-sencillo">
+      <!-- 13 sept: en mobile el nombre completo no cabe en el ancho
+           disponible sin volver a chocar con las redes sociales (se
+           midió: 185px el texto solo, ~210px es lo máximo seguro a
+           390px de ancho). En vez de achicar la letra o partirlo en 2
+           líneas, se usa el mismo truco de los reproductores reales
+           (iPod, Spotify desktop, pantallas de radio de auto): ancho
+           fijo + texto que se desliza en loop, como una franja de
+           noticias. Estructura: el nombre real vive UNA vez, oculto
+           visualmente (`.oculto-visual`) para que el lector de
+           pantalla lo anuncie una sola vez y normal; el texto que SÍ
+           se ve está DUPLICADO dentro de `.marquee-pista`, marcado
+           `aria-hidden` porque es puramente decorativo — el duplicado
+           es lo que permite que el loop se vea continuo (ver
+           @keyframes en style.css). En tablet/desktop, o si el
+           visitante tiene activado "reducir movimiento", esto no se
+           activa — ahí simplemente se ve el nombre completo, fijo,
+           sin ancho limitado (ver los `@media` en style.css). -->
+      <p class="nombre-sencillo">
+        <span class="oculto-visual">La Invitada de la Temporada</span>
+        <span class="marquee-pista" aria-hidden="true">
+          <span>La Invitada de la Temporada</span>
+          <span>La Invitada de la Temporada</span>
+        </span>
+      </p>
+      <a href="#discografia" class="enlace-discografia-widget">Ver discografía →</a>
+    </div>
+    <audio id="audioSencillo" src="assets/audio/sencillo.mp3" preload="none"></audio>
   </div>
 
   <script src="script.js"></script>
