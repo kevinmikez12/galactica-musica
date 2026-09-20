@@ -216,6 +216,89 @@ planetas.forEach(planeta => {
 
 
 // ============================================================
+// SECCIÓN 4B: HINT DE PRIMERA VISITA — "toca los planetas"
+// ============================================================
+// Mismo patrón que la pantalla de carga (Sección 2): una sola vez por
+// sesión, vía sessionStorage. Se muestra DESPUÉS de que termina la
+// secuencia del Big Bang para no competir con esa animación de entrada,
+// y se cierra con el primer click/tap en un planeta (Enter con foco de
+// teclado ya dispara ese mismo evento 'click' de forma nativa en
+// <button>/<a>, no hace falta un listener aparte) o al salir del hero
+// con scroll.
+const hintPlanetas = document.getElementById('hintPlanetas');
+
+if (hintPlanetas) {
+  let hintYaVisto = false;
+  try {
+    hintYaVisto = !!sessionStorage.getItem('galacticaHintPlanetasVisto');
+  } catch (error) {
+    // Sin sessionStorage disponible simplemente no lo mostramos esta
+    // vez — no es un error grave, solo se pierde la persistencia.
+    hintYaVisto = true;
+  }
+
+  if (!hintYaVisto) {
+    const mostrarHint = () => {
+      hintPlanetas.classList.add('visible');
+      try {
+        sessionStorage.setItem('galacticaHintPlanetasVisto', '1');
+      } catch (error) {
+        // no pasa nada grave, ver arriba
+      }
+    };
+
+    const ocultarHint = () => {
+      hintPlanetas.classList.remove('visible');
+    };
+
+    // Si la pantalla de carga ya estaba oculta (2ª visita en la misma
+    // sesión que SÍ tiene sessionStorage pero por lo que sea no marcó
+    // el hint todavía) lo mostramos casi de inmediato; si no, esperamos
+    // a que termine la secuencia completa del click (600ms de tensión +
+    // 400ms de expansión del flash, ver Sección 2) más un margen para
+    // que el sistema solar ya se sienta "asentado".
+    if (pantallaCarga.classList.contains('oculta')) {
+      setTimeout(mostrarHint, 400);
+    } else {
+      pantallaCarga.addEventListener('click', () => {
+        setTimeout(mostrarHint, 1300);
+      }, { once: true });
+    }
+
+    planetas.forEach(planeta => {
+      planeta.addEventListener('click', ocultarHint, { once: true });
+    });
+
+    // Salir del hero con scroll sin haber tocado ningún planeta también
+    // lo cierra — no tiene sentido perseguirlo más abajo en la página.
+    // Bug real encontrado con Playwright (19 sept), probado 2 veces antes
+    // de asumir que un IntersectionObserver serviría aquí: cuando .hero
+    // mide exactamente 100vh y el scroll llega exactamente a esa
+    // distancia (justo lo que hace scrollIntoView() al entrar a Presskit/
+    // Biografía — el caso más común, no uno raro), Chromium simplemente
+    // NO vuelve a disparar el callback del observer (confirmado con log
+    // instrumentado: ni con threshold:0 ni agregando rootMargin negativo).
+    // Un scroll grande a cualquier otro punto sí lo dispara bien — el
+    // problema es específico de ese límite exacto. En vez de perseguir
+    // más ajustes de IntersectionObserver, se usa un listener de scroll
+    // directo sobre la posición real (getBoundingClientRect), que sí se
+    // evalúa de forma confiable en cada evento de scroll.
+    const alSalirDelHero = () => {
+      const heroRect = document.querySelector('.hero').getBoundingClientRect();
+      if (heroRect.bottom <= 0) {
+        ocultarHint();
+        window.removeEventListener('scroll', alSalirDelHero);
+      }
+    };
+    window.addEventListener('scroll', alSalirDelHero, { passive: true });
+  }
+}
+// ============================================================
+// FIN SECCIÓN 4B
+// ============================================================
+
+
+// ============================================================
 // SECCIÓN 5: SISTEMA DE MODALES (abrir, cerrar, click-fuera)
 // ============================================================
 const fondoModal = document.getElementById('fondoModal');

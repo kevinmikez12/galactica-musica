@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Galactica Homepage</title>
+<!-- Favicon (19 sept): michi-verde (el michimeteoro verde de meteoro-1),
+     recortado a su contenido real + reescalado a los tamaños estándar de
+     pestaña de navegador. Legibilidad a 16px verificada con un render real
+     (no solo a ojo en el original) contra fondo claro Y oscuro de pestaña —
+     la silueta de orejas+cara se distingue en ambos. -->
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="assets/favicon/favicon-48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
 <link rel="stylesheet" href="style.css">
 <script>
   // Esto va aquí (en <head>, antes de pintar el <body>) y no al final
@@ -67,8 +76,14 @@
          que un lector de pantalla necesite anunciar. -->
     <img src="assets/nucleo-estrella.gif" class="nucleo-bigbang" id="nucleoBigbang" alt="">
     <div class="flash-explosion" id="flashExplosion"></div>
-    <p class="texto-carga" id="textoCarga">Haz clic para comenzar</p>
-    <p class="frase-artistica">— frase artística aquí —</p>
+    <p class="texto-carga" id="textoCarga">Toca la pantalla y entra a mi universo.</p>
+    <!-- Concepto real de la artista (19 sept), tomado tal cual del Press
+         Kit oficial — Kevin propuso usar este espacio (que Claude había
+         inventado sin pedido real del artista) para meter contenido real
+         del PDF que no tenía otro lugar obvio. Encaja bien aquí porque ya
+         es una frase corta de tono poético, mismo registro que el resto
+         del texto de esta pantalla. -->
+    <p class="frase-artistica">Traduce lo cotidiano en algo íntimo y colectivo a través de música sincera y sin pretensiones.</p>
   </div>
 
   <!-- Contenedor vacío: JavaScript lo llena con estrellas generadas -->
@@ -91,21 +106,35 @@
        una etiqueta aparte, pegada debajo de cada meteoro. -->
   <div class="meteoro meteoro-1">
     <div class="meteoro-nucleo"></div>
-    <span class="meteoro-fecha">15 Nov<br>CDMX</span>
+    <span class="meteoro-fecha">23 Oct<br>Puebla</span>
   </div>
 
   <div class="meteoro meteoro-2">
     <div class="meteoro-nucleo"></div>
-    <span class="meteoro-fecha">22 Nov<br>GDL</span>
+    <span class="meteoro-fecha">30 Oct<br>Cholula</span>
   </div>
 
+  <!-- meteoro-3 (michi-morado / ruta3) reactivado (20 sept, v105) como
+       placeholder "Próximamente" — solo hay 2 fechas reales
+       confirmadas todavía, pero Kevin prefirió mostrar que viene un
+       3er show en vez de ocultarlo del todo. Reemplazar este texto
+       por la fecha/ciudad real en cuanto se confirme (mismo formato
+       que meteoro-1/2: "DD Mes<br>Ciudad"). -->
   <div class="meteoro meteoro-3">
     <div class="meteoro-nucleo"></div>
-    <span class="meteoro-fecha">05 Dic<br>MTY</span>
+    <span class="meteoro-fecha">Próximamente</span>
   </div>
 
   <!-- ===== HERO: envuelve el sistema solar en una pantalla completa ===== -->
   <div class="hero">
+    <!-- Hint de primera visita (19 sept): discoverability de que los
+         planetas son botones/links reales. Una sola vez por sesión
+         (sessionStorage, ver Sección 11 de script.js), aparece después
+         de que termina el Big Bang, se cierra al hacer click/Enter en un
+         planeta o al salir del hero con scroll. aria-hidden porque los
+         planetas ya son accesibles por su propia semántica (button/a con
+         label) — esto es puramente un refuerzo visual para mouse/touch. -->
+    <p class="hint-planetas" id="hintPlanetas" aria-hidden="true">Toca los planetas para interactuar</p>
     <div class="sistema-solar" id="sistemaSolar">
 
       <div class="sol">
@@ -117,10 +146,9 @@
       <div class="orbita orbita-tierra"></div>
       <div class="orbita orbita-marte"></div>
 
-      <!-- Mercurio/Shows: sigue con el placeholder de "disco" (ver .mercurio
-           en style.css) — Kevin todavía no manda una imagen real para esta,
-           a diferencia de Presskit/Biografía/Newsletter (12 sept, ver más
-           abajo). No tocar hasta que llegue esa imagen. -->
+      <!-- Mercurio/Shows: bola de disco real (19 sept, ver .mercurio en
+           style.css) — generada por código en vez de usar la foto que
+           mandó Kevin (tenía un watermark de banco de imágenes). -->
       <div class="pivote pivote-mercurio">
         <button type="button" class="planeta mercurio" data-nombre="Shows" data-tipo="modal" title="Shows"></button>
       </div>
@@ -200,6 +228,20 @@
           <div class="titulo-moodboard">
             <h2><span class="texto-resaltado">Presskit</span></h2>
             <p class="subtitulo-seccion"><span class="texto-resaltado">Fotos, video y material para difusión</span></p>
+
+            <!-- Descarga real del Press Kit (19 sept). Vive DENTRO de
+                 .titulo-moodboard (19 sept, v104) — antes era hermano
+                 suelto de este div y en mobile (ver media query en
+                 style.css) eso lo dejaba flotando en flujo normal justo
+                 encima de .titulo-moodboard (que SÍ está posicionado con
+                 z-index:5), así que al aparecer el título con su fade-in
+                 quedaba TAPANDO el botón por completo (bug real que
+                 reportó Kevin). Viviendo adentro, el botón fluye
+                 naturalmente debajo del subtítulo sin importar cuánto
+                 mida el texto, en cualquier ancho. En desktop no cambia
+                 nada visualmente (mismo lugar de siempre, ver
+                 .cabecera-moodboard en style.css). -->
+            <a href="assets/presskit/galactica-press-kit.pdf" class="boton-pill boton-descarga-presskit" download>Descargar Press Kit (PDF)</a>
           </div>
 
           <div class="texto-moodboard">
@@ -256,7 +298,8 @@
            Kevin) — no se van a insertar en ningún otro punto del sitio.
            Quien quiera ver el resto del catálogo llega por el ícono de
            YouTube del footer/menú flotante, que ya apunta al canal real
-           (youtube.com/@galactica.x). Efecto "nebulosa" en vez de anillo
+           (youtube.com/@soygalactica, corregido 19 sept contra el Press
+           Kit oficial). Efecto "nebulosa" en vez de anillo
            giratorio: ver comentario en .video-destacado en style.css —
            el motivo de por qué se reemplazó un efecto por el otro (no
            se dejaron los dos) también está ahí. -->
@@ -383,7 +426,11 @@
            renglón, en vez de dibujar un solo rectángulo detrás de
            todo el bloque. Ver .texto-resaltado en style.css. -->
       <div class="intro-biografia">
-        <h2><span class="texto-resaltado">Biografía</span></h2>
+        <!-- Título conversacional (20 sept, v105) — antes "Biografía"
+             (funcional). Kevin pidió el cambio directo (PENDIENTES
+             #17 del doc de estado), sin mantener el nombre funcional
+             al lado. -->
+        <h2><span class="texto-resaltado">¿Quién es Galáctica?</span></h2>
         <p class="tagline-biografia"><span class="texto-resaltado">Reflexiones de una artista cuyo camino por la escena independiente se convirtió en parte de su identidad creativa.</span></p>
       </div>
 
@@ -464,7 +511,11 @@
            el fondo casi sólido (a diferencia del título, no llevan
            su propio fondo blanco) para garantizar contraste WCAG. -->
       <div class="tarjeta-seccion">
-        <a href="mailto:contacto@karjarecords.com" class="enlace-contacto">contacto@karjarecords.com</a>
+        <!-- Email corregido (19 sept) contra el Press Kit oficial en PDF:
+             decía contacto@karjarecords.com, el PDF confirma
+             karjarecords@gmail.com. Si el dominio propio SÍ es real y el
+             PDF quedó desactualizado, avisar para revertir. -->
+        <a href="mailto:karjarecords@gmail.com" class="enlace-contacto">karjarecords@gmail.com</a>
         <p class="nota-seccion">vía Karja Records</p>
       </div>
 
@@ -485,9 +536,12 @@
     <nav class="pie-redes" aria-label="Redes sociales">
       <a href="https://open.spotify.com/artist/7ahVxIZJi50T8AG0xjWuuh" target="_blank" rel="noopener" aria-label="Spotify" title="Spotify"><svg class="svg-icono" aria-hidden="true"><use href="#icono-spotify"></use></svg></a>
       <a href="https://music.apple.com/us/artist/gal%C3%A1ctica/1833128457" target="_blank" rel="noopener" aria-label="Apple Music" title="Apple Music"><svg class="svg-icono" aria-hidden="true"><use href="#icono-applemusic"></use></svg></a>
-      <a href="https://www.youtube.com/@galactica.x" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"><svg class="svg-icono" aria-hidden="true"><use href="#icono-youtube"></use></svg></a>
+      <!-- Handles corregidos (19 sept) contra el Press Kit oficial en PDF:
+           YouTube es @soygalactica, Instagram/TikTok son @galactica.x —
+           antes YouTube y TikTok estaban invertidos. -->
+      <a href="https://www.youtube.com/@soygalactica" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"><svg class="svg-icono" aria-hidden="true"><use href="#icono-youtube"></use></svg></a>
       <a href="https://www.instagram.com/galactica.x" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg class="svg-icono" aria-hidden="true"><use href="#icono-instagram"></use></svg></a>
-      <a href="https://www.tiktok.com/@soygalactica" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg class="svg-icono" aria-hidden="true"><use href="#icono-tiktok"></use></svg></a>
+      <a href="https://www.tiktok.com/@galactica.x" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg class="svg-icono" aria-hidden="true"><use href="#icono-tiktok"></use></svg></a>
       <a href="https://music.amazon.com.mx/artists/B003YK5SQY" target="_blank" rel="noopener" aria-label="Amazon Music" title="Amazon Music"><svg class="svg-icono" aria-hidden="true"><use href="#icono-amazon"></use></svg></a>
       <a href="https://link.deezer.com/s/34mBjBODc6MYXa9LyxiKB" target="_blank" rel="noopener" aria-label="Deezer" title="Deezer"><svg class="svg-icono" aria-hidden="true"><use href="#icono-deezer"></use></svg></a>
     </nav>
@@ -502,7 +556,17 @@
        aria-label conserva el texto "Contáctanos" para lectores de
        pantalla y como title/tooltip, ya que visualmente ya no queda
        texto — mismo criterio que los íconos de redes del footer. -->
-  <a href="#contacto" class="boton-contacto" aria-label="Contáctanos" title="Contáctanos"></a>
+  <!-- Mensaje de colab (19 sept): SOLO aparece con hover/focus del botón
+       (Kevin descartó el ciclo automático) — se desliza desde la derecha.
+       Texto es una corrección ortográfica de la idea original de Kevin
+       ("hacemos collab, llamame") mientras confirma la redacción final;
+       es un cambio de una línea cuando la tenga. aria-hidden porque
+       aria-label del botón ya cubre la acción real (ir a #contacto). En
+       mobile no hay hover real, así que el mensaje se oculta ahí (ver
+       style.css) — el botón sigue funcionando igual como link directo. -->
+  <a href="#contacto" class="boton-contacto" aria-label="Contáctanos" title="Contáctanos">
+    <span class="mensaje-colab" aria-hidden="true">¿Hacemos colab?</span>
+  </a>
 
   <!-- ===== FONDO OSCURO COMPARTIDO POR AMBOS MODALES ===== -->
   <div class="fondo-modal" id="fondoModal"></div>
@@ -515,33 +579,45 @@
 
     <div class="item-show">
       <div>
-        <div class="fecha-show">15 Nov · CDMX</div>
-        <div class="ciudad-show">Foro Indie Rocks</div>
+        <div class="fecha-show">23 Oct · Puebla</div>
+        <div class="ciudad-show">Sala Sonar — apertura para Babastutsipop</div>
       </div>
       <a href="#" class="boton-pill">Boletos</a>
     </div>
 
     <div class="item-show">
       <div>
-        <div class="fecha-show">22 Nov · GDL</div>
-        <div class="ciudad-show">C3 Stage</div>
+        <div class="fecha-show">30 Oct · San Andrés Cholula</div>
+        <div class="ciudad-show">Festival Domingo de Muertos · Parque Soria</div>
       </div>
       <a href="#" class="boton-pill">Boletos</a>
     </div>
 
-    <div class="item-show">
+    <!-- 3er show (20 sept, v105): reactivado como placeholder
+         "Próximamente" en vez de oculto — mismo criterio que
+         meteoro-3 (ver arriba). Sin botón "Boletos" a propósito: no
+         hay nada que vender todavía, un link muerto sería peor que no
+         tener botón. .item-show--proximamente baja la opacidad para
+         que se lea como "aún no confirmado" frente a los 2 shows
+         reales de arriba. Reemplazar por los datos reales (y el
+         .item-show completo, con su botón) en cuanto Kevin confirme
+         fecha/venue. -->
+    <div class="item-show item-show--proximamente">
       <div>
-        <div class="fecha-show">05 Dic · MTY</div>
-        <div class="ciudad-show">Café Iguana</div>
+        <div class="fecha-show">Próximamente</div>
+        <div class="ciudad-show">Fecha y ciudad por confirmar</div>
       </div>
-      <a href="#" class="boton-pill">Boletos</a>
     </div>
   </div>
 
   <!-- ===== MODAL: NEWSLETTER ===== -->
   <div class="tarjeta-modal" id="modalNewsletter">
     <button class="cerrar-modal" data-cerrar-modal>×</button>
-    <h2>Únete al newsletter</h2>
+    <!-- Título conversacional (20 sept, v105) — antes "Únete al
+         newsletter" (funcional). Texto elegido por Claude (Kevin
+         delegó la redacción, solo confirmó "aplícalo también aquí"):
+         evita repetir "primera en enterarte" del subtítulo de abajo. -->
+    <h2>¿Quieres enterarte primero?</h2>
     <p class="subtitulo-modal">Sé la primera en enterarte de nueva música, fechas y sorpresas exclusivas</p>
 
     <input type="email" class="campo-newsletter" placeholder="tu@correo.com">
@@ -557,8 +633,8 @@
     <a href="https://link.deezer.com/s/34mBjBODc6MYXa9LyxiKB" target="_blank" rel="noopener" class="icono-red" title="Deezer" aria-label="Deezer"><svg class="svg-icono" aria-hidden="true"><use href="#icono-deezer"></use></svg></a>
     <a href="https://music.amazon.com.mx/artists/B003YK5SQY" target="_blank" rel="noopener" class="icono-red" title="Amazon Music" aria-label="Amazon Music"><svg class="svg-icono" aria-hidden="true"><use href="#icono-amazon"></use></svg></a>
     <a href="https://music.apple.com/us/artist/gal%C3%A1ctica/1833128457" target="_blank" rel="noopener" class="icono-red" title="Apple Music" aria-label="Apple Music"><svg class="svg-icono" aria-hidden="true"><use href="#icono-applemusic"></use></svg></a>
-    <a href="https://www.youtube.com/@galactica.x" target="_blank" rel="noopener" class="icono-red" title="YouTube" aria-label="YouTube"><svg class="svg-icono" aria-hidden="true"><use href="#icono-youtube"></use></svg></a>
-    <a href="https://www.tiktok.com/@soygalactica" target="_blank" rel="noopener" class="icono-red" title="TikTok" aria-label="TikTok"><svg class="svg-icono" aria-hidden="true"><use href="#icono-tiktok"></use></svg></a>
+    <a href="https://www.youtube.com/@soygalactica" target="_blank" rel="noopener" class="icono-red" title="YouTube" aria-label="YouTube"><svg class="svg-icono" aria-hidden="true"><use href="#icono-youtube"></use></svg></a>
+    <a href="https://www.tiktok.com/@galactica.x" target="_blank" rel="noopener" class="icono-red" title="TikTok" aria-label="TikTok"><svg class="svg-icono" aria-hidden="true"><use href="#icono-tiktok"></use></svg></a>
     <a href="https://open.spotify.com/artist/7ahVxIZJi50T8AG0xjWuuh" target="_blank" rel="noopener" class="icono-red siempre-visible" title="Spotify" aria-label="Spotify"><svg class="svg-icono" aria-hidden="true"><use href="#icono-spotify"></use></svg></a>
     <a href="https://www.instagram.com/galactica.x" target="_blank" rel="noopener" class="icono-red siempre-visible" title="Instagram" aria-label="Instagram"><svg class="svg-icono" aria-hidden="true"><use href="#icono-instagram"></use></svg></a>
     <button class="boton-redes" id="botonRedes" aria-label="Abrir redes sociales">+</button>

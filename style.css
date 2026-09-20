@@ -72,14 +72,16 @@
    particular), no compite con los hovers de mouse existentes
    (:focus-visible solo se activa navegando con teclado en
    navegadores modernos) y de paso resuelve un hueco real de
-   accesibilidad. Mismo verde que ya usa el `<mark>` de Presskit
-   (#6b9e7f, la versión sólida de `rgba(107, 158, 127, ...)`) — sigue
-   siendo un placeholder sin confirmar contra la paleta real de
-   marca; cuando lleguen los hex definitivos, este es el valor a
-   actualizar. */
+   accesibilidad. Mismo verde que usa el `<mark>` de Presskit — VERDE
+   REAL DE MARCA (13 sept, paleta oficial que mandó Kevin: #6e8820),
+   reemplaza el placeholder #6b9e7f de antes. Contraste verificado
+   antes de aplicar (no a ojo): 5.03:1 contra el fondo más oscuro del
+   sitio (#05050f) y 4.78:1 contra el fondo de tarjetas (#0d0d1a) —
+   ambos pasan de sobra el mínimo de 3:1 que pide WCAG para contraste
+   de UI no-textual (este outline no es texto). */
 a:focus-visible,
 button:focus-visible {
-  outline: 2px solid #6b9e7f;
+  outline: 2px solid #6e8820;
   outline-offset: 3px;
 }
 
@@ -251,6 +253,65 @@ body {
   overflow: hidden;
 }
 
+/* Hint de primera visita, "toca los planetas" (19 sept) — position:
+   absolute lo saca del flujo flex de .hero, así que NO afecta el
+   centrado de .sistema-solar (sigue siendo el único elemento flex real).
+   Posición: top calculado a partir de --tam-sistema (no un % fijo de la
+   pantalla) para que quede anclado al borde SUPERIOR real de la caja del
+   sistema solar en cualquier viewport — ese borde ya tiene margen de
+   sobra contra la órbita más externa (Marte): ~90px en desktop, ~46px+
+   en el mobile más angosto probado (ver geometría real de --radio-marte
+   en :root), así que 8px hacia adentro del borde es seguro sin
+   necesidad de un breakpoint aparte. */
+.hint-planetas {
+  position: absolute;
+  top: calc(50% - (var(--tam-sistema) / 2) + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  z-index: 15;
+  padding: 7px 16px;
+  font-size: 13px;
+  color: #ededef;
+  background: rgba(13, 13, 26, 0.6);
+  border: 1px solid rgba(183, 221, 222, 0.3);
+  border-radius: 999px;
+  white-space: nowrap;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.hint-planetas.visible {
+  opacity: 1;
+}
+
+/* Info real, no decoración pura — se muestra/oculta igual con movimiento
+   reducido, solo sin el fundido suave (mismo criterio que el resto del
+   sitio: lo puramente estético se apaga, lo informativo se queda). */
+@media (prefers-reduced-motion: reduce) {
+  .hint-planetas {
+    transition: none;
+  }
+}
+
+/* Bug real encontrado con Playwright (19 sept): dejar que el texto
+   partiera en 2 líneas por debajo de 400px casi DUPLICABA la altura del
+   hint (32px a 42px+) — eso empujaba su borde inferior DENTRO del anillo
+   de la órbita de Marte en 320-390px (overlap real medido contra
+   .orbita-marte, no contra el borde de la caja: hasta -12px de traslape
+   en 320px). Fix: una sola línea siempre (nowrap), achicando la letra en
+   vez de partir el texto — a 320px de ancho real, el pill completo mide
+   ~223px con letras más chicas, cabe con margen de sobra sin crecer en
+   altura. Reverificado sin overlap contra .orbita-marte en 320-1920px. */
+@media (max-width: 400px) {
+  .hint-planetas {
+    font-size: 10.5px;
+    padding: 6px 12px;
+  }
+}
+
 /* ===================================================
    SECCIONES DE SCROLL (Presskit, Biografía, Contacto)
    Placeholder por ahora — solo para probar que el scroll
@@ -370,11 +431,17 @@ body {
 
 .nota-seccion {
   font-size: 12px;
-  /* Subido de 0.4 a 0.5 (11 sept, backlog de code review) — con
-     opacity:0.4 sobre el fondo #0d0d1a el contraste real era 3.80:1,
-     no pasa WCAG AA (mínimo 4.5:1 para texto normal). En 0.5 da
-     5.33:1, ya pasa con margen. */
-  opacity: 0.5;
+  /* Gris claro real de marca (13 sept: #ededef, antes heredaba blanco
+     de .seccion-scroll) — pedido de Kevin para "textos secundarios",
+     y este es exactamente eso: una nota chica bajo el contenido
+     principal. Mismo motivo que .pie-copyright: con el opacity:0.5 de
+     antes el gris nuevo quedaba en 4.69-4.72:1 (ya sin margen real
+     sobre el 4.5:1 mínimo de WCAG AA) — subido a 0.55 para volver a
+     un margen cómodo (5.47-5.53:1 según el fondo detrás). Historial:
+     0.4 → 0.5 (11 sept, backlog de code review, mismo motivo con
+     blanco) → 0.55 (13 sept, al cambiar de blanco a gris claro). */
+  color: #ededef;
+  opacity: 0.55;
   margin-top: 16px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -632,12 +699,15 @@ body {
 
 /* <mark>: la etiqueta semántica de HTML para "texto resaltado" —
    mejor que un <span> genérico porque describe el SIGNIFICADO
-   (esto es importante), no solo la apariencia. Usamos un verde
-   translúcido en vez de amarillo/rosa porque el verde ya es
-   uno de los colores de marca que mencionó Kevin (pendiente
-   aplicar la paleta real completa). */
+   (esto es importante), no solo la apariencia. Verde real de marca
+   (13 sept: #6e8820, ver nota completa en :focus-visible arriba) en
+   vez del placeholder anterior — mismo alpha (0.35) que ya se usaba,
+   reverificado porque el tono cambió: el fondo efectivo resultante
+   (~#2f381c sobre la tarjeta oscura de Presskit) da 12.33:1 de
+   contraste contra el texto blanco encima — de sobra por encima del
+   4.5:1 mínimo de WCAG AA para texto normal. */
 .texto-moodboard mark {
-  background: rgba(107, 158, 127, 0.35);
+  background: rgba(110, 136, 32, 0.35);
   color: white;
   padding: 0 4px;
   border-radius: 3px;
@@ -795,7 +865,10 @@ body {
 .badge-nuevo {
   display: inline-block;
   background: #ffffff;
-  color: #0a0a12;
+  /* Negro real de marca (13 sept: #2b2c26, antes #0a0a12) — mismo
+     cambio que .texto-resaltado, mismo tratamiento visual (blanco
+     sólido + negro), así que va el mismo valor. */
+  color: #2b2c26;
   font-size: 10px;
   font-weight: bold;
   text-transform: uppercase;
@@ -965,6 +1038,50 @@ body {
 .boton-pill:hover {
   background: rgba(255, 255, 255, 0.15);
 }
+
+/* .boton-descarga-presskit (19 sept): modificador para el link de
+   descarga del PDF real en Presskit — mismo look que .boton-pill
+   (Boletos/Spotify), pero con texto más largo ("Descargar Press Kit
+   (PDF)") que sí necesita poder partirse en 2 líneas en mobile en vez
+   de desbordarse (a diferencia de "Boletos"/"Play", que siempre caben
+   en una sola línea). */
+.boton-descarga-presskit {
+  white-space: normal;
+  text-align: center;
+  /* Antes este espacio lo daba el gap:14px de .cabecera-moodboard
+     (el botón vivía como hermano suelto de .titulo-moodboard, ver
+     nota grande en index.html sobre el bug de v104). Ahora que vive
+     DENTRO de .titulo-moodboard, necesita su propio margen respecto
+     al subtítulo — mismo valor que ese gap para no cambiar el
+     espaciado visual en desktop. */
+  margin-top: 14px;
+}
+
+/* Fondo propio (19 sept, v103): a diferencia de "Boletos"/"Spotify"
+   (que siempre viven sobre una tarjeta oscura sólida), este botón
+   flota suelto sobre el collage de fotos del moodboard en desktop —
+   fondo que cambia y a veces es claro. El estilo base de .boton-pill
+   (sin relleno, solo borde blanco translúcido) depende de lo que haya
+   detrás para verse — Kevin reportó que ahí no se distingue bien. Se
+   le da un fondo propio semi-opaco (mismo tono que las tarjetas/
+   modales del sitio) para que tenga contraste garantizado sin
+   importar qué imagen quede detrás. */
+.boton-descarga-presskit {
+  background: rgba(13, 13, 26, 0.75);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.boton-descarga-presskit:hover {
+  background: rgba(13, 13, 26, 0.9);
+}
+
+/* Nota (20 sept, v105): en v104 se probó dejarlo transparente SOLO en
+   mobile (el bug real era la posición, no el contraste) — Kevin lo
+   probó y prefirió que no desaparezca del todo: mismo fondo
+   translúcido oscuro que desktop, visible en cualquier viewport. Por
+   eso ya no hay override de mobile aquí — la regla de arriba
+   (rgba(13,13,26,0.75) + blur) aplica parejo en todos los anchos. */
 
 /* .boton-spotify (9 sept, pedido de Mike): modificador SOLO para los
    links de Spotify — el mismo ".boton-pill" también se usa para
@@ -1301,7 +1418,12 @@ body {
    CSS. */
 .texto-resaltado {
   background-color: #ffffff;
-  color: #0a0a12;
+  /* Negro real de marca (13 sept: #2b2c26, antes #0a0a12) — pedido de
+     Kevin para "los títulos y subtítulos", que es exactamente este
+     efecto de texto (todos los h2 y taglines resaltados del sitio
+     pasan por esta clase). Contraste contra el blanco del fondo:
+     14.08:1, muy por encima del mínimo de WCAG. */
+  color: #2b2c26;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
   padding: 0.15em 0.5em;
@@ -1801,7 +1923,11 @@ body {
   align-items: center;
   justify-content: center;
   padding: 4px;
-  color: white;
+  /* Gris claro real de marca (13 sept: #ededef) en vez de blanco puro —
+     pedido de Kevin para los íconos de redes sociales. Contraste de
+     sobra contra el fondo aun con la opacity de reposo (0.6): 6.39:1,
+     muy por encima del 3:1 mínimo de WCAG para elementos no-textuales. */
+  color: #ededef;
   text-decoration: none;
   opacity: 0.6;
   transition: opacity 0.2s ease;
@@ -1842,12 +1968,16 @@ svg[hidden] {
 }
 
 .pie-copyright {
-  /* opacity 0.5 (no 0.35) a propósito: a 11px, 0.35 da 3.06:1 de
-     contraste y no pasa WCAG AA (mínimo 4.5:1 en texto normal).
-     0.5 da 5.31:1. */
-  color: white;
+  /* Gris claro real de marca (13 sept: #ededef) en vez de blanco puro
+     — pedido de Kevin para "textos secundarios", y este es el más
+     chico/discreto del sitio. Opacity subida de 0.5 a 0.55 en el
+     mismo movimiento: con el mismo 0.5 de antes, el gris nuevo daba
+     4.69:1 (ya no pasaba con margen real el 4.5:1 mínimo de WCAG AA a
+     11px — antes el blanco daba 5.31:1 con ese mismo 0.5, más aire).
+     A 0.55 vuelve a dar margen real: 5.47-5.53:1 según el fondo. */
+  color: #ededef;
   font-size: 11px;
-  opacity: 0.5;
+  opacity: 0.55;
   letter-spacing: 0.5px;
 }
 
@@ -1944,7 +2074,11 @@ svg[hidden] {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  /* Gris claro real de marca (13 sept: #ededef) en vez de blanco puro,
+     mismo pedido/motivo que .pie-redes a de arriba — estos íconos ya
+     están a opacity:1 cuando visibles, contraste 17.35:1 contra el
+     fondo del sitio, de sobra por encima del mínimo de WCAG. */
+  color: #ededef;
   font-size: 18px;
   text-decoration: none;
   cursor: pointer;
@@ -1959,8 +2093,10 @@ svg[hidden] {
 .icono-red:hover {
   transform: scale(1.25) !important;
   /* Como ya no hay fondo circular, el hover resalta con un
-     glow suave detrás del ícono en sí */
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+     glow suave detrás del ícono en sí — azul real de marca (13 sept:
+     #b7ddde) en vez de blanco, ver nota completa en .planeta:hover
+     más abajo (mismo cambio, mismo motivo). */
+  filter: drop-shadow(0 0 6px rgba(183, 221, 222, 0.8));
 }
 
 .redes-flotantes.abierto .icono-red {
@@ -2403,7 +2539,11 @@ svg[hidden] {
 
 .boton-contacto:hover {
   transform: scale(1.15);
-  filter: drop-shadow(0 0 14px rgba(255,255,255,0.8));
+  /* Azul real de marca en vez de blanco (13 sept), ver nota completa
+     en .planeta:hover más abajo — mismo cambio, mismo motivo. El
+     glow de REPOSO (arriba, sin :hover) se queda en blanco a
+     propósito, Kevin pidió el color de marca puntual para el hover. */
+  filter: drop-shadow(0 0 14px rgba(183, 221, 222, 0.8));
 }
 
 /* Vibración periódica (12 sept, a pedido de Kevin): el celular "suena"
@@ -2421,6 +2561,52 @@ svg[hidden] {
    Como toda animación puramente decorativa del sitio, respeta
    prefers-reduced-motion — con esa preferencia el celular se queda
    perfectamente quieto. */
+/* Mensaje de colaboración (19 sept) — Kevin propuso originalmente que
+   apareciera en un ciclo automático cada 2-3 vibraciones, pero después
+   de que se le señaló el riesgo real de sentirse invasivo en una sesión
+   larga (hasta 6 apariciones en 2 minutos), decidió dejarlo SOLO con
+   hover/focus — sin ciclo, sin sessionStorage, disponible siempre que
+   alguien pase el mouse. Se desliza desde la derecha (empieza más cerca
+   del botón, invisible) hacia la izquierda (posición final, visible). */
+.mensaje-colab {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-right: 12px;
+  transform: translateY(-50%) translateX(16px);
+  padding: 8px 14px;
+  background: #2b2c26;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.boton-contacto:hover .mensaje-colab,
+.boton-contacto:focus-visible .mensaje-colab {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mensaje-colab {
+    transition: none;
+  }
+}
+
+@media (max-width: 700px) {
+  /* Sin hover real en touch — dejarlo visible aquí lo dejaría atorado
+     o inalcanzable. El botón sigue funcionando igual como link directo
+     a #contacto, tocarlo ya cumple el objetivo real (contactar). */
+  .mensaje-colab {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .boton-contacto {
     animation: vibrarCelular 11.5s ease-in-out infinite;
@@ -2604,6 +2790,12 @@ html.sin-intro .pantalla-carga {
   font-style: italic;
   margin-top: 12px;
   text-align: center;
+  /* max-width (19 sept, al llenar esto con texto real): sin esto, la
+     frase se estira de borde a borde en pantallas anchas — a esa
+     longitud de línea es más difícil de leer. 320px mantiene un
+     renglón cómodo (~2 líneas) en cualquier ancho. */
+  max-width: 320px;
+  padding: 0 20px;
 }
 
 /* ===== CURSOR CUSTOM (al hacer clic) ===== */
@@ -3122,7 +3314,23 @@ body:active {
 
 .planeta:hover {
   transform: translate(-50%, -50%) scale(1.4);
-  filter: drop-shadow(0 0 14px rgba(255,255,255,0.8));
+  /* Azul real de marca en el glow del HOVER (13 sept: #b7ddde,
+     rgb(183,221,222) — mismo alpha 0.8 que el blanco de antes, solo
+     cambia el tono). Pedido puntual de Kevin: "el azul del branding
+     como color de blur del hover, así no se diferencia mucho el
+     color" — le da personalidad de marca al hover sin reabrir la
+     regla de "un color por sección" (sigue siendo el MISMO color en
+     todo el sitio, solo que ahora es azul de marca en vez de blanco).
+     A propósito NO se tocó: el glow de REPOSO/idle de este mismo
+     elemento (arriba, sin :hover, línea ~3131) se queda blanco —
+     Kevin pidió el color de marca solo para el hover, no para todos
+     los drop-shadow del sitio; mismo criterio aplicado en
+     .icono-red:hover y .boton-contacto:hover. Tampoco se tocó el
+     azul/morado decorativo que ya existe (nebulosa de Biografía,
+     mark de Presskit, degradado de Discografía — #38b3fa/#9b6bdc):
+     Kevin confirmó explícitamente dejarlos como están, sin mezclar
+     con la paleta real. */
+  filter: drop-shadow(0 0 14px rgba(183, 221, 222, 0.8));
   z-index: 20;
 }
 
@@ -3132,20 +3340,30 @@ body:active {
    como anticipaba el comentario que vivía aquí: "cuando lleguen los
    PNGs reales con transparencia, se puede quitar el clip-path y dejar
    que el PNG mismo traiga su silueta". Eso ya pasó (12 sept) para
-   Presskit/Biografía/Newsletter — Mercurio/Shows es el único que sigue
-   en placeholder, a la espera de que Kevin mande su imagen. (Contacto
-   NO es un planeta — el celular vive en .boton-contacto, más abajo.)
-   background-size:contain (no cover) porque estas 3 imágenes NO son
-   cuadradas — cover las recortaría, contain las encoge completas
-   dentro del cuadro de .planeta sin cortar nada. El filter:drop-shadow
-   de .planeta (ver arriba) sigue funcionando igual de bien aquí que con
-   clip-path: sigue el canal alfa real del PNG, no un cuadro invisible. */
+   Presskit/Biografía/Newsletter, y (19 sept) para Mercurio/Shows también
+   — las 4 usan PNG con transparencia real ahora, ninguna sigue en
+   placeholder de gradiente. (Contacto NO es un planeta — el celular
+   vive en .boton-contacto, más abajo.) background-size:contain (no
+   cover) porque estas imágenes no llenan el cuadro de forma exacta
+   (3 no son cuadradas; la de Mercurio sí lo es, pero no vale la pena
+   una excepción solo para esa) — cover recortaría contenido en las que
+   no son cuadradas, contain las encoge completas sin cortar nada en
+   ningún caso. El filter:drop-shadow de .planeta (ver
+   arriba) sigue funcionando igual de bien aquí que con clip-path: sigue
+   el canal alfa real del PNG, no un cuadro invisible. */
 
-/* Disco (círculo simple con un "agujero" simulado en el centro) —
-   sigue siendo placeholder, Kevin no ha mandado la imagen real de Shows */
+/* Shows — bola de disco (19 sept). NO es una foto: Kevin mandó una foto
+   real pero con un watermark de banco de imágenes tejido en los píxeles
+   (ver COMPLETADO/PENDIENTES), así que en vez de usarla se generó una
+   bola de espejos ORIGINAL por código (geometría de esfera + facetas
+   tipo mosaico con brillo aleatorio por faceta + iluminación sintética,
+   ver render_disco_ball.py) — mismo look plateado, sin ese problema de
+   derechos. Kevin la vio y confirmó ("me gusta"). Mismo tratamiento que
+   Presskit/Biografía/Newsletter: PNG con transparencia real, sin
+   clip-path (ya no hace falta, el PNG trae su propia silueta circular). */
 .mercurio {
-  background: radial-gradient(circle, #e8e8e8 20%, #b8b8d0 40%, #7878a0 70%, #e8e8e8 100%);
-  clip-path: circle(50%);
+  background-image: url('assets/planetas/bola-disco-shows.png');
+  background-repeat: no-repeat;
 }
 
 /* Presskit — tamagotchi real de Kevin, pantalla dice "press kit" (12 sept) */
@@ -3293,6 +3511,14 @@ body:active {
 
 .item-show:last-child {
   border-bottom: none;
+}
+
+/* Placeholder "Próximamente" (20 sept, v105) — mismo bloque que un
+   show real, pero atenuado para que se lea como "todavía sin
+   confirmar" en vez de una fecha real más. Ver index.html, modal de
+   Shows. */
+.item-show--proximamente {
+  opacity: 0.55;
 }
 
 .item-show .fecha-show {
