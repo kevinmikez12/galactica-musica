@@ -1,33 +1,28 @@
 /* ===================================================
-   TIPOGRAFÍA DE MARCA (11 sept)
-   Antes el sitio usaba sans-serif genérico (la fuente por default
-   del sistema de quien esté viendo la página) en todo. Kevin mandó
-   las 2 tipografías reales de la artista:
-   - "Galáctica" — logotipo/fuente propia de la artista (ella
-     confirmó que es suya, sin restricción de licencia). Se usa
-     puntual, donde el sitio necesita leerse como SU marca (el
-     wordmark fijo arriba a la izquierda) — no como fuente de
-     lectura general, un logotipo no está pensado para párrafos.
+   TIPOGRAFÍA DE MARCA
+   El sitio usa 2 tipografías:
+   - "Galáctica" — logotipo/fuente propia de la artista, sin
+     restricción de licencia. Se usa puntual, donde el sitio necesita
+     leerse como marca (el wordmark fijo arriba a la izquierda) — no
+     como fuente de lectura general, un logotipo no está pensado para
+     párrafos.
    - Montserrat — de uso libre (SIL Open Font License), la
-     tipografía de lectura del sitio. Kevin mencionó Regular o
-     Light — se registran las DOS variantes bajo el mismo
-     font-family ("Montserrat"), cada una en su propio @font-face
-     con su font-weight correspondiente (400/300): así, poner
-     font-weight:300 en cualquier elemento cambia automáticamente
-     al archivo Light, sin necesitar una segunda familia con otro
-     nombre. Por ahora el body usa 400 (Regular) en todos lados;
-     el peso 300 (Light) queda disponible para cuando se quiera dar
-     más jerarquía a taglines/citas, no aplicado todavía.
+     tipografía de lectura del sitio. Se registran las DOS variantes
+     bajo el mismo font-family ("Montserrat"), cada una en su propio
+     @font-face con su font-weight correspondiente (400/300): así,
+     poner font-weight:300 en cualquier elemento cambia
+     automáticamente al archivo Light, sin necesitar una segunda
+     familia con otro nombre. El body usa 400 (Regular) en todos
+     lados; el peso 300 (Light) queda disponible para dar más
+     jerarquía a taglines/citas.
 
    Los 2 archivos se auto-hospedan como .woff2 en assets/fonts/ —
-   mismo criterio de "cero dependencias externas" que ya se usó con
-   los íconos de redes: nada de linkear al CDN de Google Fonts (que
-   además filtra la IP de cada visitante a Google — motivo real,
-   no solo preferencia, de por qué NUNCA se usó ese link). woff2 es
-   el formato comprimido está­ndar para fuentes web (bastante más
-   chico que el .ttf original: Montserrat pasó de ~200KB a ~85KB
-   por variante) y ya lo soportan todos los navegadores modernos —
-   no hace falta fallback a .ttf/.woff. */
+   cero dependencias externas: nada de linkear al CDN de Google Fonts
+   (que además filtra la IP de cada visitante a Google). woff2 es el
+   formato comprimido estándar para fuentes web (bastante más chico
+   que el .ttf original: Montserrat pasó de ~200KB a ~85KB por
+   variante) y ya lo soportan todos los navegadores modernos — no
+   hace falta fallback a .ttf/.woff. */
 @font-face {
   font-family: 'Galactica';
   src: url('assets/fonts/Galactica-Regular.woff2') format('woff2');
@@ -58,36 +53,30 @@
   box-sizing: border-box;
 }
 
-/* Acento verde GLOBAL (13 sept, a pedido de Kevin: integrar más el
-   verde sin repetir el patrón de "un color por sección" que ya se
-   descartó el 8 sept). En vez de tocar los hovers de mouse que ya
-   existen en todo el sitio (planetas, botones, redes — TODOS usan
-   blanco a propósito: glow/drop-shadow/opacity, nunca color), el
-   verde se usa como color de foco de TECLADO (:focus-visible) en
-   cualquier link o botón del sitio. Antes no había NINGÚN estilo de
-   foco definido — dependía del azul/negro default del navegador, que
-   además se ve roto o invisible sobre elementos con `clip-path`/
-   `transform` como los planetas. Esto es un acento realmente global
-   (toca cada elemento interactivo por igual, no una sección en
+/* Acento verde GLOBAL — color de foco de TECLADO (:focus-visible) en
+   cualquier link o botón del sitio, en vez de tocar los hovers de
+   mouse existentes en todo el sitio (planetas, botones, redes — TODOS
+   usan blanco a propósito: glow/drop-shadow/opacity, nunca color).
+   Sin este estilo el foco dependería del azul/negro default del
+   navegador, que además se ve roto o invisible sobre elementos con
+   `clip-path`/`transform` como los planetas. Es un acento realmente
+   global (toca cada elemento interactivo por igual, no una sección en
    particular), no compite con los hovers de mouse existentes
    (:focus-visible solo se activa navegando con teclado en
-   navegadores modernos) y de paso resuelve un hueco real de
-   accesibilidad. Mismo verde que usa el `<mark>` de Presskit — VERDE
-   REAL DE MARCA (13 sept, paleta oficial que mandó Kevin: #6e8820),
-   reemplaza el placeholder #6b9e7f de antes. Contraste verificado
-   antes de aplicar (no a ojo): 5.03:1 contra el fondo más oscuro del
-   sitio (#05050f) y 4.78:1 contra el fondo de tarjetas (#0d0d1a) —
-   ambos pasan de sobra el mínimo de 3:1 que pide WCAG para contraste
-   de UI no-textual (este outline no es texto). */
+   navegadores modernos). Mismo verde que usa el `<mark>` de Presskit —
+   verde real de marca (#6e8820). Contraste verificado: 5.03:1 contra
+   el fondo más oscuro del sitio (#05050f) y 4.78:1 contra el fondo de
+   tarjetas (#0d0d1a) — ambos pasan de sobra el mínimo de 3:1 que pide
+   WCAG para contraste de UI no-textual (este outline no es texto). */
 a:focus-visible,
 button:focus-visible {
   outline: 2px solid #6e8820;
   outline-offset: 3px;
 }
 
-/* Video de fondo de Presskit (13 sept) — oculto por defecto (desktop
-   no lo usa, ahí sigue el collage de 8 fotos). Se enciende SOLO
-   dentro de la media query mobile (max-width:700px) Y dentro de
+/* Video de fondo de Presskit — oculto por defecto (desktop no lo usa,
+   ahí sigue el collage de 8 fotos). Se enciende SOLO dentro de la
+   media query mobile (max-width:700px) Y dentro de
    prefers-reduced-motion:no-preference — ver .moodboard-presskit
    más abajo para el resto de las capas (foto de fondo + gradiente). */
 .video-fondo-presskit {
@@ -103,43 +92,22 @@ button:focus-visible {
    =================================================== */
 :root {
   --tam-sistema: 700px;
-  /* Subido de 110px a 180px (12 sept): con el placeholder plano (un
-     círculo con gradiente) 110px se veía bien, pero la imagen real
-     (cara + rayos de sol dibujados, PNG con transparencia) necesita
-     más espacio para que los rayos se lean — a 110px se verían
-     encimados/recortados. La cara en sí (el "núcleo" del PNG) queda
-     a un tamaño visual similar al placeholder anterior; lo que crece
-     es el aro de rayos alrededor.
-
-     Historial de ajustes del mismo día (12 sept) — el diagnóstico real
-     terminó siendo otro del que se pensó al principio, ver la nota
-     completa en `.sol` más abajo: 200px → 180px (diagnóstico impreciso
-     de por qué los rayos llegaban a la órbita de Mercurio, corregido
-     después) → Kevin pidió reducir el zoom porque SÍ tapaba a Mercurio
-     de verdad (causa real: un rayo diagonal llega 1.33x más lejos del
-     centro que uno horizontal/vertical — esa cuenta vive en
-     `background-size`, no en este tamaño de caja) → sintió que quedó
-     chico, se subió el zoom a un punto seguro → Kevin pidió DOS veces
-     seguidas "aumenta el tamaño un poco más y reduce el zoom un poco":
-     cada vez, esta caja crece un poco (más presencia/más aro de
-     resplandor) MIENTRAS `background-size` baja en proporción (ver
-     `.sol`), para que el alcance real de los rayos en px se mantenga
-     igual o mejor que antes en vez de empeorar — reverificado con
-     Playwright (9 anchos de mobile + desktop) en cada ronda. Una 3ª
-     vez pidió lo mismo pero "el doble de los valores que consideraste"
-     — mismo mecanismo, delta de caja y de `background-size` duplicados
-     respecto a las rondas anteriores (+40px en vez de +20px). Valor
-     actual: 260px. */
+  /* Tamaño de la caja del Sol — la cara del PNG queda centrada a un
+     tamaño visual más chico; lo que ocupa esta caja es el aro de
+     rayos alrededor. Un rayo diagonal llega ~1.33x más lejos del
+     centro que uno horizontal/vertical — esa proporción vive en
+     `background-size` de `.sol`, no en este tamaño de caja, así que
+     cambiar uno sin el otro puede tapar la órbita de Mercurio o
+     recortar los rayos. */
   --tam-sol: 260px;
-  /* Subido de 46px a 58px (12 sept): las 3 imágenes reales que llegaron
-     para Presskit/Biografía/Newsletter tienen detalle real (texto en la
-     pantalla del tamagotchi, ilustraciones del diario) que a 46px se
-     perdía casi por completo. El aumento aplica parejo a los 4 planetas
-     (incluido Mercurio, que sigue con su placeholder) — más espacio de
-     sobra que el mínimo necesario contra los ~100px de separación entre
-     órbitas, verificado con Playwright (ver comentario de .planeta más
-     abajo). El celular (Contacto) NO es un planeta — reemplaza el botón
-     fijo de la esquina, ver .boton-contacto más abajo. */
+  /* 58px: las imágenes reales de Presskit/Biografía/Newsletter tienen
+     detalle (texto en la pantalla del tamagotchi, ilustraciones del
+     diario) que se pierde a tamaños más chicos. Aplica parejo a los 4
+     planetas (incluido Mercurio, que usa un placeholder) — espacio de
+     sobra contra los ~100px de separación entre órbitas (ver
+     comentario de .planeta más abajo). El celular (Contacto) NO es un
+     planeta — reemplaza el botón fijo de la esquina, ver
+     .boton-contacto más abajo. */
   --tam-planeta: 58px;
   --radio-mercurio: 220px;
   --radio-venus: 320px;
@@ -161,12 +129,11 @@ button:focus-visible {
 @media (max-width: 600px) {
   :root {
     --tam-sistema: min(92vw, 420px);
-    /* Misma proporción que desktop: 260/700 = 0.3714 (antes 0.16,
-       cuando --tam-sol era 110px). */
+    /* Misma proporción que desktop: 260/700 = 0.3714 */
     --tam-sol: calc(var(--tam-sistema) * 0.3714);
-    /* Mismo aumento que en desktop (ver comentario en :root de arriba),
-       tope subido de 46px a 58px — el mínimo/la fórmula de vw se quedan
-       igual, esto solo levanta el techo en pantallas más anchas. */
+    /* Mismo criterio que en desktop (ver comentario en :root de arriba):
+       tope de 58px, el mínimo y la fórmula de vw quedan iguales — esto
+       solo levanta el techo en pantallas más anchas. */
     --tam-planeta: clamp(34px, calc(var(--tam-sistema) * 0.11), 58px);
     --radio-mercurio: calc(var(--tam-sistema) * 0.314);
     --radio-venus: calc(var(--tam-sistema) * 0.457);
@@ -184,24 +151,12 @@ button:focus-visible {
    como un deslizamiento suave en vez de un salto brusco */
 html {
   scroll-behavior: smooth;
-  /* Bug real reportado por Kevin (12 sept): scroll horizontal +
-     "espacio" al lado del fondo del Presskit en mobile. La causa
-     NO estaba en .moodboard-presskit (medí con Playwright: ese
-     bloque cae exacto de borde a borde, 0 a 100% del viewport,
-     en 360/375/390/393/412/430px) — estaba aquí. .meteoro usa
-     position:fixed y viaja con left/top en vw desde fuera de la
-     pantalla (left:-30vw) hacia el lado opuesto, a propósito (ver
-     rutas más abajo). overflow-x:hidden en <body> NO contiene
-     elementos position:fixed — esos se miden contra <html>, no
-     contra body. Resultado: html.scrollWidth quedaba ~8-15px más
-     ancho que el viewport en TODA la página (confirmado con
-     document.documentElement.scrollWidth), y ese margen de scroll
-     es lo que corría el viewport y dejaba ver una franja sin foto
-     al lado del Presskit. Con overflow-x:hidden también en html
-     (además del que ya tenía body) el navegador no puede scrollear
-     ese sobrante — los meteoros se ven exactamente igual (siguen
-     naciendo y muriendo fuera de la pantalla), pero ya no hay
-     scroll horizontal posible en toda la página. */
+  /* overflow-x:hidden aquí (no solo en body) es necesario porque
+     .meteoro usa position:fixed y viaja con left/top en vw desde
+     fuera de la pantalla (ver rutas más abajo). overflow-x:hidden en
+     <body> NO contiene elementos position:fixed — esos se miden
+     contra <html>, no contra body — así que sin esto html.scrollWidth
+     queda más ancho que el viewport y aparece scroll horizontal. */
   overflow-x: hidden;
 }
 
@@ -213,28 +168,24 @@ body {
      sistema solar. overflow-x sigue oculto acá también (ver
      el de html arriba: hacen falta los dos, por motivos distintos). */
   overflow-x: hidden;
-  /* Antes sans-serif genérico. 'Montserrat' primero (fuente real de
-     la artista, ver @font-face arriba); sans-serif se queda como
-     respaldo final por si el archivo .woff2 no cargara por algún
-     motivo (conexión lenta antes de que font-display:swap resuelva,
-     bloqueo de red, etc.) — nunca deja al visitante sin texto. */
+  /* 'Montserrat' primero (fuente de marca, ver @font-face arriba);
+     sans-serif se queda como respaldo final por si el .woff2 no
+     cargara por algún motivo (conexión lenta antes de que
+     font-display:swap resuelva, bloqueo de red, etc.) — nunca deja
+     al visitante sin texto. */
   font-family: 'Montserrat', sans-serif;
   /* ===== CURSOR CUSTOM (normal) ===== */
-  /* Reemplaza el punto blanco placeholder por la varita real que mandó
-     Kevin (13 sept) — recortada a su contenido real (745×893 original).
-     Bajada en 3 rondas a pedido de Kevin: 56×67 → 42×50 ("reducir un
-     poco el tamaño") → **24×29px, tamaño final** ("bájalo al mínimo
-     que aún se distingan los picos"). Se probaron 36/32/28/24/20px uno
-     por uno (reescalado directo desde el recorte original de alta
-     resolución, no desde una versión ya reducida, para no acumular
-     borrosidad) — a 24px los 8 picos de la estrella todavía se
-     distinguen por separado; a 20px ya empiezan a fundirse entre sí.
+  /* Reemplaza el punto blanco placeholder por la varita real,
+     recortada a su contenido real (745×893 original) y reescalada a
+     24×29px — el tamaño mínimo en el que los 8 picos de la estrella
+     todavía se distinguen por separado (a 20px empiezan a fundirse).
+     Reescalado directo desde el recorte original de alta resolución,
+     no desde una versión ya reducida, para no acumular borrosidad.
      El "8 1" es el hotspot: el punto de la imagen que el navegador usa
-     como "punta del cursor" para saber dónde cae el click — se calculó
-     para caer justo en la punta de arriba de la estrella (el pico que
-     apunta hacia arriba-izquierda), no en el centro/esquina de la
-     imagen. Recalculado en la misma proporción cada vez que cambie el
-     tamaño de este PNG. */
+     como "punta del cursor" para saber dónde cae el click — cae en la
+     punta de arriba de la estrella (el pico que apunta hacia
+     arriba-izquierda), no en el centro/esquina de la imagen.
+     Recalcular en la misma proporción si cambia el tamaño del PNG. */
   cursor: url('assets/cursor/varita-normal.png') 8 1, auto;
 }
 
@@ -253,16 +204,16 @@ body {
   overflow: hidden;
 }
 
-/* Hint de primera visita, "toca los planetas" (19 sept) — position:
-   absolute lo saca del flujo flex de .hero, así que NO afecta el
-   centrado de .sistema-solar (sigue siendo el único elemento flex real).
-   Posición: top calculado a partir de --tam-sistema (no un % fijo de la
-   pantalla) para que quede anclado al borde SUPERIOR real de la caja del
-   sistema solar en cualquier viewport — ese borde ya tiene margen de
-   sobra contra la órbita más externa (Marte): ~90px en desktop, ~46px+
-   en el mobile más angosto probado (ver geometría real de --radio-marte
-   en :root), así que 8px hacia adentro del borde es seguro sin
-   necesidad de un breakpoint aparte. */
+/* Hint de primera visita, "toca los planetas" — position:absolute lo
+   saca del flujo flex de .hero, así que NO afecta el centrado de
+   .sistema-solar (sigue siendo el único elemento flex real).
+   Posición: top calculado a partir de --tam-sistema (no un % fijo de
+   la pantalla) para que quede anclado al borde SUPERIOR real de la
+   caja del sistema solar en cualquier viewport — ese borde ya tiene
+   margen de sobra contra la órbita más externa (Marte): ~90px en
+   desktop, ~46px+ en el mobile más angosto (ver geometría real de
+   --radio-marte en :root), así que 8px hacia adentro del borde es
+   seguro sin necesidad de un breakpoint aparte. */
 .hint-planetas {
   position: absolute;
   top: calc(50% - (var(--tam-sistema) / 2) + 5px);
@@ -296,15 +247,14 @@ body {
   }
 }
 
-/* Bug real encontrado con Playwright (19 sept): dejar que el texto
-   partiera en 2 líneas por debajo de 400px casi DUPLICABA la altura del
-   hint (32px a 42px+) — eso empujaba su borde inferior DENTRO del anillo
-   de la órbita de Marte en 320-390px (overlap real medido contra
-   .orbita-marte, no contra el borde de la caja: hasta -12px de traslape
-   en 320px). Fix: una sola línea siempre (nowrap), achicando la letra en
-   vez de partir el texto — a 320px de ancho real, el pill completo mide
-   ~223px con letras más chicas, cabe con margen de sobra sin crecer en
-   altura. Reverificado sin overlap contra .orbita-marte en 320-1920px. */
+/* Dejar que el texto partiera en 2 líneas por debajo de 400px casi
+   DUPLICABA la altura del hint (32px a 42px+) — eso empujaba su borde
+   inferior DENTRO del anillo de la órbita de Marte en 320-390px
+   (overlap real medido contra .orbita-marte, no contra el borde de la
+   caja: hasta -12px de traslape en 320px). Fix: una sola línea siempre
+   (nowrap), achicando la letra en vez de partir el texto — a 320px de
+   ancho real, el pill completo mide ~223px con letras más chicas, cabe
+   con margen de sobra sin crecer en altura. */
 @media (max-width: 400px) {
   .hint-planetas {
     font-size: 10.5px;
@@ -382,35 +332,32 @@ body {
   text-align: center;
 }
 
-/* Nota: .tarjeta-seccion ya NO lleva h2 (8 sept) — el título de
-   Contacto se movió a .intro-contacto, fuera de la tarjeta, igual
-   que en Presskit. La regla ".tarjeta-seccion h2 { opacity:1 }" que
-   vivía aquí se eliminó por quedar sin uso. */
+/* Nota: .tarjeta-seccion ya no lleva h2 — el título de Contacto se
+   movió a .intro-contacto, fuera de la tarjeta, igual que en
+   Presskit. La regla ".tarjeta-seccion h2 { opacity:1 }" que vivía
+   aquí se eliminó por quedar sin uso. */
 
 .subtitulo-seccion {
   /* Mismo tamaño/interlineado que .tagline-biografia (19px/1.7) —
-     antes eran más chicos (14px) que el tagline de Biografía, y
-     Kevin pidió normalizarlos: las 3 secciones (Biografía, Presskit,
-     Contacto) ahora usan la misma jerarquía tipográfica para su
-     título+tagline. */
+     Biografía, Presskit y Contacto comparten la misma jerarquía
+     tipográfica para su título+tagline. */
   font-size: 19px;
   line-height: 1.7;
-  /* Montserrat Light (13 sept, prueba a pedido de Kevin — la
-     variante ya estaba registrada desde antes, sin usar en ningún
-     lado). Un peso más delgado le da un aire más editorial al
-     tagline, en contraste con el h2 en negrita de arriba — mismo
-     criterio en los 2 taglines del sitio (este y .tagline-biografia)
-     para que compartan la misma jerarquía tipográfica que ya
-     comparten en tamaño. Legible sin problema aquí porque el texto
-     vive DENTRO de .texto-resaltado (texto negro sobre fondo blanco
-     sólido) — el contraste no depende del peso de la fuente. */
+  /* Montserrat Light — un peso más delgado le da un aire más
+     editorial al tagline, en contraste con el h2 en negrita de
+     arriba — mismo criterio en los 2 taglines del sitio (este y
+     .tagline-biografia) para que compartan la misma jerarquía
+     tipográfica que ya comparten en tamaño. Legible sin problema
+     aquí porque el texto vive DENTRO de .texto-resaltado (texto
+     negro sobre fondo blanco sólido) — el contraste no depende del
+     peso de la fuente. */
   font-weight: 300;
-  /* Antes opacity:0.6 (texto plano atenuado). Ahora lleva el span
-     .texto-resaltado adentro (fondo blanco sólido) en sus 2 únicos
-     usos del sitio (Presskit y Contacto) — con opacity:0.6 en el
-     padre, ese fondo blanco se vería gris/lavado en vez de sólido,
-     porque opacity afecta TODO lo que se pinta dentro del elemento,
-     no solo el texto. */
+  /* opacity:1 (no un valor atenuado): el span .texto-resaltado
+     adentro (fondo blanco sólido) aparece en sus 2 únicos usos del
+     sitio (Presskit y Contacto) — con opacity reducida en el padre,
+     ese fondo blanco se vería gris/lavado en vez de sólido, porque
+     opacity afecta TODO lo que se pinta dentro del elemento, no solo
+     el texto. */
   opacity: 1;
   margin-bottom: 24px;
 }
@@ -431,15 +378,11 @@ body {
 
 .nota-seccion {
   font-size: 12px;
-  /* Gris claro real de marca (13 sept: #ededef, antes heredaba blanco
-     de .seccion-scroll) — pedido de Kevin para "textos secundarios",
-     y este es exactamente eso: una nota chica bajo el contenido
-     principal. Mismo motivo que .pie-copyright: con el opacity:0.5 de
-     antes el gris nuevo quedaba en 4.69-4.72:1 (ya sin margen real
-     sobre el 4.5:1 mínimo de WCAG AA) — subido a 0.55 para volver a
-     un margen cómodo (5.47-5.53:1 según el fondo detrás). Historial:
-     0.4 → 0.5 (11 sept, backlog de code review, mismo motivo con
-     blanco) → 0.55 (13 sept, al cambiar de blanco a gris claro). */
+  /* Gris claro de marca (#ededef) para textos secundarios — mismo
+     motivo que .pie-copyright: con opacity:0.5 el contraste queda en
+     4.69-4.72:1 (sin margen real sobre el 4.5:1 mínimo de WCAG AA);
+     con opacity:0.55 el margen es cómodo (5.47-5.53:1 según el fondo
+     detrás). */
   color: #ededef;
   opacity: 0.55;
   margin-top: 16px;
@@ -481,20 +424,19 @@ body {
    =================================================== */
 .moodboard-presskit {
   /* position:relative de vuelta: en desktop .cabecera-moodboard se
-     posiciona absoluta ENCIMADA en medio de las fotos (como en tu
-     referencia), y necesita un ancla — en mobile la deshacemos por
-     completo (ver media query), así que ahí no molesta que exista. */
+     posiciona absoluta ENCIMADA en medio de las fotos, y necesita un
+     ancla — en mobile la deshacemos por completo (ver media query),
+     así que ahí no molesta que exista. */
   position: relative;
   margin: 56px 0;
 }
 
 /* Desktop: la cabecera flota ENCIMADA en medio del collage, no
-   arriba de todo — el flex-column + gap sigue siendo lo que da el
-   margen entre título y cita, nada más que ahora ese bloque
-   completo se posiciona con top/left en vez de vivir en flujo
-   normal. En mobile (ver media query) se deshace todo esto y
-   vuelve a flujo normal arriba del carrusel, que es como ya te
-   gustó cómo quedó. */
+   arriba de todo — el flex-column + gap sigue dando el margen entre
+   título y cita, nada más que ahora ese bloque completo se posiciona
+   con top/left en vez de vivir en flujo normal. En mobile (ver media
+   query) se deshace todo esto y vuelve a flujo normal arriba del
+   carrusel. */
 .cabecera-moodboard {
   position: absolute;
   top: 24%;
@@ -527,10 +469,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* object-fit/position solo aplican a las 5 FOTOS, que ahora son
-     <img> reales (11 sept) — recortan la foto al tamaño de la caja
-     sin deformarla, centrado. No afecta a los 3 VIDEOS, que siguen
-     siendo <div> de color placeholder. */
+  /* object-fit/position solo aplican a las 5 FOTOS, que son <img>
+     reales — recortan la foto al tamaño de la caja sin deformarla,
+     centrado. No afecta a los 3 VIDEOS, que siguen siendo <div> de
+     color placeholder. */
   object-fit: cover;
   object-position: center;
 
@@ -592,17 +534,16 @@ body {
 .moodboard-presskit.en-vista .medio-8 { transition-delay: 1.05s, 1.05s, 1.05s, 0s, 0s; }
 
 /* HOVER: el selector sigue filtrando por [data-tipo="foto"] aunque
-   las 8 sean foto ahora (11 sept) — se deja así a propósito, es
-   menos cambio que tocar el selector, y si algún día vuelve un
-   video con otro data-tipo, el filtro ya está listo para excluirlo
-   otra vez sin tocar nada más. Al pasar el cursor, la foto se JALA
-   hacia afuera del texto — cada una tiene su propia dirección de
-   escape (--jx/--jy, definidas junto a su posición más abajo) que
-   apunta hacia donde está el hueco vacío más cercano, alejándola de
-   la zona del título/cita. Las 3 que viven en las esquinas (1, 2, 6)
-   no definen --jx/--jy porque ya están despejadas del texto — ahí
-   el hover solo escala y profundiza la sombra, sin jalón. También
-   crece un poco y su sombra se hace más profunda.
+   las 8 sean foto ahora — se deja así a propósito, es menos cambio
+   que tocar el selector, y si algún día vuelve un video con otro
+   data-tipo, el filtro ya está listo para excluirlo otra vez sin
+   tocar nada más. Al pasar el cursor, la foto se JALA hacia afuera
+   del texto — cada una tiene su propia dirección de escape (--jx/--jy,
+   definidas junto a su posición más abajo) que apunta hacia donde
+   está el hueco vacío más cercano, alejándola de la zona del
+   título/cita. Las 3 que viven en las esquinas (1, 2, 6) no definen
+   --jx/--jy porque ya están despejadas del texto — ahí el hover solo
+   escala y profundiza la sombra, sin jalón.
 
    z-index:3 la sube por encima de las demás fotos con las que se
    traslapa (que se quedan en 1), pero OJO: sigue siendo menor que
@@ -616,8 +557,8 @@ body {
 }
 
 /* Posiciones — ya no hay colores de prueba, las 8 son fotos reales
-   (11 sept, decisión de Kevin: "puras fotos", se quitaron los 3
-   placeholders de video que vivían en las esquinas 1, 2 y 6).
+   (se quitaron los 3 placeholders de video que vivían en las
+   esquinas 1, 2 y 6).
 
    1, 2 y 6 se quedan FUERA de la franja horizontal ~28%-72% que
    ocupa .cabecera-moodboard (por eso nunca necesitaron --jx/--jy:
@@ -626,30 +567,27 @@ body {
    texto a propósito (efecto collage) y cada una trae su dirección
    de "jalón" hacia afuera (--jx/--jy) para el hover de arriba:
    apunta hacia el espacio libre más cercano, alejándola del texto. */
-.medio-1 { top: 0%;   left: 0%;  width: 250px; height: 250px; --angulo: -6deg; } /* foto real (11 sept) */
-.medio-2 { top: 2%;   left: 76%; width: 220px; height: 190px; --angulo: 3deg;  } /* foto real (11 sept) */
-.medio-3 { top: 2%;   left: 33%; width: 270px; height: 215px; --angulo: -4deg; --jx: 20px;  --jy: -30px; } /* foto real (11 sept) */
-.medio-4 { top: 28%;  left: 10%; width: 235px; height: 230px; --angulo: 4deg;  --jx: -32px; --jy: 6px;   } /* foto real (11 sept) */
-.medio-5 { top: 32%;  left: 62%; width: 265px; height: 225px; --angulo: -3deg; --jx: 36px;  --jy: -8px;  } /* foto real (11 sept) */
-.medio-6 { top: 58%;  left: 0%;  width: 245px; height: 225px; --angulo: 5deg;  } /* foto real (11 sept) */
-.medio-7 { top: 60%;  left: 30%; width: 220px; height: 195px; --angulo: -5deg; --jx: -6px;  --jy: 34px;  } /* foto real (11 sept) */
-.medio-8 { top: 56%;  left: 60%; width: 250px; height: 250px; --angulo: 3deg;  --jx: 32px;  --jy: 28px;  } /* foto real (11 sept) */
+.medio-1 { top: 0%;   left: 0%;  width: 250px; height: 250px; --angulo: -6deg; }
+.medio-2 { top: 2%;   left: 76%; width: 220px; height: 190px; --angulo: 3deg;  }
+.medio-3 { top: 2%;   left: 33%; width: 270px; height: 215px; --angulo: -4deg; --jx: 20px;  --jy: -30px; }
+.medio-4 { top: 28%;  left: 10%; width: 235px; height: 230px; --angulo: 4deg;  --jx: -32px; --jy: 6px;   }
+.medio-5 { top: 32%;  left: 62%; width: 265px; height: 225px; --angulo: -3deg; --jx: 36px;  --jy: -8px;  }
+.medio-6 { top: 58%;  left: 0%;  width: 245px; height: 225px; --angulo: 5deg;  }
+.medio-7 { top: 60%;  left: 30%; width: 220px; height: 195px; --angulo: -5deg; --jx: -6px;  --jy: 34px;  }
+.medio-8 { top: 56%;  left: 60%; width: 250px; height: 250px; --angulo: 3deg;  --jx: 32px;  --jy: 28px;  }
 
-/* .icono-play se eliminó (11 sept) — vivía aquí, distinguía los
-   medios data-tipo="video" de las fotos. Con el moodboard ahora de
-   puras fotos (decisión de Kevin) no queda ningún data-tipo="video"
-   en el sitio, así que la clase quedó sin uso. Si el video real
-   regresa más adelante, está completa en el historial de git. */
+/* .icono-play ya no se usa — el moodboard es solo fotos, no queda
+   ningún data-tipo="video" en el sitio. */
 
 /* ===================================================
    TÍTULO Y CITA: dos contenedores separados (siguen siendo dos
    divs distintos en el HTML), apilados en flujo normal dentro de
    .cabecera-moodboard (arriba de las fotos). Comparten el mismo
-   tratamiento visual que ya usas en .tarjeta-modal — fondo casi
-   sólido, borde y esquinas redondeadas.
+   tratamiento visual que .tarjeta-modal — fondo casi sólido, borde
+   y esquinas redondeadas.
    =================================================== */
-/* Sin tarjeta oscura de fondo (a propósito, 8 sept): con el título y
-   el tagline ya llevando .texto-resaltado (fondo blanco sólido), la
+/* Sin tarjeta oscura de fondo, a propósito: con el título y el
+   tagline ya llevando .texto-resaltado (fondo blanco sólido), la
    tarjeta se volvió una capa redundante — el blanco sólido ya da
    todo el contraste que necesita contra las fotos del collage detrás,
    sin encerrarlo en otra caja. .texto-moodboard (la cita, abajo)
@@ -670,7 +608,7 @@ body {
 }
 
 .titulo-moodboard h2 {
-  margin-bottom: 16px; /* antes 4px — subido junto con el tamaño del tagline (8 sept), mismo espaciado que Biografía/Contacto */
+  margin-bottom: 16px; /* mismo espaciado que Biografía/Contacto */
 }
 
 .texto-moodboard {
@@ -698,14 +636,12 @@ body {
 }
 
 /* <mark>: la etiqueta semántica de HTML para "texto resaltado" —
-   mejor que un <span> genérico porque describe el SIGNIFICADO
-   (esto es importante), no solo la apariencia. Verde real de marca
-   (13 sept: #6e8820, ver nota completa en :focus-visible arriba) en
-   vez del placeholder anterior — mismo alpha (0.35) que ya se usaba,
-   reverificado porque el tono cambió: el fondo efectivo resultante
-   (~#2f381c sobre la tarjeta oscura de Presskit) da 12.33:1 de
-   contraste contra el texto blanco encima — de sobra por encima del
-   4.5:1 mínimo de WCAG AA para texto normal. */
+   mejor que un <span> genérico porque describe el SIGNIFICADO (esto
+   es importante), no solo la apariencia. Verde real de marca
+   (#6e8820, ver nota completa en :focus-visible arriba), alpha 0.35:
+   el fondo efectivo resultante (~#2f381c sobre la tarjeta oscura de
+   Presskit) da 12.33:1 de contraste contra el texto blanco encima —
+   de sobra por encima del 4.5:1 mínimo de WCAG AA para texto normal. */
 .texto-moodboard mark {
   background: rgba(110, 136, 32, 0.35);
   color: white;
@@ -714,30 +650,29 @@ body {
 }
 
 /* ===================================================
-   VIDEOS Y DISCOGRAFÍA REALES (8 sept) — a diferencia del moodboard
-   de arriba (fotos placeholder), este contenido SÍ es real. Van
-   derechos, sin el clip-path/rotación del collage a propósito: son
-   reproductores/links funcionales, no fotos decorativas — mismo
-   criterio que ya vimos en las referencias del cliente (ninguna
-   rota sus embeds de YouTube).
+   VIDEOS Y DISCOGRAFÍA REALES — a diferencia del moodboard de arriba
+   (fotos placeholder), este contenido SÍ es real. Van derechos, sin
+   el clip-path/rotación del collage a propósito: son
+   reproductores/links funcionales, no fotos decorativas.
    =================================================== */
 .etiqueta-bloque {
-  /* 19px — mismo tamaño que .tagline-biografia/.subtitulo-seccion
-     (8 sept, pedido por Kevin): las 5 "etiquetas" de texto resaltado
-     del sitio (Biografía, Presskit, Contacto, Videos, Discografía)
-     comparten ahora la misma jerarquía tipográfica. Antes 13px. */
+  /* 19px — mismo tamaño que .tagline-biografia/.subtitulo-seccion:
+     las 5 "etiquetas" de texto resaltado del sitio (Biografía,
+     Presskit, Contacto, Videos, Discografía) comparten la misma
+     jerarquía tipográfica. */
   font-size: 19px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  /* opacity:1 (antes 0.5) por el mismo motivo que .subtitulo-seccion:
-     ahora lleva .texto-resaltado adentro (fondo blanco sólido) — con
-     opacity:0.5 en el padre, ese fondo se vería lavado, no sólido. */
+  /* opacity:1 (no un valor atenuado) por el mismo motivo que
+     .subtitulo-seccion: lleva .texto-resaltado adentro (fondo blanco
+     sólido) — con opacity reducida en el padre, ese fondo se vería
+     lavado, no sólido. */
   opacity: 1;
   margin-bottom: 20px;
 }
 
 /* .videos-presskit tiene su propio max-width (más ancho, para el
-   video) y más aire arriba/abajo (9 sept, pedido de Mike) — antes
+   video) y más aire arriba/abajo que .discografia-presskit. Antes
    compartía regla con .discografia-presskit y el margen (56px) se
    "colapsaba" con el margin-bottom de .moodboard-presskit (también
    56px): en CSS, márgenes verticales de bloques contiguos no se
@@ -757,13 +692,11 @@ body {
   margin: 0 auto 0;
 }
 
-/* ===== VIDEO DESTACADO + "nebulosa" (9 sept, ronda 3: vapor) =====
-   Antes: un aro giratorio (conic-gradient + overflow:hidden, ver
-   historial en el doc del proyecto). Se reemplazó por una sombra que
-   "respira" (crece y se desvanece, `@keyframes laten-nebulosa` abajo)
-   para dejar el video como único foco. Mike pidió ir un paso más:
-   que se sienta como una "tormenta nebulosa" con vapor saliendo, no
-   solo un brillo respirando parejo.
+/* ===== VIDEO DESTACADO + "nebulosa" =====
+   Sombra que "respira" (crece y se desvanece, `@keyframes
+   laten-nebulosa` abajo) detrás del video, con vapor moviéndose para
+   que se sienta como una "tormenta nebulosa", no solo un brillo
+   respirando parejo.
 
    Técnica: 2 manchas (::before y ::after) de `radial-gradient` MÁS
    GRANDES que el contenedor, muy difuminadas (`filter:blur`), puestas
@@ -807,18 +740,14 @@ body {
   background: radial-gradient(circle at 72% 65%, rgba(155, 107, 220, 0.5), transparent 60%);
 }
 
-/* Gated a .en-vista (13 sept, fix de rendimiento pendiente desde el
-   fix de scroll mobile de v60 — ver PENDIENTES #18 del doc del
-   proyecto): antes las 3 animaciones corrían SIEMPRE, aunque Presskit
-   ni siquiera estuviera en pantalla — el blur(45px) de las 2 manchas
-   es de los filtros más caros de repintar, exactamente el mismo
-   patrón que ya se corrigió en los meteoros y en la nebulosa de
-   Biografía (v60). `.video-destacado` no tenía IntersectionObserver
-   propio todavía — se agregó uno con el mismo helper genérico
-   `activarRevelado()` que ya usan Presskit/Biografía (ver script.js,
-   Sección 8). Cero cambio visual para quien ve la sección: el estado
-   base (sin `.en-vista`) ya deja el box-shadow y las 2 manchas fijos
-   en su posición/opacidad de reposo, en vez de animar. */
+/* Gated a .en-vista: las 3 animaciones corren SOLO cuando la sección
+   está en pantalla — el blur(45px) de las 2 manchas es de los
+   filtros más caros de repintar, mismo patrón que se usa en los
+   meteoros y en la nebulosa de Biografía. Usa el mismo helper
+   genérico `activarRevelado()` (ver script.js, Sección 8) que ya usan
+   Presskit/Biografía. Cero cambio visual para quien ve la sección: el
+   estado base (sin `.en-vista`) ya deja el box-shadow y las 2 manchas
+   fijos en su posición/opacidad de reposo, en vez de animar. */
 @media (prefers-reduced-motion: no-preference) {
   .video-destacado.en-vista {
     animation: laten-nebulosa 5s ease-in-out infinite;
@@ -858,16 +787,14 @@ body {
   border-radius: 18px;
 }
 
-/* ===== "Nuevo" — mismo blanco sólido que .texto-resaltado, a
-   propósito: es el único acento de alto contraste que ya usa el
-   sitio (decisión de Kevin: sin colores por sección) — un badge
-   verde/rojo aquí sería sumar un color nuevo sin paleta confirmada. */
+/* ===== "Nuevo" — mismo blanco sólido que .texto-resaltado: es el
+   único acento de alto contraste del sitio, sin colores por sección. */
 .badge-nuevo {
   display: inline-block;
   background: #ffffff;
-  /* Negro real de marca (13 sept: #2b2c26, antes #0a0a12) — mismo
-     cambio que .texto-resaltado, mismo tratamiento visual (blanco
-     sólido + negro), así que va el mismo valor. */
+  /* Negro real de marca (#2b2c26, no un negro genérico) — mismo
+     tratamiento visual que .texto-resaltado (blanco sólido + negro),
+     así que va el mismo valor. */
   color: #2b2c26;
   font-size: 10px;
   font-weight: bold;
@@ -878,8 +805,7 @@ body {
   vertical-align: middle;
 }
 
-/* ===== Ronda 4 (9 sept): lista en tarjeta + último lanzamiento
-   flotando encima (pedido de Mike) =====
+/* ===== Lista en tarjeta + último lanzamiento flotando encima =====
 
    .discografia-cuerpo es el ancla (position:relative) de la que
    cuelga .lanzamiento-destacado (position:absolute). El truco para
@@ -894,12 +820,12 @@ body {
    de UI, solo que aquí en vez de un ícono chico es la canción entera. */
 .discografia-cuerpo {
   position: relative;
-  margin-top: 80px; /* antes 56px — Mike pidió alejar un poco más la etiqueta "Discografía" de la tarjeta flotante, se sentían pegadas */
+  margin-top: 80px; /* separación entre la etiqueta "Discografía" y la tarjeta flotante */
 }
 
 .tarjeta-lista-discografia {
-  /* mismo fondo casi sólido que .tarjeta-seccion/.tarjeta-modal —
-     el "fondo de modal" que pidió Mike para la lista completa */
+  /* mismo fondo casi sólido que .tarjeta-seccion/.tarjeta-modal,
+     para la lista completa */
   background: #0d0d1a;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
@@ -907,20 +833,17 @@ body {
 }
 
 /* ===== Último lanzamiento — bloque compacto arriba de la lista
-   completa, escalado desde el hero-banner grande que usa
-   galobarker.com para su canción más nueva (referencia de Kevin) a
-   algo proporcional para un artista con 5 sencillos, no una
-   discografía extensa. Ahora flota SOBRE .tarjeta-lista-discografia
-   en vez de ir arriba en flujo normal (ver nota en .discografia-cuerpo
-   arriba) — el fondo cambia de un simple borde a un degradado
+   completa, escalado a un tamaño proporcional para un artista con 5
+   sencillos, no una discografía extensa. Flota SOBRE
+   .tarjeta-lista-discografia en vez de ir arriba en flujo normal (ver
+   nota en .discografia-cuerpo arriba) — el fondo usa un degradado
    azul/morado (los mismos tonos que ya usa la nebulosa del video
    destacado, `#38b3fa`/`#9b6bdc`) para que se lea como "destacado que
    flota encima", no solo otra fila más de la lista. Es un degradado
    estático (sin animación) a propósito: esta tarjeta lleva texto que
    hay que poder leer bien, y demasiado movimiento aquí competiría con
-   el efecto del video de arriba en vez de reforzar la identidad visual
-   del sitio — si después de verlo prefieres que también "respire" un
-   poco, es un cambio chico. */
+   el efecto del video de arriba en vez de reforzar la identidad
+   visual del sitio. */
 .lanzamiento-destacado {
   position: absolute;
   top: -48px;
@@ -936,12 +859,10 @@ body {
   border-radius: 16px;
 
   background: linear-gradient(135deg, rgba(56, 179, 250, 0.3), rgba(155, 107, 220, 0.3)), #12121f;
-  /* Sombra reducida (pedido de Mike) — antes era grande y difusa
-     (32px de blur + dos glows de 46-70px). Ahora es delgada: blur
-     corto y desplazamiento chico para la sombra de elevación, y los
-     glows de color se acortan y se les baja la opacidad — se sigue
-     notando el color de la nebulosa pegado al borde, pero ya no se
-     "riega" tanto hacia afuera. */
+  /* Sombra delgada: blur corto y desplazamiento chico para la sombra
+     de elevación, y los glows de color se acortan y se les baja la
+     opacidad — se sigue notando el color de la nebulosa pegado al
+     borde, pero sin que se "riegue" hacia afuera. */
   box-shadow:
     0 4px 10px rgba(5, 5, 15, 0.4),
     0 0 16px 1px rgba(56, 179, 250, 0.18),
@@ -992,7 +913,7 @@ body {
   border-bottom: none;
 }
 
-/* Envuelve portada+nombre como UN solo elemento flex (8 sept) — así
+/* Envuelve portada+nombre como UN solo elemento flex — así
    ".item-discografia" (justify-content:space-between) los agrupa
    juntos a la izquierda y manda el botón a la derecha, en vez de
    repartir espacio entre los 3 por igual. */
@@ -1016,12 +937,10 @@ body {
   text-align: left;
 }
 
-/* .boton-pill: antes se llamaba ".boton-boletos" y solo se usaba en
-   los links de "Boletos" del modal de Shows (por eso vivía scoped a
-   ".item-show"). Se generalizó (8 sept) porque el mismo botón —
-   texto chico, uppercase, borde translúcido — es exactamente lo que
-   necesitábamos para "Escuchar en Spotify" aquí. Un solo estilo
-   reutilizado en vez de duplicar CSS. */
+/* .boton-pill: nombre genérico porque el mismo estilo — texto chico,
+   uppercase, borde translúcido — se reutiliza en "Boletos" (modal de
+   Shows) y en "Escuchar en Spotify". Un solo estilo reutilizado en
+   vez de duplicar CSS. */
 .boton-pill {
   padding: 8px 16px;
   border-radius: 20px;
@@ -1039,33 +958,32 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* .boton-descarga-presskit (19 sept): modificador para el link de
-   descarga del PDF real en Presskit — mismo look que .boton-pill
-   (Boletos/Spotify), pero con texto más largo ("Descargar Press Kit
-   (PDF)") que sí necesita poder partirse en 2 líneas en mobile en vez
-   de desbordarse (a diferencia de "Boletos"/"Play", que siempre caben
-   en una sola línea). */
+/* .boton-descarga-presskit: modificador para el link de descarga del
+   PDF real en Presskit — mismo look que .boton-pill (Boletos/
+   Spotify), pero con texto más largo ("Descargar Press Kit (PDF)")
+   que sí necesita poder partirse en 2 líneas en mobile en vez de
+   desbordarse (a diferencia de "Boletos"/"Play", que siempre caben en
+   una sola línea). */
 .boton-descarga-presskit {
   white-space: normal;
   text-align: center;
-  /* Antes este espacio lo daba el gap:14px de .cabecera-moodboard
-     (el botón vivía como hermano suelto de .titulo-moodboard, ver
-     nota grande en index.html sobre el bug de v104). Ahora que vive
-     DENTRO de .titulo-moodboard, necesita su propio margen respecto
-     al subtítulo — mismo valor que ese gap para no cambiar el
-     espaciado visual en desktop. */
+  /* Este margen reemplaza el gap:14px que daba .cabecera-moodboard
+     cuando el botón vivía como hermano suelto de .titulo-moodboard.
+     Ahora que vive DENTRO de .titulo-moodboard, necesita su propio
+     margen respecto al subtítulo — mismo valor que ese gap para no
+     cambiar el espaciado visual en desktop. */
   margin-top: 14px;
 }
 
-/* Fondo propio (19 sept, v103): a diferencia de "Boletos"/"Spotify"
-   (que siempre viven sobre una tarjeta oscura sólida), este botón
-   flota suelto sobre el collage de fotos del moodboard en desktop —
-   fondo que cambia y a veces es claro. El estilo base de .boton-pill
-   (sin relleno, solo borde blanco translúcido) depende de lo que haya
-   detrás para verse — Kevin reportó que ahí no se distingue bien. Se
-   le da un fondo propio semi-opaco (mismo tono que las tarjetas/
-   modales del sitio) para que tenga contraste garantizado sin
-   importar qué imagen quede detrás. */
+/* Fondo propio: a diferencia de "Boletos"/"Spotify" (que siempre
+   viven sobre una tarjeta oscura sólida), este botón flota suelto
+   sobre el collage de fotos del moodboard en desktop — fondo que
+   cambia y a veces es claro. El estilo base de .boton-pill (sin
+   relleno, solo borde blanco translúcido) depende de lo que haya
+   detrás para verse, así que no siempre se distingue bien. Se le da
+   un fondo propio semi-opaco (mismo tono que las tarjetas/modales del
+   sitio) para que tenga contraste garantizado sin importar qué imagen
+   quede detrás. */
 .boton-descarga-presskit {
   background: rgba(13, 13, 26, 0.75);
   backdrop-filter: blur(3px);
@@ -1076,20 +994,17 @@ body {
   background: rgba(13, 13, 26, 0.9);
 }
 
-/* Nota (20 sept, v105): en v104 se probó dejarlo transparente SOLO en
-   mobile (el bug real era la posición, no el contraste) — Kevin lo
-   probó y prefirió que no desaparezca del todo: mismo fondo
-   translúcido oscuro que desktop, visible en cualquier viewport. Por
-   eso ya no hay override de mobile aquí — la regla de arriba
-   (rgba(13,13,26,0.75) + blur) aplica parejo en todos los anchos. */
+/* No hay override de mobile aquí a propósito — el mismo fondo
+   translúcido oscuro de desktop (rgba(13,13,26,0.75) + blur) se
+   queda visible en cualquier viewport. */
 
-/* .boton-spotify (9 sept, pedido de Mike): modificador SOLO para los
-   links de Spotify — el mismo ".boton-pill" también se usa para
-   "Boletos" en Shows, y ese no lleva ícono ni necesita el texto
-   corto, así que el cambio va scoped aquí, no en ".boton-pill" en
-   general. ".texto-boton-corto" ("Play") existe siempre en el HTML
-   pero se queda oculto por default — el media query de abajo es el
-   que decide cuál de los dos textos se ve. */
+/* .boton-spotify: modificador SOLO para los links de Spotify — el
+   mismo ".boton-pill" también se usa para "Boletos" en Shows, y ese
+   no lleva ícono ni necesita el texto corto, así que el cambio va
+   scoped aquí, no en ".boton-pill" en general. ".texto-boton-corto"
+   ("Play") existe siempre en el HTML pero se queda oculto por
+   default — el media query de abajo es el que decide cuál de los dos
+   textos se ve. */
 .boton-spotify {
   display: inline-flex;
   align-items: center;
@@ -1105,14 +1020,14 @@ body {
   display: none;
 }
 
-/* Mobile (9 sept, pedido de Mike): antes el nombre de canción largo
-   ("A Song I Wrote About U at the Airport Lol") no cabía junto al
-   botón "ESCUCHAR EN SPOTIFY" completo en una fila angosta, así que
-   forzábamos todo a apilarse en columna. Con el botón comprimido a
-   ícono + "PLAY" (mucho más angosto), ya no hace falta ese apilado:
-   miniatura + nombre + botón caben en una sola fila — el nombre
-   simplemente hace wrap a 2 líneas si el título es largo, en vez de
-   saltar a su propio renglón completo. */
+/* Mobile: el nombre de canción largo ("A Song I Wrote About U at the
+   Airport Lol") no cabe junto al botón "ESCUCHAR EN SPOTIFY" completo
+   en una fila angosta, así que antes se forzaba todo a apilarse en
+   columna. Con el botón comprimido a ícono + "PLAY" (mucho más
+   angosto), ya no hace falta ese apilado: miniatura + nombre + botón
+   caben en una sola fila — el nombre simplemente hace wrap a 2 líneas
+   si el título es largo, en vez de saltar a su propio renglón
+   completo. */
 @media (max-width: 600px) {
   .texto-boton-completo {
     display: none;
@@ -1144,9 +1059,9 @@ body {
 
 /* ===================================================
    MOBILE: el esparcido irregular con position:absolute no cabe en
-   una pantalla angosta, y apilar las 8 en una columna (lo que
-   probamos antes) dejaba el moodboard midiendo más de 2000px de
-   alto — demasiado scroll vertical solo para llegar al texto.
+   una pantalla angosta, y apilar las 8 en una columna dejaría el
+   moodboard midiendo más de 2000px de alto — demasiado scroll
+   vertical solo para llegar al texto.
 
    En vez de eso: .medios-presskit se convierte en un carrusel
    horizontal usando scroll-snap, una función NATIVA del navegador
@@ -1159,11 +1074,11 @@ body {
    de arriba (una sola clase), así que ganan por venir después en el
    archivo — por eso este bloque va al final, no antes. */
 @media (max-width: 700px) {
-  /* Carrusel eliminado (12 sept, a pedido de Kevin) — reemplazado por
-     una foto de fondo fija detrás del título+cita (ver .moodboard-presskit
-     más abajo). display:none en vez de borrar el HTML: el markup de las
-     8 fotos se queda intacto (lo sigue usando el collage de desktop,
-     misma media query no aplica ahí), solo se oculta en mobile. */
+  /* Carrusel eliminado — reemplazado por una foto de fondo fija
+     detrás del título+cita (ver .moodboard-presskit más abajo).
+     display:none en vez de borrar el HTML: el markup de las 8 fotos
+     se queda intacto (lo sigue usando el collage de desktop, la misma
+     media query no aplica ahí), solo se oculta en mobile. */
   .medios-presskit {
     display: none;
   }
@@ -1184,39 +1099,37 @@ body {
     width: calc(100% + 48px);
     min-height: 560px;
     overflow: hidden;
-    /* 13 sept — ya no es flex/centrado: el título y la cita se
-       posicionan cada uno `absolute` por separado (ver
+    /* Ya no es flex/centrado: el título y la cita se posicionan cada
+       uno `absolute` por separado (ver
        .cabecera-moodboard/.titulo-moodboard/.texto-moodboard más
        abajo) para que uno viva arriba y el otro abajo, dejando el
-       centro del video libre — a pedido de Kevin, para que se vea
-       más el video real en vez de taparlo con el texto centrado.
-       Por eso tampoco lleva padding ya: el gutter de 24px ahora lo
-       da cada caja de texto por separado, no el contenedor. */
+       centro del video libre para que se vea el video en vez de
+       taparlo con el texto centrado. Por eso tampoco lleva padding
+       ya: el gutter de 24px ahora lo da cada caja de texto por
+       separado, no el contenedor. */
   }
 
-  /* Foto real (12 sept): Galáctica cantando en vivo con luz azul de
-     escenario (medio-5 del collage de desktop, mismo archivo fuente
-     pero exportado a mayor resolución/calidad para uso de fondo — ver
+  /* Foto de Galáctica cantando en vivo con luz azul de escenario
+     (medio-5 del collage de desktop, mismo archivo fuente pero
+     exportado a mayor resolución/calidad para uso de fondo — ver
      nota en index.html sobre .medios-presskit). object-position
      favorece la parte de arriba (rostro/micrófono) del encuadre.
 
-     13 sept — ahora esta foto es solo la capa DE ABAJO DE TODO
-     (z-index:0): sirve de "poster" instantáneo mientras el video
-     de .video-fondo-presskit carga, y de fallback completo si el
-     usuario tiene prefers-reduced-motion (el video ni siquiera se
-     pinta, ver más abajo) o si el navegador no puede reproducir el
-     video.
+     Es la capa DE ABAJO DE TODO (z-index:0): sirve de "poster"
+     instantáneo mientras el video de .video-fondo-presskit carga, y
+     de fallback completo si el usuario tiene prefers-reduced-motion
+     (el video ni siquiera se pinta, ver más abajo) o si el navegador
+     no puede reproducir el video.
 
-     MISMO DÍA, 2º ajuste: top/bottom pasaron de 0 (inset:0 completo)
-     a 24px — deja una franja de 24px arriba y abajo SIN foto/video,
-     donde el fondo que se ve es el de la página (#05050f, casi
-     idéntico al #0d0d1a de la tarjeta de la cita — por eso esa
-     franja se siente parte del mismo diseño, no un corte brusco).
-     Esa franja es lo que le da a .titulo-moodboard/.texto-moodboard
-     espacio real para "salirse" del video (ver esas 2 reglas más
-     abajo) en vez de quedar SIEMPRE encimados sobre la imagen — a
-     pedido de Kevin, para que el video (la parte más interesante,
-     al centro) quede libre de texto/degradado encima. */
+     top/bottom en 24px (no inset:0 completo) deja una franja de 24px
+     arriba y abajo SIN foto/video, donde se ve el fondo de la página
+     (#05050f, casi idéntico al #0d0d1a de la tarjeta de la cita — por
+     eso esa franja se siente parte del mismo diseño, no un corte
+     brusco). Esa franja es lo que le da a
+     .titulo-moodboard/.texto-moodboard espacio real para "salirse"
+     del video (ver esas 2 reglas más abajo) en vez de quedar SIEMPRE
+     encimados sobre la imagen, dejando el video (la parte más
+     interesante, al centro) libre de texto/degradado encima. */
   .moodboard-presskit::before {
     content: '';
     position: absolute;
@@ -1230,10 +1143,10 @@ body {
     background-position: center 20%;
   }
 
-  /* Video real del reel musical (13 sept, a pedido de Kevin — ver
-     .video-fondo-presskit en index.html): mudo, en loop, autoplay,
-     playsinline (obligatorio en iOS para que autoplay funcione sin
-     pantalla completa). Vive ENCIMA de la foto de ::before
+  /* Video real del reel musical (ver .video-fondo-presskit en
+     index.html): mudo, en loop, autoplay, playsinline (obligatorio en
+     iOS para que autoplay funcione sin pantalla completa). Vive
+     ENCIMA de la foto de ::before
      (z-index:1 > 0) y DEBAJO del gradiente de ::after (z-index:2,
      ver abajo) y de .cabecera-moodboard (z-index:5, ya heredado de
      la regla de desktop más arriba — no se repite aquí). object-fit
@@ -1258,16 +1171,16 @@ body {
       left: 0;
       z-index: 1;
       /* width/height explícitos en vez de dejar que el 4º offset
-         (right/bottom) los calcule solo — real bug encontrado con
-         Playwright: en un elemento reemplazado (<video>), dejar los
-         4 offsets (top/right/bottom/left) sin declarar width/height
-         hace que Chromium use el ratio intrínseco del video (1080×
-         1350) para calcular el alto en vez de respetar `bottom`, y
-         el video termina mucho más alto que su contenedor, saliendo
-         de la pantalla por debajo. width:100% + height con calc()
-         (restando los 24px de arriba Y de abajo) fuerza el tamaño
-         real sin ambigüedad — object-fit:cover sigue encargándose
-         de recortar el video para llenar esa caja sin deformarlo. */
+         (right/bottom) los calcule solo — bug real: en un elemento
+         reemplazado (<video>), dejar los 4 offsets
+         (top/right/bottom/left) sin declarar width/height hace que
+         Chromium use el ratio intrínseco del video (1080×1350) para
+         calcular el alto en vez de respetar `bottom`, y el video
+         termina mucho más alto que su contenedor, saliendo de la
+         pantalla por debajo. width:100% + height con calc() (restando
+         los 24px de arriba Y de abajo) fuerza el tamaño real sin
+         ambigüedad — object-fit:cover sigue encargándose de recortar
+         el video para llenar esa caja sin deformarlo. */
       width: 100%;
       height: calc(100% - 48px);
       object-fit: cover;
@@ -1275,15 +1188,13 @@ body {
     }
   }
 
-  /* Gradiente oscuro (13 sept, reducido de golpe): antes cubría casi
-     todo el cuadro (necesario cuando el título+cita vivían centrados
-     ENCIMA del video/foto). Ahora que ambos textos se movieron a sus
-     propias cajas sólidas arriba/abajo (ver .titulo-moodboard/
-     .texto-moodboard) y el centro del video queda libre a propósito,
-     el degradado se redujo a un viñeteado angosto solo en el
-     borde superior e inferior (18% de cada lado) — el 64% del medio
-     queda sin oscurecer, que es justo el "se vea más el video" que
-     pidió Kevin. pointer-events:none para no bloquear ningún tap. */
+  /* Gradiente oscuro reducido a un viñeteado angosto: cubre solo el
+     borde superior e inferior (18% de cada lado). Ahora que el
+     título+cita viven en sus propias cajas sólidas arriba/abajo (ver
+     .titulo-moodboard/.texto-moodboard) en vez de centrados ENCIMA
+     del video/foto, el 64% del medio queda sin oscurecer para que se
+     vea más el video. pointer-events:none para no bloquear ningún
+     tap. */
   .moodboard-presskit::after {
     content: '';
     position: absolute;
@@ -1315,23 +1226,22 @@ body {
     width: 100%;
     max-width: 100%;
     /* transform:none cancela el translateX(-50%) de la regla de
-       desktop (arriba) — real bug encontrado con Playwright: sin
-       este reset, el translateX se sigue aplicando (no es algo que
-       "left" por sí solo pueda cancelar) y desplazaba TODO el header
-       -195px en un viewport de 390px (la mitad de su propio ancho,
-       ya que aquí ocupa el 100%), sacándolo de pantalla por
-       completo. */
+       desktop (arriba) — bug real: sin este reset, el translateX se
+       sigue aplicando (no es algo que "left" por sí solo pueda
+       cancelar) y desplazaba TODO el header -195px en un viewport de
+       390px (la mitad de su propio ancho, ya que aquí ocupa el
+       100%), sacándolo de pantalla por completo. */
     transform: none;
   }
 
   /* Título+subtítulo: pegado al borde SUPERIOR de .cabecera-moodboard
      (top:0) — como el video empieza 24px más abajo (ver ::before/
      .video-fondo-presskit arriba), los primeros ~24px de esta caja
-     quedan sobre la franja sin video (fondo de página) y el resto
-     de su alto real (variable, según cuánto envuelva el texto) cae
-     encima del video — ese es el efecto "se sale un poco arriba del
-     video" que pidió Kevin. left/right + margin:0 auto centran el
-     bloque dentro del gutter de 24px, igual que antes. */
+     quedan sobre la franja sin video (fondo de página) y el resto de
+     su alto real (variable, según cuánto envuelva el texto) cae
+     encima del video, dando el efecto "se sale un poco arriba del
+     video". left/right + margin:0 auto centran el bloque dentro del
+     gutter de 24px, igual que antes. */
   .titulo-moodboard {
     position: absolute;
     top: 0;
@@ -1396,33 +1306,30 @@ body {
   line-height: 1.7; /* un poco más alto que antes (1.6) para que los
                         renglones resaltados de abajo no se peguen
                         entre sí verticalmente */
-  /* Montserrat Light (13 sept) — ver nota completa en
-     .subtitulo-seccion, mismo criterio en los 2 taglines del sitio. */
+  /* Montserrat Light — ver nota completa en .subtitulo-seccion, mismo
+     criterio en los 2 taglines del sitio. */
   font-weight: 300;
   color: rgba(255, 255, 255, 0.85);
   max-width: 560px;
   margin: 0 auto;
 }
 
-/* PRUEBA (7 sept), referencia: KOSA Artist Residency — efecto
-   "marcador": fondo blanco que se pega a cada renglón de texto,
-   texto en negro. Clave: va en un <span> DENTRO del h2/p, nunca en
-   el h2/p mismo — un span es inline por default, así que cuando el
-   texto se parte en varios renglones, cada renglón es su propia
-   "caja" y box-decoration-break:clone le clona el mismo fondo+padding
-   a cada una. Si se pusiera en el h2/p (block-level) se vería UN
-   solo rectángulo blanco gigante detrás de todo el párrafo, no el
-   efecto de renglones sueltos que se ve en la referencia.
-   Clase reutilizable a propósito — es una prueba en Biografía, pero
-   si funciona se puede reusar en otros títulos/textos sin duplicar
-   CSS. */
+/* Efecto "marcador" tipo KOSA Artist Residency: fondo blanco que se
+   pega a cada renglón de texto, texto en negro. Clave: va en un
+   <span> DENTRO del h2/p, nunca en el h2/p mismo — un span es inline
+   por default, así que cuando el texto se parte en varios renglones,
+   cada renglón es su propia "caja" y box-decoration-break:clone le
+   clona el mismo fondo+padding a cada una. Si se pusiera en el h2/p
+   (block-level) se vería UN solo rectángulo blanco gigante detrás de
+   todo el párrafo, no el efecto de renglones sueltos. Clase
+   reutilizable a propósito: la usan varios títulos/textos del sitio
+   sin duplicar CSS. */
 .texto-resaltado {
   background-color: #ffffff;
-  /* Negro real de marca (13 sept: #2b2c26, antes #0a0a12) — pedido de
-     Kevin para "los títulos y subtítulos", que es exactamente este
-     efecto de texto (todos los h2 y taglines resaltados del sitio
-     pasan por esta clase). Contraste contra el blanco del fondo:
-     14.08:1, muy por encima del mínimo de WCAG. */
+  /* Negro real de marca (#2b2c26, no un negro genérico) — usado en
+     todos los h2 y taglines resaltados del sitio que pasan por esta
+     clase. Contraste contra el blanco del fondo: 14.08:1, muy por
+     encima del mínimo de WCAG. */
   color: #2b2c26;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -1443,18 +1350,14 @@ body {
   flex-direction: row-reverse;
 }
 
-/* Fotos reales de la artista (13 sept, mandadas por Kevin) —
-   reemplazan el degradado placeholder que vivía aquí desde el
-   principio (ver historial abajo: 2 tonos distintos solo para
-   distinguir los 2 bloques mientras no había foto real). Bloque 1:
-   la artista en un parque con patos; Bloque 2: retrato posando
-   contra una pared blanca — mismo orden en que Kevin las mandó, fácil
-   de invertir si prefiere lo contrario, es solo cambiar el nombre del
-   archivo en las 2 reglas de abajo. object-fit:cover (ambas fotos
-   son verticales, ~675×900, más altas que anchas) recorta por los
-   lados/arriba-abajo según haga falta para llenar la caja de 260×320
-   sin deformar la imagen — mismo criterio que ya usan las fotos de
-   Presskit. */
+/* Fotos reales de la artista — reemplazan el degradado placeholder
+   que vivía aquí antes. Bloque 1: la artista en un parque con patos;
+   Bloque 2: retrato posando contra una pared blanca — invertir el
+   orden es solo cambiar el nombre del archivo en las 2 reglas de
+   abajo. object-fit:cover (ambas fotos son verticales, ~675×900, más
+   altas que anchas) recorta por los lados/arriba-abajo según haga
+   falta para llenar la caja de 260×320 sin deformar la imagen —
+   mismo criterio que ya usan las fotos de Presskit. */
 .foto-bloque-bio {
   flex: 0 0 260px;
   height: 320px;
@@ -1469,36 +1372,23 @@ body {
   background-image: url('assets/biografia/artista-retrato-pared.jpg');
 }
 
-/* ===== Fondo "nebulosa" detrás del texto — v3, sin silueta (9 sept,
-   pedido de Mike) =====
-   v1 era una tarjeta (borde + esquinas redondeadas + fondo casi
-   sólido) — se sentía "modal". v2 quitó el borde y metió un
-   radial-gradient más chico que la caja para que no se cortara en un
-   borde recto — mejoró, pero Mike notó que TODAVÍA se alcanzaba a ver
-   la forma del rectángulo (la caja `.texto-bloque-bio` es ancha y
-   baja, casi del ancho de una ellipse pegada a sus proporciones, así
-   que el degradado terminaba "abrazando" esa forma).
+/* ===== Fondo "nebulosa" detrás del texto =====
+   El degradado vive en un `::before` MÁS GRANDE que la caja (`inset`
+   negativo) y con `filter:blur()`, en vez de ser el `background`
+   directo del contenedor — mismo espíritu que la nebulosa del video
+   destacado. Al no estar recortado por los límites exactos del div,
+   no hay ninguna línea recta donde "termina la caja y empieza el
+   fondo": el blur + el sobretamaño garantizan que lo único que se vea
+   sea la mancha difusa, nunca su borde.
 
-   v3: mismo espíritu que la nebulosa del video destacado — el
-   degradado ahora vive en un `::before` MÁS GRANDE que la caja
-   (`inset` negativo) y con `filter:blur()`, en vez de ser el
-   `background` directo del contenedor. Al ya no estar recortado por
-   los límites exactos del div, no hay ninguna línea recta donde
-   "termina la caja y empieza el fondo" — el blur + el sobretamaño
-   son los que garantizan que lo único que se vea sea la mancha
-   difusa, nunca su borde.
-
-   Por qué esto SÍ es seguro para la legibilidad (a diferencia de lo
-   que hablamos del video): no es que el blur ya no importe aquí,
-   es que el degradado deja una meseta bien opaca y bien grande en el
+   Legibilidad: el degradado deja una meseta bien opaca y grande en el
    centro (los primeros stops casi no bajan de opacidad hasta 45-50%)
-   ANTES de empezar a desvanecer — el blur difumina esa meseta hacia
+   antes de empezar a desvanecer — el blur difumina esa meseta hacia
    afuera, pero el centro (justo donde vive el texto, gracias al
    padding) se queda sólido. `isolation:isolate` en el contenedor
    evita que el `z-index:-1` del `::before` se escape a pelear con
    otras capas de la página — mismo mecanismo que `.video-destacado`.
-   Mismo color en los dos bloques (no uno por foto) — mismo criterio
-   de siempre: no contradecir la decisión de no variar colores por
+   Mismo color en los dos bloques (no uno por foto): sin colores por
    sección. */
 .texto-bloque-bio {
   position: relative;
@@ -1506,17 +1396,12 @@ body {
   padding: 40px 44px;
 }
 
-/* v5 (9 sept, pedido de Mike): la v4 (color que cambia de azul a
-   morado en vivo, vía @property) le ganaba la atención al título
-   "BIOGRAFÍA" — un cambio de TONO es una señal visual mucho más
-   fuerte que un simple desplazamiento de posición, así que aunque
-   la paleta fuera la misma de siempre, el comportamiento nuevo se
-   sentía más "ruidoso" que el resto del sitio. Se quita el
-   @property y el cambio de color por completo — de vuelta a colores
-   FIJOS por capa (mismo criterio que `.video-destacado`, que nunca
-   generó esta queja: ahí las manchas se mueven pero nunca cambian
-   de tono). La viñeta oscura (3ª capa) sigue igual de siempre: fija,
-   sin animar nada. */
+/* Colores FIJOS por capa (sin @property ni cambio de tono en vivo):
+   un cambio de TONO es una señal visual mucho más fuerte que un
+   simple desplazamiento de posición y se sentiría más "ruidoso" que
+   el resto del sitio — mismo criterio que `.video-destacado`, donde
+   las manchas se mueven pero nunca cambian de color. La viñeta oscura
+   (3ª capa) es fija, sin animar nada. */
 .texto-bloque-bio::before {
   content: '';
   position: absolute;
@@ -1531,18 +1416,12 @@ body {
   background-position: 32% 30%, 72% 74%, 50% 50%;
 }
 
-/* Patrón invertido (9 sept, pedido de Mike): "que no se repita" entre
-   los dos bloques de Biografía. Se invierte el PATRÓN DE COLOR
-   mismo: se intercambia qué color va en cada capa — donde el bloque
-   normal tiene azul arriba-izquierda y morado abajo-derecha, este
-   bloque tiene morado arriba-izquierda y azul abajo-derecha. Nada de
-   @keyframes nuevo, un solo override de `background-image`.
-
-   (9 sept: hubo una comparación temporal aquí — "manchas más chicas
-   y separadas, alpha 0.4, blur 22px" contra el actual — para decidir
-   si el fondo grisáceo mejoraba. Mike decidió quedarse con EL ACTUAL
-   (el de siempre, sin ese ajuste), así que este bloque vuelve a ser
-   solo el intercambio de color, igual que antes de la prueba.) */
+/* Patrón invertido: "que no se repita" entre los dos bloques de
+   Biografía. Se invierte el PATRÓN DE COLOR: se intercambia qué color
+   va en cada capa — donde el bloque normal tiene azul arriba-izquierda
+   y morado abajo-derecha, este bloque tiene morado arriba-izquierda y
+   azul abajo-derecha. Nada de @keyframes nuevo, un solo override de
+   `background-image`. */
 .bloque-bio--invertido .texto-bloque-bio::before {
   background-image:
     radial-gradient(ellipse 55% 55%, rgba(155, 107, 220, 0.3), transparent 68%),
@@ -1550,25 +1429,22 @@ body {
     radial-gradient(ellipse 62% 58%, rgba(8, 8, 16, 0.85) 0%, rgba(8, 8, 16, 0.8) 45%, transparent 92%);
 }
 
-/* Solo se anima la POSICIÓN (mismo mecanismo de siempre: la 3ª capa,
-   la viñeta, se queda fija en "50% 50%" en los dos pasos del
-   keyframe, nunca se mueve). El bloque invertido corre la MISMA
-   animación pero con un delay negativo de medio ciclo, para que los
-   dos bloques tampoco se muevan en espejo perfecto — ya no cambian
-   de color, pero sí conviene que su desplazamiento esté desfasado.
+/* Solo se anima la POSICIÓN (la 3ª capa, la viñeta, se queda fija en
+   "50% 50%" en los dos pasos del keyframe, nunca se mueve). El bloque
+   invertido corre la MISMA animación pero con un delay negativo de
+   medio ciclo, para que los dos bloques no se muevan en espejo
+   perfecto.
 
-   Gated a .en-vista (12 sept, fix de rendimiento a partir de reporte
-   de Mike de scroll "raro"/no fluido en mobile): antes la animación
-   corría SIEMPRE, aunque Biografía ni siquiera estuviera en pantalla
-   — cada bloque repinta un pseudo-elemento de ~55-58% del bloque,
-   con filter:blur(26px) encima (blur es de los filtros más caros de
-   repintar), y eso corriendo de fondo todo el tiempo le suma trabajo
-   al hilo principal justo cuando el navegador también está ocupado
-   compositando el scroll. `.bloque-bio`/`.bloque-bio--invertido` YA
-   reciben `.en-vista` vía IntersectionObserver (activarRevelado en
+   Gated a .en-vista: la animación corre SOLO cuando Biografía está en
+   pantalla — cada bloque repinta un pseudo-elemento de ~55-58% del
+   bloque, con filter:blur(26px) encima (blur es de los filtros más
+   caros de repintar), y correr eso de fondo todo el tiempo le suma
+   trabajo al hilo principal justo cuando el navegador también está
+   ocupado compositando el scroll. `.bloque-bio`/`.bloque-bio--invertido`
+   ya reciben `.en-vista` vía IntersectionObserver (activarRevelado en
    script.js) para el fade-in — se reutiliza esa misma clase para
-   prender/apagar esta animación: solo corre mientras el bloque
-   realmente se ve, cero cambio visual para quien lee la sección. */
+   prender/apagar esta animación: cero cambio visual para quien lee la
+   sección. */
 @media (prefers-reduced-motion: no-preference) {
   .bloque-bio.en-vista .texto-bloque-bio::before {
     animation: nebulosa-bio-deriva 11s ease-in-out infinite;
@@ -1584,31 +1460,25 @@ body {
   50%      { background-position: 42% 20%, 60% 84%, 50% 50%; }
 }
 
-/* Refuerzo de legibilidad (9 sept, pedido de Mike): el contraste en
-   el CENTRO de la caja ya era alto (blanco sobre la meseta casi
-   negra de la viñeta), pero cerca de los bordes del padding —donde
-   la viñeta empieza a desvanecerse (stop 45%→92%)— el color animado
-   de atrás se asoma un poco más. Subimos blanco 0.85→0.93 (contraste
-   más duro en automático) y agregamos un text-shadow CORTO y oscuro
-   (nada de blur amplio tipo glow/neón — eso competiría con el blur
-   de la nebulosa de atrás) que blinda justo esa zona de borde sin
-   depender de qué tan oscuro esté el fondo en ese punto exacto del
-   ciclo de animación. Primera vez que se usa text-shadow en el
-   sitio — si el resultado convence, vale la pena repetirlo en otros
-   bloques de texto sobre fondo animado/oscuro, no solo aquí. */
-/* Textura decorativa de fondo (13 sept, idea de Kevin del 11 sept,
-   pausada hasta tener texto real de biografía — ver PENDIENTES #16
-   del doc del proyecto — retomada ahora que ese texto ya es real
-   desde v59). Repite la MISMA frase que ya lleva <mark> en el párrafo
-   de cada bloque, como textura tipográfica muy tenue detrás del
-   texto real — no un tercer color/frase inventada, para no competir
-   con lo que ya se resaltó a propósito. Estática (sin animación de
-   posición ni de color, pedido explícito) — no suma costo de
-   repintado ni compite con la nebulosa que ya se mueve detrás.
-   Orden de capas dentro de `.texto-bloque-bio` (isolation:isolate):
-   nebulosa `::before` (z-index:-1, ver arriba) → esta textura
-   (z-index:0) → párrafo real (z-index:1, ver regla de abajo).
-   `aria-hidden` porque es puramente decorativo — el lector de
+/* Refuerzo de legibilidad: el contraste en el CENTRO de la caja ya es
+   alto (blanco sobre la meseta casi negra de la viñeta), pero cerca
+   de los bordes del padding —donde la viñeta empieza a desvanecerse
+   (stop 45%→92%)— el color animado de atrás se asoma un poco más.
+   Blanco en 0.93 (más duro que 0.85) y un text-shadow CORTO y oscuro
+   (nada de blur amplio tipo glow/neón — eso competiría con el blur de
+   la nebulosa de atrás) blindan esa zona de borde sin depender de qué
+   tan oscuro esté el fondo en ese punto exacto del ciclo de
+   animación. */
+/* Textura decorativa de fondo: repite la MISMA frase que ya lleva
+   <mark> en el párrafo de cada bloque, como textura tipográfica muy
+   tenue detrás del texto real — no un tercer color/frase inventada,
+   para no competir con lo que ya se resaltó a propósito. Estática
+   (sin animación de posición ni de color, a propósito) — no suma
+   costo de repintado ni compite con la nebulosa que ya se mueve
+   detrás. Orden de capas dentro de `.texto-bloque-bio`
+   (isolation:isolate): nebulosa `::before` (z-index:-1, ver arriba) →
+   esta textura (z-index:0) → párrafo real (z-index:1, ver regla de
+   abajo). `aria-hidden` porque es puramente decorativo — el lector de
    pantalla ya tiene el texto real en el `<p>`. */
 .textura-bio {
   position: absolute;
@@ -1620,24 +1490,21 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
   text-transform: uppercase;
-  /* Bajado de clamp(24px,4vw,40px) a esto (13 sept, a pedido de
-     Kevin: "se ven cortados"). Con el tamaño grande anterior, cada
-     renglón medía ~30-52px de alto — la tarjeta rara vez tiene una
-     altura que sea múltiplo exacto de eso, así que el renglón de
-     arriba/abajo casi siempre terminaba a la mitad, cortando una
-     palabra completa a simple vista. Con texto más chico cada
-     renglón mide ~17-23px — el sobrante que se recorta en el borde
-     es una franja angosta de una palabra corta en vez de media
-     palabra grande, mucho menos notorio. letter-spacing/word-spacing
-     bajados en la misma proporción que el tamaño (si no, con texto
-     chico y el espaciado grande de antes el efecto se ve raro/
-     desarmado, como si le sobrara aire entre letras).
-     Además (refuerzo, no lo pidió Kevin pero resuelve el problema de
-     raíz sin depender de que el tamaño ya case perfecto con el alto
-     de cada tarjeta en cada ancho de pantalla): mask-image en
-     degradado difumina los primeros/últimos ~14px de la tarjeta — el
-     renglón que SÍ quede a la mitad ya no se ve "cortado a cuchillo",
-     se desvanece solo, como una viñeta. */
+  /* font-size chico (clamp 13-18px, no un tamaño grande tipo
+     24-40px): con texto grande, cada renglón medía ~30-52px de alto —
+     la tarjeta rara vez tiene una altura que sea múltiplo exacto de
+     eso, así que el renglón de arriba/abajo casi siempre terminaba a
+     la mitad, cortando una palabra completa a simple vista. Con texto
+     más chico cada renglón mide ~17-23px — el sobrante que se recorta
+     en el borde es una franja angosta de una palabra corta en vez de
+     media palabra grande, mucho menos notorio. letter-spacing/
+     word-spacing bajados en la misma proporción que el tamaño, si no
+     el efecto se ve desarmado, como si le sobrara aire entre letras.
+     Además, mask-image en degradado difumina los primeros/últimos
+     ~14px de la tarjeta — el renglón que SÍ quede a la mitad ya no se
+     ve "cortado a cuchillo", se desvanece solo, como una viñeta. Esto
+     resuelve el problema de raíz sin depender de que el tamaño case
+     perfecto con el alto de cada tarjeta en cada ancho de pantalla. */
   font-size: clamp(13px, 1.6vw, 18px);
   line-height: 1.3;
   letter-spacing: 1.5px;
@@ -1663,22 +1530,18 @@ body {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
 }
 
-/* <mark> de previsualización (9 sept, pedido de Mike) — misma idea
-   que el <mark> de la cita en Presskit (.texto-moodboard mark), con
-   dos ajustes a propósito:
-   1. Color de marca (azul) en vez del verde de Presskit — ese verde
-      sigue siendo un placeholder pendiente de la paleta real, y
-      Biografía ya tiene su propio lenguaje de color (azul/morado) —
-      meter un tercer color aquí rompería esa consistencia.
+/* <mark> de previsualización — misma idea que el <mark> de la cita en
+   Presskit (.texto-moodboard mark), con dos ajustes a propósito:
+   1. Color de marca (azul) en vez del verde de Presskit — Biografía
+      tiene su propio lenguaje de color (azul/morado), meter un
+      tercer color aquí rompería esa consistencia.
    2. Alpha más alto que el 0.35 de Presskit (aquí 0.55): el mark de
-      Presskit vive sobre una tarjeta de fondo casi sólido, así que
-      su contraste está garantizado siempre. Aquí el texto vive
-      directo sobre la nebulosa animada — el alpha más alto hace que
-      el highlight no dependa de qué tan oscuro esté el fondo en ese
+      Presskit vive sobre una tarjeta de fondo casi sólido, así que su
+      contraste está garantizado siempre. Aquí el texto vive directo
+      sobre la nebulosa animada — el alpha más alto hace que el
+      highlight no dependa de qué tan oscuro esté el fondo en ese
       punto exacto del ciclo.
-   Con el texto real de biografía (12 sept) ya se resaltan frases de
-   verdad (ver index.html) — este es el color BASE (azul), usado en
-   el bloque 1. */
+   Este es el color BASE (azul), usado en el bloque 1. */
 .texto-bloque-bio mark {
   background: rgba(56, 179, 250, 0.55);
   color: white;
@@ -1686,22 +1549,20 @@ body {
   border-radius: 3px;
 }
 
-/* Bloque 2 (--invertido): mark en morado en vez de azul (12 sept,
-   pedido de Mike) — mismo criterio que ya usa el fondo de nebulosa
-   de este bloque (.bloque-bio--invertido .texto-bloque-bio::before,
-   más abajo): los 2 bloques intercalan azul/morado para que no se
-   sientan gemelos. Mismo alpha (0.55), solo cambia el color base. */
+/* Bloque 2 (--invertido): mark en morado en vez de azul — mismo
+   criterio que ya usa el fondo de nebulosa de este bloque
+   (.bloque-bio--invertido .texto-bloque-bio::before, más abajo): los
+   2 bloques intercalan azul/morado para que no se sientan gemelos.
+   Mismo alpha (0.55), solo cambia el color base. */
 .bloque-bio--invertido .texto-bloque-bio mark {
   background: rgba(155, 107, 220, 0.55);
 }
 
-/* Easter egg (13 sept, pedido de Kevin — opción 3 de las que se le
-   plantearon): la palabra "pequeña" dentro de "Escribo desde
-   pequeña" (bloque 2) revela, al pasar el mouse o dar tap/foco, una
-   foto real de la artista de niña haciendo la MISMA seña de rock que
-   ya usa de adulta en las fotos del sitio — el gesto es el gancho.
-   Solo vive en este bloque (no en el 1) porque es donde está esa
-   frase exacta.
+/* Easter egg: la palabra "pequeña" dentro de "Escribo desde pequeña"
+   (bloque 2) revela, al pasar el mouse o dar tap/foco, una foto real
+   de la artista de niña haciendo la MISMA seña de rock que ya usa de
+   adulta en las fotos del sitio — el gesto es el gancho. Solo vive en
+   este bloque (no en el 1) porque es donde está esa frase exacta.
 
    Mecanismo: `.disparador-easteregg` es el `<span>` que envuelve la
    palabra, con `position:relative` para anclar el popup absoluto
@@ -1717,11 +1578,11 @@ body {
    `tabindex="0" role="button" aria-expanded` en el HTML lo hacen
    real para teclado/lector de pantalla, no decorativo.
 
-   Estética "polaroid" (franja blanca abajo + cinta arriba, tal como
-   pediría un diario/scrapbook — mismo lenguaje visual que ya usa el
-   ícono de Tierra=Biografía) en vez de un tooltip genérico: es un
-   easter egg, se vale que se sienta como un objeto físico
-   encontrado, no como una notificación de UI. */
+   Estética "polaroid" (franja blanca abajo + cinta arriba, como un
+   diario/scrapbook — mismo lenguaje visual que ya usa el ícono de
+   Tierra=Biografía) en vez de un tooltip genérico: es un easter egg,
+   se vale que se sienta como un objeto físico encontrado, no como una
+   notificación de UI. */
 .disparador-easteregg {
   position: relative;
   cursor: pointer;
@@ -1902,9 +1763,9 @@ body {
   background-color: rgba(5, 5, 15, 0.95);
 }
 
-/* .pie-etiqueta y .pie-email se quitaron (7 sept): duplicaban
-   literalmente el correo que ya muestra la tarjeta de #contacto
-   justo arriba en el flujo de scroll. */
+/* .pie-etiqueta y .pie-email se quitaron — duplicaban literalmente
+   el correo que ya muestra la tarjeta de #contacto justo arriba en
+   el flujo de scroll. */
 
 .pie-redes {
   display: flex;
@@ -1916,15 +1777,14 @@ body {
 
 .pie-redes a {
   /* Antes llevaban texto junto al ícono (gap/font-size/letter-spacing
-     eran para ESE texto) — ahora es solo ícono (9 sept, pedido de
-     Kevin), el padding es lo que le da un área de toque decente sin
-     inflar el tamaño visual del ícono. */
+     eran para ESE texto) — ahora es solo ícono, el padding es lo que
+     le da un área de toque decente sin inflar el tamaño visual del
+     ícono. */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px;
-  /* Gris claro real de marca (13 sept: #ededef) en vez de blanco puro —
-     pedido de Kevin para los íconos de redes sociales. Contraste de
+  /* Gris claro de marca (#ededef) en vez de blanco puro. Contraste de
      sobra contra el fondo aun con la opacity de reposo (0.6): 6.39:1,
      muy por encima del 3:1 mínimo de WCAG para elementos no-textuales. */
   color: #ededef;
@@ -1937,16 +1797,14 @@ body {
    fill:currentColor los conecta con el color/opacity que ya trae cada
    link (incluida la dimerización a 0.6 de arriba y el hover a 1) —
    no hace falta pintar cada logo de su color de marca por separado,
-   consistente con la decisión de no variar colores por sección. */
-/* Fix (9 sept): el atributo HTML "hidden" del sprite de íconos (ver
-   index.html, justo después de abrir <body>) no se estaba respetando de
-   forma confiable en un <svg> raíz — en vez de desaparecer del todo,
-   se quedaba con su tamaño de reemplazo por default (300x150px) y
-   empujaba TODO lo de abajo (incluido el sistema solar) 150px hacia
-   abajo. Por eso "después del cambio de íconos" el sistema solar se
-   veía corrido — no tiene que ver con el espaciado del video. Se
-   fuerza aquí con CSS explícito en vez de depender solo del atributo,
-   para que sea consistente en cualquier navegador. */
+   consistente con el resto del sitio: sin colores por sección. */
+/* Fix: el atributo HTML "hidden" del sprite de íconos (ver index.html,
+   justo después de abrir <body>) no se respeta de forma confiable en
+   un <svg> raíz — en vez de desaparecer del todo, se queda con su
+   tamaño de reemplazo por default (300x150px) y empuja TODO lo de
+   abajo (incluido el sistema solar) 150px hacia abajo. Se fuerza aquí
+   con CSS explícito en vez de depender solo del atributo, para que
+   sea consistente en cualquier navegador. */
 svg[hidden] {
   display: none;
 }
@@ -1968,13 +1826,11 @@ svg[hidden] {
 }
 
 .pie-copyright {
-  /* Gris claro real de marca (13 sept: #ededef) en vez de blanco puro
-     — pedido de Kevin para "textos secundarios", y este es el más
-     chico/discreto del sitio. Opacity subida de 0.5 a 0.55 en el
-     mismo movimiento: con el mismo 0.5 de antes, el gris nuevo daba
-     4.69:1 (ya no pasaba con margen real el 4.5:1 mínimo de WCAG AA a
-     11px — antes el blanco daba 5.31:1 con ese mismo 0.5, más aire).
-     A 0.55 vuelve a dar margen real: 5.47-5.53:1 según el fondo. */
+  /* Gris claro de marca (#ededef) en vez de blanco puro, para el
+     texto secundario más chico/discreto del sitio. Con opacity:0.5 el
+     gris da 4.69:1 (sin margen real sobre el 4.5:1 mínimo de WCAG AA
+     a 11px) — a 0.55 vuelve a dar margen real: 5.47-5.53:1 según el
+     fondo. */
   color: #ededef;
   font-size: 11px;
   opacity: 0.55;
@@ -2068,16 +1924,16 @@ svg[hidden] {
 }
 
 /* ===== ÍCONOS SUELTOS, SIN CÍRCULO DE FONDO ===== */
-/* Ya no llevan background, border ni backdrop-filter — son
-   solo el ícono/texto flotando, como pediste */
+/* Ya no llevan background, border ni backdrop-filter — son solo el
+   ícono/texto flotando. */
 .icono-red {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Gris claro real de marca (13 sept: #ededef) en vez de blanco puro,
-     mismo pedido/motivo que .pie-redes a de arriba — estos íconos ya
-     están a opacity:1 cuando visibles, contraste 17.35:1 contra el
-     fondo del sitio, de sobra por encima del mínimo de WCAG. */
+  /* Gris claro de marca (#ededef) en vez de blanco puro, mismo
+     criterio que .pie-redes a de arriba — estos íconos ya están a
+     opacity:1 cuando visibles, contraste 17.35:1 contra el fondo del
+     sitio, de sobra por encima del mínimo de WCAG. */
   color: #ededef;
   font-size: 18px;
   text-decoration: none;
@@ -2092,10 +1948,10 @@ svg[hidden] {
 
 .icono-red:hover {
   transform: scale(1.25) !important;
-  /* Como ya no hay fondo circular, el hover resalta con un
-     glow suave detrás del ícono en sí — azul real de marca (13 sept:
-     #b7ddde) en vez de blanco, ver nota completa en .planeta:hover
-     más abajo (mismo cambio, mismo motivo). */
+  /* Como ya no hay fondo circular, el hover resalta con un glow
+     suave detrás del ícono en sí — azul real de marca (#b7ddde) en
+     vez de blanco, ver nota completa en .planeta:hover más abajo
+     (mismo cambio, mismo motivo). */
   filter: drop-shadow(0 0 6px rgba(183, 221, 222, 0.8));
 }
 
@@ -2114,18 +1970,17 @@ svg[hidden] {
 .redes-flotantes.abierto .icono-red:nth-child(4) { transition-delay: 0s; }
 
 /* ===== Las principales, siempre visibles (fuera del toggle) =====
-   Bajado de 3 (TikTok/Spotify/Instagram) a 2 (13 sept, a pedido de
-   Kevin para hacer espacio al widget del sencillo en mobile — ver
+   2 íconos, no 3: deja espacio al widget del sencillo en mobile (ver
    media query de abajo). Elegidas por popularidad real, no al azar:
    Instagram como red social (alcance general más amplio para seguir
-   a la artista) + Spotify como plataforma de streaming — confirmado
-   con datos de Similarweb (sept 2026) que Spotify es la app de
-   música #1 en México, con margen amplio sobre Apple Music (#7) y
-   Amazon Music (#9); YouTube Music aparece #2 pero YouTube ya vive
-   aparte como plataforma de VIDEO en el sitio (video destacado en
-   Presskit), así que no sumaba tanto aquí. TikTok pasa al grupo
-   colapsado (detrás del "+") — sigue siendo real y alcanzable, solo
-   ya no ocupa espacio fijo en la fila. */
+   a la artista) + Spotify como plataforma de streaming — según datos
+   de Similarweb (sept 2026), Spotify es la app de música #1 en
+   México, con margen amplio sobre Apple Music (#7) y Amazon Music
+   (#9); YouTube Music aparece #2 pero YouTube ya vive aparte como
+   plataforma de VIDEO en el sitio (video destacado en Presskit), así
+   que no sumaba tanto aquí. TikTok pasa al grupo colapsado (detrás
+   del "+") — sigue siendo real y alcanzable, solo ya no ocupa espacio
+   fijo en la fila. */
 .icono-red.siempre-visible {
   opacity: 1;
   transform: translateX(0) scale(1);
@@ -2137,17 +1992,16 @@ svg[hidden] {
    (para la animación de apertura, que las hace aparecer con
    opacity+transform) — pero por más invisibles/encogidos que estén
    cuando el menú está cerrado, un elemento flex SIN display:none
-   sigue reservando su espacio real en la fila (confirmado con
-   Playwright: aun cerrado, el contenedor completo medía 296px en un
-   viewport de 390px, no los ~116px que se ven a simple vista). Eso
-   era lo que de verdad chocaba con el widget del sencillo en la
-   esquina opuesta. Aquí, SOLO en mobile, se sacan por completo del
-   flujo con `display:none` mientras el menú está cerrado — se
-   pierde el desliz/fundido escalonado de esos 5 íconos al abrir en
-   mobile (aparecen de golpe en vez de en cascada), pero es la forma
-   correcta de liberar el espacio real, no un ajuste cosmético que
-   deja el problema de fondo intacto. Desktop no se toca — ahí nunca
-   hubo problema de espacio, y se conserva la animación completa. */
+   sigue reservando su espacio real en la fila (el contenedor completo
+   medía 296px en un viewport de 390px, no los ~116px que se ven a
+   simple vista). Eso era lo que chocaba con el widget del sencillo en
+   la esquina opuesta. Aquí, SOLO en mobile, se sacan por completo del
+   flujo con `display:none` mientras el menú está cerrado — se pierde
+   el desliz/fundido escalonado de esos 5 íconos al abrir en mobile
+   (aparecen de golpe en vez de en cascada), pero es la forma correcta
+   de liberar el espacio real, no un ajuste cosmético que deja el
+   problema de fondo intacto. Desktop no se toca — ahí nunca hubo
+   problema de espacio, y se conserva la animación completa. */
 @media (max-width: 700px) {
   .icono-red:not(.siempre-visible) {
     display: none;
@@ -2237,13 +2091,12 @@ svg[hidden] {
 
 /* ===================================================
    WIDGET FIJO: SENCILLO (esquina inferior izquierda)
-   13 sept, idea de Kevin. Mismo offset (24px) y mismo z-index (200)
-   que .redes-flotantes de arriba — es su espejo en la esquina
-   contraria, incluso desktop/mobile lo tratan igual (esa regla
-   tampoco tiene ajuste especial por ancho de pantalla).
-   `transition: bottom` es para el ajuste de abajo (menú de redes
-   abierto en mobile angosto) — se anima igual de suave en los dos
-   sentidos, no solo al subir. */
+   Mismo offset (24px) y mismo z-index (200) que .redes-flotantes de
+   arriba — es su espejo en la esquina contraria, incluso
+   desktop/mobile lo tratan igual (esa regla tampoco tiene ajuste
+   especial por ancho de pantalla). `transition: bottom` es para el
+   ajuste de abajo (menú de redes abierto en mobile angosto) — se
+   anima igual de suave en los dos sentidos, no solo al subir. */
 .widget-sencillo {
   position: fixed;
   left: 24px;
@@ -2252,20 +2105,34 @@ svg[hidden] {
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: bottom 0.3s ease;
+  transition: bottom 0.3s ease, opacity 0.3s ease;
+}
+
+/* Se oculta al llegar al footer, para no competir visualmente con el
+   contenido del pie de página. Reutiliza el MISMO IntersectionObserver
+   que ya vigilaba .pie-pagina para el botón cohete (Sección 9 de
+   script.js) en vez de crear uno nuevo — mismo elemento observado,
+   mismo evento, dos clases distintas que reaccionan a él.
+   opacity+pointer-events (no display:none) para poder animar la
+   transición y no cortar en seco; el audio SIGUE sonando aunque el
+   widget esté invisible (ocultar visualmente no pausa la
+   reproducción, son cosas independientes). */
+.widget-sencillo.oculto-footer {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Con las 2 esquinas ya a la misma altura en reposo (ver más abajo),
    queda un último caso real: en mobile angosto (<700px), cuando
    alguien ABRE el menú de redes con el botón "+", ese menú se
-   expande a los 7 íconos completos (~296px) — y a 320-390px de
-   ancho (verificado con Playwright, el rango de teléfonos más
-   común) esa expansión SÍ alcanza a tocar el disco, aunque en
-   reposo (cerrado) ya no se toquen. En vez de dejarlo o de volver a
-   subir el widget SIEMPRE (perdiendo la misma altura que pidió
-   Kevin), se sube SOLO mientras el menú de redes está abierto —
-   combinador `~` porque en el HTML `.redes-flotantes` viene ANTES
-   que `.widget-sencillo`. Se resuelve solo al cerrar el menú. */
+   expande a los 7 íconos completos (~296px) — y a 320-390px de ancho
+   (el rango de teléfonos más común) esa expansión SÍ alcanza a tocar
+   el disco, aunque en reposo (cerrado) ya no se toquen. En vez de
+   dejarlo o de subir el widget SIEMPRE (perdiendo la altura que
+   comparte con .redes-flotantes en reposo), se sube SOLO mientras el
+   menú de redes está abierto — combinador `~` porque en el HTML
+   `.redes-flotantes` viene ANTES que `.widget-sencillo`. Se resuelve
+   solo al cerrar el menú. */
 @media (max-width: 700px) {
   .redes-flotantes.abierto ~ .widget-sencillo {
     bottom: 84px;
@@ -2377,11 +2244,11 @@ svg[hidden] {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
 }
 
-/* Utilidad genérica (13 sept, primer uso en el sitio): oculta visualmente
-   sin ocultar de lectores de pantalla — técnica estándar ("visually
-   hidden"), a diferencia de display:none/aria-hidden que sí lo esconden
-   de todos. Sirve para el nombre real del sencillo (ver marquee de abajo)
-   y queda disponible para el resto del sitio si hace falta a futuro. */
+/* Utilidad genérica: oculta visualmente sin ocultar de lectores de
+   pantalla — técnica estándar ("visually hidden"), a diferencia de
+   display:none/aria-hidden que sí lo esconden de todos. Sirve para el
+   nombre real del sencillo (ver marquee de abajo) y queda disponible
+   para el resto del sitio si hace falta a futuro. */
 .oculto-visual {
   position: absolute;
   width: 1px;
@@ -2411,10 +2278,9 @@ svg[hidden] {
 @media (max-width: 700px) {
   @media (prefers-reduced-motion: no-preference) {
     /* Ancho fijo elegido para que "disco + gap + este ancho" quepa
-       con margen real contra las redes sociales — medido con
-       Playwright antes de fijar el número (nunca a ojo). 130px es
-       seguro desde 375px de ancho en adelante; abajo de eso (320-
-       374px, celulares angostos reales) el hueco libre contra
+       con margen real contra las redes sociales. 130px es seguro
+       desde 375px de ancho en adelante; abajo de eso (320-374px,
+       celulares angostos reales) el hueco libre contra
        `.redes-flotantes` se encoge mucho y 130px SÍ choca — se achica
        más en el breakpoint de abajo (374px) solo para ese rango. */
     .nombre-sencillo {
@@ -2427,9 +2293,9 @@ svg[hidden] {
        se usa el valor más chico (76px) para TODO este rango, seguro
        en el peor caso en vez de un ajuste fino por cada ancho.
 
-       Con Playwright se encontró que achicar SOLO `.nombre-sencillo`
-       no bastaba: `.info-sencillo` es flex-direction:column, y sin un
-       ancho propio se estira al hijo MÁS ancho — que a partir de aquí
+       Achicar SOLO `.nombre-sencillo` no bastaba: `.info-sencillo` es
+       flex-direction:column, y sin un ancho propio se estira al hijo
+       MÁS ancho — que a partir de aquí
        ya no es el nombre (recortado a 76px) sino el link "Ver
        discografía →" (~90px), así que el widget completo seguía
        chocando por ese link, no por el nombre. Se fija el mismo ancho
@@ -2493,27 +2359,23 @@ svg[hidden] {
   color: rgba(255, 255, 255, 0.95);
 }
 
-/* Mobile angosto (mismo corte de 700px que ya usa el resto del sitio):
-   antes (13 sept, primera ronda) aquí se escondía TODO `.info-sencillo`
-   (nombre + link a discografía) porque el texto completo no cabía sin
-   chocar con `.redes-flotantes` en anchos de celular comunes
-   (360-414px). Esa reserva de espacio de `.redes-flotantes` ya se
+/* Mobile angosto (mismo corte de 700px que ya usa el resto del
+   sitio): `.info-sencillo` (nombre + link a discografía) ya no se
+   esconde aquí. Antes se ocultaba porque el texto completo no cabía
+   sin chocar con `.redes-flotantes` en anchos de celular comunes
+   (360-414px); esa reserva de espacio de `.redes-flotantes` ya se
    corrigió de raíz (ver `.icono-red:not(.siempre-visible)` arriba) y,
    sobre todo, el nombre ya NO necesita su ancho completo: el marquee
    de arriba (`.nombre-sencillo` / `.marquee-pista`) lo recorta a un
-   ancho fijo de 130px y lo hace deslizarse en loop — por eso ya NO
-   hace falta esconder `.info-sencillo`, el link "Ver discografía →"
-   vuelve a mostrarse también en mobile. */
+   ancho fijo de 130px y lo hace deslizarse en loop. */
 
 /* ===================================================
    BOTÓN DE CONTACTO (esquina superior derecha)
-   Hasta el 12 sept era una píldora con el texto "Contáctanos". Corrección
-   de Kevin el mismo día: el celular real que mandó NO es un planeta más
-   (se había malentendido así en la primera pasada) — reemplaza el
-   CONTENIDO de este botón fijo, que se queda en su lugar de siempre.
-   Mismo trato visual que un .planeta (imagen real con transparencia +
-   drop-shadow que sigue su silueta + el mismo hover de agrandado), pero
-   fuera del sistema solar y sin animación de órbita.
+   El celular real reemplaza el CONTENIDO de este botón fijo, que se
+   queda en su lugar de siempre. Mismo trato visual que un .planeta
+   (imagen real con transparencia + drop-shadow que sigue su silueta +
+   el mismo hover de agrandado), pero fuera del sistema solar y sin
+   animación de órbita.
    =================================================== */
 .boton-contacto {
   position: fixed;
@@ -2539,35 +2401,31 @@ svg[hidden] {
 
 .boton-contacto:hover {
   transform: scale(1.15);
-  /* Azul real de marca en vez de blanco (13 sept), ver nota completa
-     en .planeta:hover más abajo — mismo cambio, mismo motivo. El
-     glow de REPOSO (arriba, sin :hover) se queda en blanco a
-     propósito, Kevin pidió el color de marca puntual para el hover. */
+  /* Azul real de marca en vez de blanco, ver nota completa en
+     .planeta:hover más abajo — mismo cambio, mismo motivo. El glow de
+     REPOSO (arriba, sin :hover) se queda en blanco a propósito: el
+     color de marca queda reservado para el hover. */
   filter: drop-shadow(0 0 14px rgba(183, 221, 222, 0.8));
 }
 
-/* Vibración periódica (12 sept, a pedido de Kevin): el celular "suena"
-   y se queda quieto 10s, en loop. Truco clave para que esto no pelee
-   con el hover de arriba: la vibración anima `rotate`/`translate`
-   como propiedades CSS INDEPENDIENTES (soporte moderno, separadas de
-   `transform` desde CSS Transforms Level 2) en vez de meterlas dentro
-   de `transform`. Si hubiera usado `transform` aquí, la animación
-   habría ganado SIEMPRE sobre el `transform: scale()` del :hover (una
-   animación corriendo le gana a cualquier otra declaración de la
-   misma propiedad, no solo durante el instante de la sacudida) y el
-   botón habría dejado de agrandar al pasar el mouse. Con propiedades
-   separadas, ambos efectos se combinan sin conflicto: puede vibrar Y
-   agrandarse al mismo tiempo si el mouse pasa justo en ese instante.
-   Como toda animación puramente decorativa del sitio, respeta
-   prefers-reduced-motion — con esa preferencia el celular se queda
-   perfectamente quieto. */
-/* Mensaje de colaboración (19 sept) — Kevin propuso originalmente que
-   apareciera en un ciclo automático cada 2-3 vibraciones, pero después
-   de que se le señaló el riesgo real de sentirse invasivo en una sesión
-   larga (hasta 6 apariciones en 2 minutos), decidió dejarlo SOLO con
-   hover/focus — sin ciclo, sin sessionStorage, disponible siempre que
-   alguien pase el mouse. Se desliza desde la derecha (empieza más cerca
-   del botón, invisible) hacia la izquierda (posición final, visible). */
+/* Vibración periódica: el celular "suena" y se queda quieto 10s, en
+   loop. Truco clave para que esto no pelee con el hover de arriba: la
+   vibración anima `rotate`/`translate` como propiedades CSS
+   INDEPENDIENTES (soporte moderno, separadas de `transform` desde CSS
+   Transforms Level 2) en vez de meterlas dentro de `transform`. Si
+   usara `transform` aquí, la animación ganaría SIEMPRE sobre el
+   `transform: scale()` del :hover (una animación corriendo le gana a
+   cualquier otra declaración de la misma propiedad, no solo durante
+   el instante de la sacudida) y el botón dejaría de agrandar al pasar
+   el mouse. Con propiedades separadas, ambos efectos se combinan sin
+   conflicto: puede vibrar Y agrandarse al mismo tiempo si el mouse
+   pasa justo en ese instante. Como toda animación puramente
+   decorativa del sitio, respeta prefers-reduced-motion — con esa
+   preferencia el celular se queda perfectamente quieto. */
+/* Mensaje de colaboración: aparece SOLO con hover/focus, sin ciclo
+   automático — disponible siempre que alguien pase el mouse, sin
+   sessionStorage. Se desliza desde la derecha (empieza más cerca del
+   botón, invisible) hacia la izquierda (posición final, visible). */
 .mensaje-colab {
   position: absolute;
   top: 50%;
@@ -2615,12 +2473,11 @@ svg[hidden] {
 
 @keyframes vibrarCelular {
   /* 1.5s de vibración fuerte (los primeros ~13% de los 11.5s) + 10s
-     quieto (el resto) — vibración alargada y más brusca a pedido de
-     Kevin (12 sept): más amplitud (hasta 4px / 10deg, antes 2px/6deg)
-     y más sacudidas dentro de la ventana (10, antes 5) para que se
-     sienta como un golpeteo real y no un temblor suave. Las últimas
-     2 sacudidas bajan de amplitud a propósito (imita cómo un celular
-     real pierde fuerza al terminar de vibrar, en vez de cortar en seco). */
+     quieto (el resto), con 10 sacudidas dentro de esa ventana para
+     que se sienta como un golpeteo real y no un temblor suave. Las
+     últimas 2 sacudidas bajan de amplitud a propósito (imita cómo un
+     celular real pierde fuerza al terminar de vibrar, en vez de
+     cortar en seco). */
   0%, 13%, 100% { translate: 0 0; rotate: 0deg; }
   1.3%          { translate: -4px 2px;  rotate: -10deg; }
   2.6%          { translate: 4px -2px;  rotate: 10deg; }
@@ -2669,13 +2526,11 @@ html.sin-intro .pantalla-carga {
   pointer-events: none;
 }
 
-/* El núcleo: la estrella que "respira" antes de explotar.
-   Antes era un círculo CSS puro (12px + box-shadow); ahora es un
-   <img> con el GIF real del cliente, así que el tratamiento cambia:
-   - Tamaño subido a 52px: a 12px el detalle dibujado a mano de la
-     estrella se perdía por completo (se veía como un punto borroso,
-     igual que el círculo de antes) — sin esto, cambiar el asset no
-     se hubiera notado.
+/* El núcleo: la estrella que "respira" antes de explotar. Es un <img>
+   con el GIF real de la estrella, no un círculo CSS puro, así que el
+   tratamiento cuida varios detalles:
+   - Tamaño de 52px: a un tamaño chico el detalle dibujado a mano de
+     la estrella se pierde por completo (se ve como un punto borroso).
    - object-fit:contain porque el archivo es cuadrado (1080x1080
      originalmente, ya redimensionado a 220x220 en /assets) y la
      estrella no ocupa todo el cuadro.
@@ -2684,10 +2539,8 @@ html.sin-intro .pantalla-carga {
      transparencia eso se vería como un cuadrado brillante detrás de
      la estrella. drop-shadow sigue la silueta real (el canal alfa),
      como ya usamos en otros brillos del sitio.
-   - Color del glow en azul (#38b3fa, el mismo azul de la estrella)
-     en vez de blanco — es el primer color de marca REAL que llega
-     del cliente (antes solo había adelantos/suposiciones, ver nota
-     de la paleta pendiente en PENDIENTES del doc del proyecto). */
+   - Color del glow en azul (#38b3fa, el mismo azul de la estrella) en
+     vez de blanco — color de marca real. */
 .nucleo-bigbang {
   width: 52px;
   height: 52px;
@@ -2721,22 +2574,19 @@ html.sin-intro .pantalla-carga {
   100% { transform: scale(1);   opacity: 0.7; }
 }
 
-/* Fix real (13 sept, Kevin reportó "se sigue viendo la estrella
-   después de la explosión" — tenía razón). El JS (Sección 2 de
-   script.js) apagaba el núcleo con `nucleoBigbang.style.opacity='0'`,
-   pero eso NUNCA se veía: una animación CSS en curso (`respirar`,
-   arriba) le gana en la cascada a un opacity puesto por JS vía estilo
-   inline normal — cada ciclo de la animación lo volvía a subir a
-   ~0.7-1.0, así que la estrella seguía "respirando" a casi opacidad
-   completa durante TODO el segundo del fundido final de
-   .pantalla-carga.oculta, cruzándose visualmente con el sistema solar
-   que ya empezaba a aparecer debajo. Confirmado midiendo el
-   computedOpacity real con Playwright (no solo leyendo el código):
-   se quedaba en ~0.8-0.99 en vez de bajar a 0.
+/* Fix: el JS (Sección 2 de script.js) apagaba el núcleo con
+   `nucleoBigbang.style.opacity='0'`, pero eso nunca se veía: una
+   animación CSS en curso (`respirar`, arriba) le gana en la cascada a
+   un opacity puesto por JS vía estilo inline normal — cada ciclo de
+   la animación lo volvía a subir a ~0.7-1.0, así que la estrella
+   seguía "respirando" a casi opacidad completa durante todo el
+   segundo del fundido final de .pantalla-carga.oculta, cruzándose
+   visualmente con el sistema solar que ya empezaba a aparecer debajo.
    Fix: esta clase (que el JS agrega en vez de tocar .style.opacity)
-   apaga la animación con `animation:none` — sin animación compitiendo,
-   el opacity:0 de aquí sí se queda fijo. Más específica que la base
-   y que .tension, así que gana sin necesitar !important. */
+   apaga la animación con `animation:none` — sin animación
+   compitiendo, el opacity:0 de aquí sí se queda fijo. Más específica
+   que la base y que .tension, así que gana sin necesitar
+   !important. */
 .nucleo-bigbang.desvanecido {
   animation: none;
   opacity: 0;
@@ -2757,17 +2607,15 @@ html.sin-intro .pantalla-carga {
   animation: explotar 0.8s ease-out forwards;
 }
 
-/* Fix real (13 sept, mismo hallazgo que el de arriba): antes esta
-   animación bajaba opacity de 1 a 0 A LA VEZ que escalaba de 1 a 300
-   — es decir, el flash se iba haciendo TRANSPARENTE just cuando más
-   grande (y más necesario para tapar la pantalla) se ponía, en vez de
-   quedarse blanco sólido mientras cubre todo. Contradecía el propio
-   comentario de arriba ("el flash blanco ya cubra la pantalla justo
-   cuando empezamos a desvanecer esta capa"). Como .flash-explosion es
-   hijo de .pantalla-carga (que se desvanece sola con su propia
-   transition de 1s al agregar .oculta, ver arriba), el flash no
-   necesita apagarse por su cuenta — se queda blanco sólido mientras
-   crece, y desaparece junto con el resto de la pantalla de carga. */
+/* Fix: antes esta animación bajaba opacity de 1 a 0 A LA VEZ que
+   escalaba de 1 a 300 — es decir, el flash se iba haciendo
+   TRANSPARENTE justo cuando más grande (y más necesario para tapar la
+   pantalla) se ponía, en vez de quedarse blanco sólido mientras cubre
+   todo. Como .flash-explosion es hijo de .pantalla-carga (que se
+   desvanece sola con su propia transition de 1s al agregar .oculta,
+   ver arriba), el flash no necesita apagarse por su cuenta — se queda
+   blanco sólido mientras crece, y desaparece junto con el resto de la
+   pantalla de carga. */
 @keyframes explotar {
   0%   { transform: scale(1);    opacity: 1; }
   100% { transform: scale(300);  opacity: 1; }
@@ -2800,27 +2648,21 @@ html.sin-intro .pantalla-carga {
 
 /* ===== CURSOR CUSTOM (al hacer clic) ===== */
 /* :active se activa SOLO durante el instante que mantienes el clic
-   presionado. Antes era el mismo punto pero en naranja — ahora es la
-   MISMA varita de arriba con un degradado arcoíris aplicado sobre su
-   forma real (conserva el relieve/sombreado metálico original, solo
-   cambia el color — "holográfico" en vez de un tinte plano), pedido
-   explícito de Kevin (13 sept): "hasta arcoíris se podrá?". Mismas
-   dimensiones y mismo hotspot que la versión normal — así el cursor
-   no "salta" de posición en el instante del clic, solo cambia de
-   color. Versión ANIMADA (arcoíris que cicla en vivo mientras se
-   mantiene presionado) NO es posible con esta técnica — un cursor
-   nativo vía `cursor:url()` es siempre una imagen estática, nunca se
-   le puede aplicar una animación CSS en vivo; eso requeriría
-   reemplazar el cursor del sistema por un elemento HTML que siga al
-   mouse con JS (arquitectura mucho más grande, discutida con Kevin y
-   pospuesta a propósito por ahora).
+   presionado. Es la MISMA varita de arriba con un degradado arcoíris
+   aplicado sobre su forma real (conserva el relieve/sombreado
+   metálico original, solo cambia el color — "holográfico" en vez de
+   un tinte plano). Mismas dimensiones y mismo hotspot que la versión
+   normal — así el cursor no "salta" de posición en el instante del
+   clic, solo cambia de color. Una versión ANIMADA (arcoíris que cicla
+   en vivo mientras se mantiene presionado) NO es posible con esta
+   técnica — un cursor nativo vía `cursor:url()` es siempre una imagen
+   estática, nunca se le puede aplicar una animación CSS en vivo; eso
+   requeriría reemplazar el cursor del sistema por un elemento HTML
+   que siga al mouse con JS (arquitectura mucho más grande).
 
-   Kevin preguntó después si en vez del clic convenía activar el
-   arcoíris al pasar el mouse sobre algo clickeable (afordance en vez
-   de feedback) — se le explicó la diferencia (ver más abajo, bloque
-   "CURSOR CUSTOM (hover sobre elementos clickeables)") y decidió
-   quedarse con LAS DOS cosas ("deja ambas"): este bloque de clic
-   sigue igual, sin tocar. */
+   El arcoíris se activa tanto al hacer clic (feedback, este bloque)
+   como al pasar el mouse sobre algo clickeable (afordance, ver bloque
+   de abajo) — ambos se mantienen, ver la diferencia explicada ahí. */
 body:active {
   cursor: url('assets/cursor/varita-rainbow.png') 8 1, auto;
 }
@@ -2833,22 +2675,18 @@ body:active {
    que las 2 reglas de arriba, ningún PNG nuevo.
 
    Selectores elegidos: son los mismos elementos que YA tenían
-   `cursor: pointer;` puesto a mano en este archivo (agregado tiempo
-   atrás, a pedido de Kevin, para reforzar hover/interacción en
-   botones y links de todo el sitio — ver ese cursor: pointer; en cada
-   regla de abajo, que se deja intacto como respaldo por si el PNG no
-   cargara por algún motivo) más los `<a>`/`<button>` reales que
-   dependían del cursor nativo del navegador (enlace de contacto,
-   botones tipo "pill" de Spotify/Boletos, el botón fijo de Contacto)
-   — en conjunto, cubre planetas, botones de modal/redes/newsletter,
-   el easter egg de Biografía, y los links reales del sitio.
+   `cursor: pointer;` puesto a mano en este archivo (se deja intacto
+   como respaldo por si el PNG no cargara por algún motivo) más los
+   `<a>`/`<button>` reales que dependían del cursor nativo del
+   navegador (enlace de contacto, botones tipo "pill" de
+   Spotify/Boletos, el botón fijo de Contacto) — en conjunto, cubre
+   planetas, botones de modal/redes/newsletter, el easter egg de
+   Biografía, y los links reales del sitio.
 
-   13 sept (2ª ronda): Kevin reportó que en las redes sociales del
-   FOOTER la varita no cambiaba a arcoíris. Causa: el footer usa su
+   `.pie-redes a:hover` está en la lista porque el footer usa su
    propia fila `.pie-redes a` (nav aparte, línea ~485 del HTML),
-   totalmente distinta del menú flotante `.icono-red` de la esquina
-   — se me había quedado fuera de esta lista por descuido. Se agrega
-   aquí `.pie-redes a:hover`. */
+   totalmente distinta del menú flotante `.icono-red` de la esquina —
+   sin este selector la varita no cambiaba a arcoíris ahí. */
 .planeta:hover,
 .boton-contacto:hover,
 .boton-redes:hover,
@@ -2875,169 +2713,59 @@ body:active {
                    y viven en un contexto de apilamiento distinto */
 }
 
-/* Foto real de la artista (12 sept) — antes un círculo placeholder
-   con gradiente azul. Mismo criterio que ya se usó con los planetas
-   (ver comentario grande en .planeta más abajo): el PNG trae su
-   propia silueta con transparencia (cara + rayos de sol dibujados a
-   mano), así que ya NO se recorta en círculo (`border-radius`/
-   `clip-path`) ni se usa `cover` (recortaría los rayos que sobresalen
-   por los lados) — se usa `contain` + `filter:drop-shadow` para que
-   el brillo siga el contorno real de los rayos, no un círculo
-   invisible.
+/* Foto real de la artista — antes un círculo placeholder con
+   gradiente azul. Mismo criterio que ya se usó con los planetas (ver
+   comentario grande en .planeta más abajo): el PNG trae su propia
+   silueta con transparencia (cara + rayos de sol dibujados a mano),
+   así que no se recorta en círculo (`border-radius`/`clip-path`) ni
+   se usa `cover` (recortaría los rayos que sobresalen por los lados)
+   — se usa `contain` + `filter:drop-shadow` para que el brillo siga
+   el contorno real de los rayos, no un círculo invisible.
 
-   Kevin mandó 3 versiones (cara sola, rayos naranja, rayos
-   azul/verde-agua). Primero se probó solo la azul; pedido de Kevin
-   (12 sept): que el Sol vaya cambiando lentamente de la versión azul
-   a la naranja y de vuelta, sin dejar de girar. `.sol` ahora es el
-   CONTENEDOR que gira (ver @keyframes mecer-sol abajo) y también la
-   capa azul de base (su propio background-image); adentro vive
-   `.sol-capa-naranja`, del mismo tamaño exacto (position:absolute +
-   inset:0, con `.sol` como su bloque de referencia), que se desvanece
-   entrando y saliendo por encima. Al ser hija de `.sol`, el giro del
-   padre la arrastra automáticamente — no hace falta duplicar
-   `@keyframes mecer-sol` en la capa de arriba. */
-/* Resplandor circular detrás de cada imagen (12 sept, pedido de Kevin
-   tras ver que los rayos recortados se leían "cuadrados"): las barras
-   del dibujo de la artista tienen la punta plana (no se afinan como
-   un rayo triangular clásico), así que al acortarlas el contorno
-   general empieza a leerse más como una flor de dientes rectos que
-   como una corona solar redonda. En vez de recortar la imagen en
-   círculo (border-radius/clip-path — cortaría las puntas de los
-   rayos con un borde recto y artificial, el mismo problema que ya se
-   evitó con los planetas/meteoros reales), se agrega un SEGUNDO
-   `background` — un `radial-gradient` suave, más chico que el
-   alcance de los rayos — detrás de cada PNG. El ojo ancla ese círculo
-   como la forma principal y los rayos quedan como detalle encima.
-   Al vivir en el mismo `background` que cada imagen (list separada
-   por comas, más `background-size`/`-position` con un valor por
-   capa), el resplandor cruza de tono junto con su imagen sin
-   animación aparte.
+   El Sol cambia lentamente de una versión azul a una naranja y de
+   vuelta, sin dejar de girar. `.sol` es el CONTENEDOR que gira (ver
+   @keyframes mecer-sol abajo) y también la capa azul de base (su
+   propio background-image); adentro vive `.sol-capa-naranja`, del
+   mismo tamaño exacto (position:absolute + inset:0, con `.sol` como
+   su bloque de referencia), que se desvanece entrando y saliendo por
+   encima. Al ser hija de `.sol`, el giro del padre la arrastra
+   automáticamente — no hace falta duplicar `@keyframes mecer-sol` en
+   la capa de arriba. */
+/* Resplandor circular detrás de cada imagen: las barras del dibujo de
+   la artista tienen la punta plana (no se afinan como un rayo
+   triangular clásico), así que el contorno general se lee más como
+   una flor de dientes rectos que como una corona solar redonda. En
+   vez de recortar la imagen en círculo (border-radius/clip-path —
+   cortaría las puntas de los rayos con un borde recto y artificial,
+   el mismo problema que ya se evitó con los planetas/meteoros
+   reales), se agrega un SEGUNDO `background` — un `radial-gradient`
+   suave, más chico que el alcance de los rayos — detrás de cada PNG.
+   El ojo ancla ese círculo como la forma principal y los rayos quedan
+   como detalle encima. Al vivir en el mismo `background` que cada
+   imagen (lista separada por comas, con `background-size`/`-position`
+   con un valor por capa), el resplandor cruza de tono junto con su
+   imagen sin animación aparte.
 
-   `background-size` bajado de "contain"/65% a 42%/27% (12 sept,
-   Kevin: "reducir el zoom porque tapa la primera opción que orbita").
-   La causa real, verificada con un análisis en Python de los pixeles
-   con transparencia real de cada PNG: el punto más lejano de cualquier
-   rayo (en línea recta desde el centro de la imagen) queda a 1.33x la
-   mitad del ANCHO de la imagen — no a 1.0x. Un rayo diagonal puede
-   salirse más del cuadro que uno horizontal/vertical sin que el
-   "bounding box" (que solo limita ancho y alto por separado) lo
-   refleje — por eso la verificación anterior (comparar el ancho de la
-   caja de `.sol` contra el radio de la órbita) daba un margen que
-   parecía cómodo pero no medía el alcance real de los rayos en
-   diagonal. Con "contain" (~100%), ese alcance real llegaba a ~120px
-   en desktop — más allá incluso del anillo de la órbita de Mercurio
-   (110px de radio) y muy dentro del propio cuerpo de Mercurio (que al
-   orbitar SOBRE ese anillo, con su radio propio de --tam-planeta/2,
-   llega hasta ~79px del centro).
+   Punto técnico importante para tocar este valor: el alcance real de
+   una silueta con puntas diagonales (medido sobre el canal alfa del
+   PNG) llega a ~1.28-1.33x la mitad del ANCHO de la caja, no 1.0x —
+   un rayo diagonal se sale más del cuadro que uno horizontal/vertical
+   sin que el "bounding box" (que solo limita ancho y alto por
+   separado) lo refleje. No basta con comparar el ancho de la caja de
+   `.sol` contra el radio de la órbita: hay que medir el alcance real
+   en diagonal.
 
-   Subido después de 42%/27% a 45%/29% (mismo día, Kevin: "ahora
-   siento que quedó muy chico") — se midió la relación real
-   margen-de-Mercurio/tamaño-del-Sol en 9 anchos de mobile distintos
-   (360 a 600px, no solo uno) para encontrar el peor caso real antes
-   de subir el número: la proporción se mantiene estable (~0.663-0.676)
-   en todo ese rango, así que 45% dejaba un margen limpio de sobra
-   (~10% de margen relativo incluso en el ancho más ajustado, 360px).
-
-   Bajado a 40%/26% al mismo tiempo que `--tam-sol` subió de 180px a
-   200px (Kevin: "aumenta el tamaño un poco más y reduce el zoom un
-   poco") — son dos ajustes independientes que trabajan juntos: la
-   CAJA crece (más presencia/más aro de resplandor detrás), pero la
-   imagen real ocupa un porcentaje MENOR de esa caja más grande, así
-   que el alcance real de los rayos en px termina igual o mejor que
-   antes de subir la caja, no peor.
-
-   Kevin repitió el mismo pedido una 2ª vez ("aumenta el tamaño un
-   poco más y reduce el zoom un poco") — mismo mecanismo otra vez:
-   `--tam-sol` 200px→220px, `background-size` **36%/23%** (la
-   proporción P×(tam-sol/2) que define el alcance real se mantuvo
-   prácticamente igual a la ronda anterior, calculada antes de tocar
-   el archivo, no ajustada a ojo). Reverificado con Playwright en los
-   mismos 9 anchos de mobile + desktop en cada ronda — el margen
-   contra Mercurio se mantuvo en el mismo rango seguro desde 45%/180px
-   hasta esta versión.
-
-   3ª vuelta: Kevin pidió lo mismo otra vez pero "el doble de los
-   valores que consideraste aumentar o reducir" — el delta de caja
-   (+20px por ronda) y de `background-size` (~-4 puntos por ronda) se
-   duplicaron: `--tam-sol` 220px→260px, `background-size` 28%/18%.
-
-   **Error real encontrado en esta misma ronda (Kevin: "no estoy
-   viendo que la imagen aumente de tamaño" — tenía razón):** en las
-   3 vueltas anteriores, cada vez que `--tam-sol` (T) subía, bajé
-   `background-size` (P) en la MISMA proporción para mantener el
-   alcance real de los rayos (que depende del producto P×T, no de T
-   solo) igual o mejor que antes — con la intención de no perder
-   margen contra Mercurio. El efecto colateral, no anticipado: al
-   mantener P×T casi constante, el tamaño VISIBLE del Sol (rayos +
-   resplandor) se quedó prácticamente igual en las 3 rondas — lo único
-   que crecía era el margen transparente invisible alrededor, dentro
-   de una caja cada vez más grande. Kevin no estaba viendo mal, el Sol
-   de verdad no había crecido.
-
-   El límite real (esto sí es física del layout, no un bug): en el
-   ancho de mobile más angosto probado (360px), el borde interno de
-   Mercurio (que orbita centrado SOBRE su propio anillo) queda a
-   ~31.5px del centro del Sol — un techo fijo que no cambia sin importar
-   qué valores de `--tam-sol`/`background-size` se usen, porque depende
-   de `--radio-mercurio`/`--tam-planeta`, no del Sol. Ya se estaba
-   usando la mayoría de ese espacio disponible. Subido a
-   **33%/21%** (dejando `--tam-sol` en 260px) para que el alcance real
-   SÍ crezca de forma perceptible (~24px → ~28px en el ancho más
-   ajustado, confirmado con capturas antes/después lado a lado) con un
-   margen todavía positivo (~9%) contra Mercurio — más ajustado que las
-   rondas anteriores a propósito, porque ya no hay mucho más margen
-   que dar sin tocar la órbita de Mercurio. Si Kevin quiere un
-   crecimiento más dramático, la única forma real es mover
-   `--radio-mercurio` hacia afuera (Mercurio sigue siendo un
-   placeholder, no imagen real) para abrir más espacio — pendiente de
-   que lo pida explícitamente, es un cambio de layout, no solo del
-   Sol.
-
-   5ª vuelta (mismo día, Kevin pidió otra vez "aumentamos un poco más
-   y reducimos el zoom", aclarando que NO fuera el doble como la
-   última vez): aquí NO se tocó `--tam-sol` (se queda en 260px) — subir
-   la caja otra vez y bajar el porcentaje en proporción habría
-   reproducido exactamente el mismo bug de "0 crecimiento visible" que
-   se acaba de corregir arriba, porque lo que definía el margen contra
-   Mercurio siempre fue el alcance real en px (P×T/2), no cuánto mide
-   la caja por separado. Se verificó primero el techo físico real con
-   Playwright en los 9 anchos de mobile: al 0% de margen (contacto
-   directo con el borde de Mercurio) el `background-size` máximo en
-   360px sería ~36.3% — es decir que solo quedaban ~3.3 puntos de
-   colchón total desde el 33% anterior. Subido a **34%/22%**, un paso
-   pequeño a propósito (no un salto de ronda normal, que ronda +4-5
-   puntos) porque ya casi no queda margen: deja el margen contra
-   Mercurio en ~7% (bajó de ~9%). El crecimiento visible es real pero
-   pequeño, y es probable que sea el último ajuste posible sin tocar
-   `--radio-mercurio` — si Kevin pide otra vuelta de "más grande"
-   después de esta, la respuesta honesta es que ya no hay margen físico
-   para dártelo sin mover la órbita de Mercurio hacia afuera.
-
-   6ª vuelta (12 sept, "Mercurio pasa por encima del Sol" llevado a
-   producción): esto se probó primero en un artifact de prueba aparte
-   (copia completa del sitio) para validar dos cosas por separado: (1)
-   que Mercurio se dibuje ENCIMA del Sol cuando se tocan — bug de
-   z-index resuelto en `.pivote-mercurio` más abajo, no en `.mercurio`
-   — y (2) qué tan grande puede crecer el Sol antes de que la
-   superposición se vea exagerada. La prueba usó un valor extremo
-   (62%/40%) a propósito solo para que el cruce se viera innegable en
-   capturas; nunca fue pensado como valor final. Para producción se
-   recalculó desde cero con las imágenes actuales de 6% de recorte (ver
-   más arriba): el alcance real de las puntas de los rayos ya no es la
-   mitad del ancho de la caja, es ~1.28× ese valor (medido con numpy
-   sobre el canal alfa). Con eso, el borde interior de Mercurio mide
-   ~81px desde el centro del Sol en desktop (1440px), y `--tam-sol` son
-   271.6px renderizados. Se buscó el punto donde el Sol invade el borde
-   de Mercurio por un margen chico y visible (no exagerado): a
-   **50%/32%** el alcance real del rayo llega a ~87px, es decir ~6px
-   (~7%) dentro del borde de Mercurio — un cruce real pero sutil,
-   Mercurio se asoma por encima del rayo solo en el tramo más cercano
-   de su órbita, no se "traga" medio planeta como en la prueba
-   exagerada. Si Kevin quiere un cruce más notorio, subir a ~55-58% da
-   más superposición sin llegar al extremo de la prueba; si se ve
-   demasiado, bajar de vuelta a 34%/22% deja el Sol como estaba antes
-   (sin superposición, con ~27% de margen) y no requiere tocar el
-   z-index (ese fix no tiene efecto si nunca se tocan). */
+   Valor actual: `background-size: 50% 50%, 32% 32%` con `--tam-sol:
+   260px`. A este tamaño el alcance real del rayo llega a ~87px desde
+   el centro del Sol en desktop, y el borde interno de Mercurio (que
+   orbita sobre su propio anillo) queda a ~81px — es decir que el Sol
+   invade el borde de Mercurio por un margen chico y deliberado (~6px,
+   ~7%), visible pero sutil, no una superposición exagerada. Para más
+   superposición, subir hacia ~55-58%; para quitarla del todo, bajar a
+   34%/22% (deja ~27% de margen limpio, sin superposición ni necesidad
+   de tocar el z-index de `.pivote-mercurio`). Prácticamente no queda
+   margen para crecer más sin mover `--radio-mercurio` hacia afuera —
+   es el límite físico real del layout, no un ajuste pendiente. */
 .sol {
   position: absolute;
   top: 50%;
@@ -3078,7 +2806,7 @@ body:active {
   opacity: 0;
 }
 
-/* Cruce lento entre azul y naranja (12 sept, a pedido de Kevin).
+/* Cruce lento entre azul y naranja.
    36s de ciclo — deliberadamente mucho más largo que el giro (14s) de
    `.sol`, para que se sienta como una deriva de fondo, no un parpadeo
    sincronizado con el giro. Se sostiene un momento en cada extremo
@@ -3099,15 +2827,14 @@ body:active {
   85%, 100% { opacity: 0; }
 }
 
-/* Giro leve del Sol completo (12 sept, a pedido de Kevin — "el efecto
-   que mencionaste": ver conversación). Nota honesta: la cara y los
-   rayos vienen dibujados juntos en un solo PNG (Kevin no mandó los
-   rayos como capa aparte) — no es posible girar SOLO los rayos
-   dejando la cara fija sin ese archivo separado. Este giro mueve el
-   PNG completo, un poco hacia cada lado, dando la sensación de "vivo"
-   sin la complejidad/riesgo de separar capas a mano. Si más adelante
-   Kevin manda los rayos como PNG aparte, esto se puede dividir en 2
-   capas (cara fija + rayos girando) sin tocar el resto del diseño.
+/* Giro leve del Sol completo. Nota técnica: la cara y los rayos
+   vienen dibujados juntos en un solo PNG — no es posible girar SOLO
+   los rayos dejando la cara fija sin un archivo con esa capa
+   separada. Este giro mueve el PNG completo, un poco hacia cada lado,
+   dando la sensación de "vivo" sin la complejidad/riesgo de separar
+   capas a mano. Si más adelante los rayos llegan como PNG aparte,
+   esto se puede dividir en 2 capas (cara fija + rayos girando) sin
+   tocar el resto del diseño.
 
    `rotate` como propiedad independiente (no `transform: rotate()`):
    `.sol` YA usa `transform` para centrarse (`translate(-50%,-50%)`) —
@@ -3129,64 +2856,48 @@ body:active {
   50%      { rotate: 4deg; }
 }
 
-/* Sol en mobile — foto real de la cara, sin rayos ni cruce de color
-   (12 sept, a pedido de Kevin: "sustituir en mobile el sol azul y
-   naranja por la otra donde solo sale su cara, para que se vea más el
-   rostro"). De las 3 imágenes originales que mandó Kevin, esta es la
-   que no se había usado (cara con brillitos, sin rayos dibujados, sin
-   tinte de color) — a diferencia de las versiones azul/naranja, esta
-   NO tiene una pareja de otro tono, así que en mobile se pierde el
-   cruce lento azul↔naranja (Kevin confirmó explícitamente que prefiere
-   así: reemplazar por la foto real en vez de mantener rayos+color con
-   solo más zoom, o intentar simular el cruce con un halo de color
-   sobre la foto). Desktop NO cambia — se queda con las 2 versiones
-   ilustradas (rayos + cruce de tono), esto es solo para el ancho de
-   celular.
+/* Sol en mobile — foto real de la cara, sin rayos ni cruce de color:
+   de las 3 imágenes originales, esta es la única sin rayos dibujados
+   ni tinte de color, así que no tiene pareja de otro tono — en mobile
+   se pierde el cruce lento azul↔naranja, se muestra solo esta foto.
+   Desktop no cambia — se queda con las 2 versiones ilustradas (rayos
+   + cruce de tono), esto es solo para el ancho de celular.
 
    `background-size: auto <alto>%` en vez de un solo porcentaje para
    ambos ejes: esta foto es vertical (382×500px, no cuadrada como los
-   PNG de rayos), así que un mismo % en ancho y alto la habría
-   deformado dentro de la caja cuadrada de `.sol` — "auto" en el ancho
-   deja que el navegador calcule el ancho real a partir del alto para
-   mantener su proporción original.
+   PNG de rayos), así que un mismo % en ancho y alto la deformaría
+   dentro de la caja cuadrada de `.sol` — "auto" en el ancho deja que
+   el navegador calcule el ancho real a partir del alto para mantener
+   su proporción original.
 
-   Mismo error que ya se cometió y corrigió con los rayos, aplicado
-   aquí a tiempo: medí primero cuánto se aleja del centro el punto de
-   la foto más lejano (las moñas de pelo llegan en diagonal a ~1.36x
-   la mitad del ancho de la imagen, no 1.0x) antes de fijar el
-   porcentaje, en vez de probarlo a ojo. Con eso + los mismos 9 anchos
-   de mobile verificados con Playwright, el techo real (margen 0%) da
-   ~47% de alto — se dejó en 41% (margen ~12%) para no repetir el
-   patrón de ir subiendo el número en rondas sucesivas hasta casi
-   tocar a Mercurio. El resplandor circular (42%) se dejó apenas un
-   poco más grande que la foto para dar sensación de halo, pero sin
-   acercarse al límite (es un degradado suave, mucho más tolerante a
-   quedar cerca del borde que contenido sólido).
+   Mismo principio que con los rayos de desktop: el punto más lejano
+   de la foto (las moñas de pelo) llega en diagonal a ~1.36x la mitad
+   del ancho de la imagen, no 1.0x — hay que medir el alcance real en
+   diagonal, no solo el ancho/alto por separado, antes de fijar el
+   porcentaje.
 
-   Subido a **44%/45%** (12 sept, v73): Kevin preguntó si convenía
-   hacer en mobile lo mismo que la prueba de "Mercurio pasa por
-   encima" en desktop. Se le recomendó NO extender esa parte a esta
-   foto (aquí lo que pasaría por encima de Mercurio sería un pedazo
-   de una cara real, no líneas delgadas de rayos — se ve invasivo, no
-   decorativo) pero SÍ crecerla un poco dentro del margen que ya
-   existía sin tocar el overlap. Techo real sigue en ~47%; subido a
-   44% deja ~6% de margen contra Mercurio (bajó de ~12%) — crecimiento
-   real y perceptible, verificado con Playwright en los mismos 9
-   anchos de mobile, sin acercarse al límite físico.
+   Valor actual: `auto 46%` para la foto, `47% 47%` para el
+   resplandor. El techo real (0% de margen contra Mercurio) es ~47%
+   de alto — queda apenas ~2% de margen contra Mercurio en el ancho de
+   mobile más angosto (360px). Prácticamente no queda espacio para
+   crecer este valor más sin mover `--radio-mercurio` o agrandar
+   `--tam-sol`: si hace falta una cara más grande en mobile, ese es el
+   siguiente cambio real, no este número. `.mercurio` no trae su
+   propio `background-size` (hereda `contain` de `.planeta`) y se
+   dibuja en la misma caja/órbita de siempre, así que cambiar SU
+   imagen no mueve este techo.
 
    La capa naranja se apaga por completo en mobile (`animation: none`)
    — como su `opacity` base ya es 0 y nunca se le puso otra imagen de
    fondo aquí, simplemente se queda invisible sin necesidad de tocar
-   su `background-image`. El giro leve (`mecer-sol`) SÍ se dejó activo
-   — la foto se mece igual que la versión de rayos; si a Kevin no le
-   gusta el efecto sobre una foto real (en vez de una ilustración), es
-   un cambio de una sola línea quitarlo solo en mobile. */
+   su `background-image`. El giro leve (`mecer-sol`) se deja activo —
+   la foto se mece igual que la versión de rayos. */
 @media (max-width: 600px) {
   .sol {
     background-image:
       url('assets/sol/cara-galactica.png'),
       radial-gradient(circle, rgba(100, 180, 255, 0.6) 0%, rgba(100, 180, 255, 0.28) 45%, rgba(100, 180, 255, 0) 72%);
-    background-size: auto 44%, 45% 45%;
+    background-size: auto 46%, 47% 47%;
   }
 
   .sol-capa-naranja {
@@ -3241,8 +2952,7 @@ body:active {
    contexto para competir contra el z-index:10 del Sol, que es hermano
    de ESTE div. Con 11 (por encima del Sol), Mercurio pasa por ENCIMA
    cuando su órbita cruza el radio del Sol, en vez de quedar tapado
-   detrás (12 sept, aplicado a producción — probado antes en un
-   artifact de prueba aparte). */
+   detrás. */
 .pivote-mercurio { width: var(--radio-mercurio); height: var(--radio-mercurio); animation-duration: 10s; z-index: 11; }
 .pivote-venus    { width: var(--radio-venus); height: var(--radio-venus); animation-duration: 18s; }
 .pivote-tierra   { width: var(--radio-tierra); height: var(--radio-tierra); animation-duration: 26s; }
@@ -3266,24 +2976,23 @@ body:active {
   padding: 0;
   margin: 0;
   font-family: inherit;
-  /* Bug real (12 sept, reportado por Kevin como "cuadro gris" detrás
-     del sobre de Newsletter): Mercurio y Marte son <button>, y todo
-     <button> trae un background-color gris (rgb(239,239,239) en Chrome)
-     de fábrica del navegador — el reset de arriba (appearance/border/
-     padding/margin) NO lo quita. Mientras Mercurio/Marte usaban
-     `background: <gradient>` (shorthand completo) esto no se notaba,
-     porque el shorthand también resetea background-color. Al pasar
-     Marte a `background-image` solo (para la foto real del sobre) ese
-     gris de fábrica quedó expuesto detrás de las partes transparentes
-     del PNG. Venus/Tierra no lo sufrían por ser <a>, que no trae ese
-     default — pero se resetea aquí para los 4 por igual, no solo en
-     el que lo mostró. */
+  /* Bug real: "cuadro gris" detrás del sobre de Newsletter. Mercurio y
+     Marte son <button>, y todo <button> trae un background-color gris
+     (rgb(239,239,239) en Chrome) de fábrica del navegador — el reset
+     de arriba (appearance/border/padding/margin) NO lo quita. Mientras
+     Mercurio/Marte usaban `background: <gradient>` (shorthand
+     completo) esto no se notaba, porque el shorthand también resetea
+     background-color. Al pasar a `background-image` solo (para la
+     foto real) ese gris de fábrica quedó expuesto detrás de las
+     partes transparentes del PNG. Venus/Tierra no lo sufren por ser
+     <a>, que no trae ese default — pero se resetea aquí para los 4
+     por igual, no solo en el que lo mostró. */
   background-color: transparent;
 
   position: absolute;
   top: 0;
   left: 50%;
-  /* MISMO TAMAÑO para todos los planetas ahora, como pidió el cliente */
+  /* MISMO TAMAÑO para todos los planetas */
   width: var(--tam-planeta);
   height: var(--tam-planeta);
   transform: translate(-50%, -50%) scale(1);
@@ -3298,11 +3007,9 @@ body:active {
   transition: transform 0.3s ease, filter 0.3s ease;
   z-index: 5;
   pointer-events: auto;
-  /* contain, no cover (12 sept): cover era correcto mientras las 4 eran
-     gradientes recortados con clip-path (llenaban el cuadro completo a
-     propósito); las imágenes reales que llegaron NO son cuadradas —
-     cover las recortaría por los lados, contain las encoge completas
-     sin cortar nada. Mercurio (el único que sigue en placeholder de
+  /* contain, no cover: las imágenes reales no son cuadradas — cover
+     las recortaría por los lados, contain las encoge completas sin
+     cortar nada. Mercurio (el único que sigue en placeholder de
      gradiente) se ve exactamente igual con contain que con cover,
      porque un gradiente no tiene "bordes" que recortar. */
   background-size: contain;
@@ -3314,82 +3021,71 @@ body:active {
 
 .planeta:hover {
   transform: translate(-50%, -50%) scale(1.4);
-  /* Azul real de marca en el glow del HOVER (13 sept: #b7ddde,
-     rgb(183,221,222) — mismo alpha 0.8 que el blanco de antes, solo
-     cambia el tono). Pedido puntual de Kevin: "el azul del branding
-     como color de blur del hover, así no se diferencia mucho el
-     color" — le da personalidad de marca al hover sin reabrir la
-     regla de "un color por sección" (sigue siendo el MISMO color en
-     todo el sitio, solo que ahora es azul de marca en vez de blanco).
-     A propósito NO se tocó: el glow de REPOSO/idle de este mismo
-     elemento (arriba, sin :hover, línea ~3131) se queda blanco —
-     Kevin pidió el color de marca solo para el hover, no para todos
-     los drop-shadow del sitio; mismo criterio aplicado en
-     .icono-red:hover y .boton-contacto:hover. Tampoco se tocó el
-     azul/morado decorativo que ya existe (nebulosa de Biografía,
-     mark de Presskit, degradado de Discografía — #38b3fa/#9b6bdc):
-     Kevin confirmó explícitamente dejarlos como están, sin mezclar
-     con la paleta real. */
+  /* Azul real de marca en el glow del HOVER (#b7ddde, rgb(183,221,222)
+     — mismo alpha 0.8 que el blanco de antes, solo cambia el tono) —
+     le da personalidad de marca al hover sin reabrir "un color por
+     sección" (sigue siendo el MISMO color en todo el sitio, solo que
+     ahora es azul de marca en vez de blanco). A propósito NO se tocó:
+     el glow de REPOSO/idle de este mismo elemento (arriba, sin
+     :hover) se queda blanco — el color de marca es solo para el
+     hover, no para todos los drop-shadow del sitio; mismo criterio
+     aplicado en .icono-red:hover y .boton-contacto:hover. Tampoco se
+     tocó el azul/morado decorativo que ya existe (nebulosa de
+     Biografía, mark de Presskit, degradado de Discografía —
+     #38b3fa/#9b6bdc): es una paleta aparte, sin mezclar con la de
+     marca. */
   filter: drop-shadow(0 0 14px rgba(183, 221, 222, 0.8));
   z-index: 20;
 }
 
 /* ===== FORMAS/IMÁGENES DE CADA PLANETA =====
-   Hasta el 11 sept, las 4 usaban clip-path (polygon()/circle() recortan
-   un gradiente cuadrado en una silueta a mano) como PLACEHOLDER, tal
-   como anticipaba el comentario que vivía aquí: "cuando lleguen los
-   PNGs reales con transparencia, se puede quitar el clip-path y dejar
-   que el PNG mismo traiga su silueta". Eso ya pasó (12 sept) para
-   Presskit/Biografía/Newsletter, y (19 sept) para Mercurio/Shows también
-   — las 4 usan PNG con transparencia real ahora, ninguna sigue en
-   placeholder de gradiente. (Contacto NO es un planeta — el celular
+   Las 4 usan PNG con transparencia real, ninguna sigue en placeholder
+   de gradiente/clip-path. (Contacto NO es un planeta — el celular
    vive en .boton-contacto, más abajo.) background-size:contain (no
-   cover) porque estas imágenes no llenan el cuadro de forma exacta
-   (3 no son cuadradas; la de Mercurio sí lo es, pero no vale la pena
-   una excepción solo para esa) — cover recortaría contenido en las que
-   no son cuadradas, contain las encoge completas sin cortar nada en
-   ningún caso. El filter:drop-shadow de .planeta (ver
-   arriba) sigue funcionando igual de bien aquí que con clip-path: sigue
+   cover) porque estas imágenes no llenan el cuadro de forma exacta (3
+   no son cuadradas; la de Mercurio sí lo es, pero no vale la pena una
+   excepción solo para esa) — cover recortaría contenido en las que no
+   son cuadradas, contain las encoge completas sin cortar nada en
+   ningún caso. El filter:drop-shadow de .planeta (ver arriba) sigue
    el canal alfa real del PNG, no un cuadro invisible. */
 
-/* Shows — bola de disco (19 sept). NO es una foto: Kevin mandó una foto
-   real pero con un watermark de banco de imágenes tejido en los píxeles
-   (ver COMPLETADO/PENDIENTES), así que en vez de usarla se generó una
-   bola de espejos ORIGINAL por código (geometría de esfera + facetas
-   tipo mosaico con brillo aleatorio por faceta + iluminación sintética,
-   ver render_disco_ball.py) — mismo look plateado, sin ese problema de
-   derechos. Kevin la vio y confirmó ("me gusta"). Mismo tratamiento que
-   Presskit/Biografía/Newsletter: PNG con transparencia real, sin
-   clip-path (ya no hace falta, el PNG trae su propia silueta circular). */
+/* Shows — bola de disco. No es una foto: se generó una bola de
+   espejos ORIGINAL por código (geometría de esfera + facetas tipo
+   mosaico con brillo aleatorio por faceta + iluminación sintética,
+   ver render_disco_ball.py) en vez de usar una foto de banco de
+   imágenes con watermark — mismo look plateado, sin problema de
+   derechos. Mismo tratamiento que Presskit/Biografía/Newsletter: PNG
+   con transparencia real, sin clip-path (el PNG trae su propia
+   silueta circular). */
 .mercurio {
   background-image: url('assets/planetas/bola-disco-shows.png');
   background-repeat: no-repeat;
 }
 
-/* Presskit — tamagotchi real de Kevin, pantalla dice "press kit" (12 sept) */
+/* Presskit — tamagotchi real, pantalla dice "press kit" */
 .venus {
   background-image: url('assets/planetas/tamagotchi-presskit.png');
   background-repeat: no-repeat;
 }
 
-/* Biografía — diario/scrapbook real de Kevin (12 sept) */
+/* Biografía — diario/scrapbook real */
 .tierra {
   background-image: url('assets/planetas/diario-biografia.png');
   background-repeat: no-repeat;
 }
 
-/* Newsletter — sobre abierto real de Kevin (12 sept) */
+/* Newsletter — sobre abierto real */
 .marte {
   background-image: url('assets/planetas/sobre-newsletter.png');
   background-repeat: no-repeat;
 }
 
-/* .jupiter y .saturno se eliminaron (7 sept): no se usaban en el HTML.
-   Decisión de Kevin: el sistema solar se queda en 4 planetas (mercurio,
-   venus, tierra, marte) — con más se satura el diseño y afecta la UX,
-   así que no se reservan clases para planetas futuros. Contacto (12
-   sept) no es una excepción a esto: nunca fue un planeta de verdad,
-   vive en .boton-contacto, fijo fuera del sistema solar. */
+/* .jupiter y .saturno se eliminaron — no se usaban en el HTML. El
+   sistema solar se queda en 4 planetas (mercurio, venus, tierra,
+   marte) — con más se satura el diseño y afecta la UX, así que no se
+   reservan clases para planetas futuros. Contacto no es una excepción
+   a esto: nunca fue un planeta de verdad, vive en .boton-contacto,
+   fijo fuera del sistema solar. */
 
 /* ===== CLASE "ENFOCADO" ===== */
 /* Esta es la clase mágica: cuando JS se la pone a un planeta,
@@ -3513,10 +3209,9 @@ body:active {
   border-bottom: none;
 }
 
-/* Placeholder "Próximamente" (20 sept, v105) — mismo bloque que un
-   show real, pero atenuado para que se lea como "todavía sin
-   confirmar" en vez de una fecha real más. Ver index.html, modal de
-   Shows. */
+/* Placeholder "Próximamente" — mismo bloque que un show real, pero
+   atenuado para que se lea como "todavía sin confirmar" en vez de una
+   fecha real más. Ver index.html, modal de Shows. */
 .item-show--proximamente {
   opacity: 0.55;
 }
@@ -3531,9 +3226,9 @@ body:active {
   opacity: 0.6;
 }
 
-/* El botón "Boletos" se generalizó a .boton-pill (8 sept) — ver esa
-   clase junto a .videos-presskit/.discografia-presskit más arriba.
-   Mismo estilo, ahora reutilizado también en "Escuchar en Spotify". */
+/* El botón "Boletos" se generalizó a .boton-pill — ver esa clase
+   junto a .videos-presskit/.discografia-presskit más arriba. Mismo
+   estilo, ahora reutilizado también en "Escuchar en Spotify". */
 
 /* ===== Contenido específico: formulario de newsletter ===== */
 .campo-newsletter {
@@ -3577,40 +3272,129 @@ body:active {
   margin-top: 14px;
 }
 
+/* ===== Formulario real de Kit dentro del modal de Newsletter =====
+   Kit (ex ConvertKit) genera su propio <style> con el embed — se
+   descartó por completo (fondo blanco, grid, tipografía propia, todo
+   pensado para vivir suelto en cualquier página, no dentro de una
+   tarjeta oscura ya diseñada). El input/botón ya se resuelven con
+   .campo-newsletter/.boton-suscribir de arriba; lo que sigue es solo
+   lo que esas clases no cubren: el cuadro de error, el spinner de
+   carga, y el badge de atribución. */
+
+.formkit-form {
+  display: block;
+}
+
+/* Vacío la mayor parte del tiempo — solo se llena si Kit devuelve un
+   error (correo inválido, ya suscrito, etc.) */
+.formkit-alert:empty {
+  display: none;
+}
+
+.formkit-alert-error {
+  list-style: none;
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  border-radius: 10px;
+  background: rgba(242, 100, 59, 0.12);
+  border: 1px solid rgba(242, 100, 59, 0.4);
+  color: #ffb49c;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* El botón de submit es position:relative para poder centrar el
+   spinner encima del texto; ck.5.js alterna data-active mientras
+   espera la respuesta de la API — el span de texto se desvanece y
+   el spinner (3 puntos con bounce escalonado) ocupa su lugar. */
+.formkit-submit {
+  position: relative;
+}
+
+.formkit-submit .formkit-spinner {
+  display: none;
+  gap: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.formkit-submit[data-active] .formkit-spinner {
+  display: flex;
+}
+
+.formkit-submit[data-active] span {
+  opacity: 0;
+}
+
+.formkit-spinner div {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0d0d1a;
+  opacity: 0.6;
+  animation: formkit-bounce 1.4s ease-in-out infinite both;
+}
+
+.formkit-spinner div:nth-child(2) { animation-delay: 0.16s; }
+.formkit-spinner div:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes formkit-bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* Atribución "Built with Kit", requerida en el plan gratuito. Se deja
+   bien chica y discreta (opacity baja) en vez de ocultarla. */
+.formkit-powered-by-convertkit-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.formkit-powered-by-convertkit {
+  font-size: 11px;
+  opacity: 0.4;
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.formkit-powered-by-convertkit:hover {
+  opacity: 0.7;
+}
+
 .titulo {
   position: fixed; /* fixed en vez de absolute: se queda anclado
                        a la ventana, no al centro del sistema solar */
   top: 24px;
   left: 24px;
   color: white;
-  /* Logotipo real de la artista (11 sept) — antes heredaba el
-     Montserrat del body. Se usa SOLO aquí a propósito: el archivo
-     no trae glifos de números (los dígitos se ven como recuadros
-     vacíos), así que no debe aplicarse a nada que pueda mostrar
-     fechas u otros números — fuera de este wordmark fijo, el resto
-     del sitio se queda en Montserrat. En mayúsculas se lee mejor
-     (ver comparación hecha antes de aplicarlo) — combina bien con
-     el text-transform:uppercase que ya traía esta regla. */
+  /* Logotipo real de la artista — no hereda el Montserrat del body.
+     Se usa SOLO aquí a propósito: el archivo no trae glifos de
+     números (los dígitos se ven como recuadros vacíos), así que no
+     debe aplicarse a nada que pueda mostrar fechas u otros números —
+     fuera de este wordmark fijo, el resto del sitio se queda en
+     Montserrat. En mayúsculas se lee mejor — combina bien con el
+     text-transform:uppercase que ya traía esta regla. */
   font-family: 'Galactica', 'Montserrat', sans-serif;
   /* mismo criterio de clamp() que en .boton-contacto: en pantallas
-     angostas el título se achica junto con el botón para que no
-     se encimen (se comprobó el choque real en un viewport de 320px).
-     Subido (11 sept) de un tope de 21px a 30px para que el wordmark
-     se distinga más — con clamp(15px,4.6vw,21px) el valor efectivo
-     era 21px fijo en casi cualquier pantalla >460px de ancho (el
-     4.6vw superaba el tope casi de inmediato). Bajado de nuevo (12
-     sept, a pedido de Mike) de 30px a 25px — 30px se sentía ya
-     grande, se perdía el look sutil que tenía antes; 25px queda a
-     medio camino entre el 21px original y el 30px de la ronda
-     anterior. Reverificado en 320/360/390/768/1280/1920px que sigue
-     sin chocar con .boton-contacto (misma fila fija arriba). */
+     angostas el título se achica junto con el botón para que no se
+     encimen (se comprobó el choque real en un viewport de 320px).
+     Tope de 25px: suficiente para que el wordmark se distinga sin
+     perder el look sutil del resto del sitio. Verificado en
+     320/360/390/768/1280/1920px que no choca con .boton-contacto
+     (misma fila fija arriba). */
   font-size: clamp(15px, 5vw, 25px);
   letter-spacing: clamp(1px, 0.6vw, 3px);
   text-transform: uppercase;
   opacity: 0.85;
-  /* Se probó una sombra de marca (azul, luego morada) el 12 sept a
-     pedido de Kevin — descartada el mismo día: se ve mejor sutil, sin
-     halo de color. Wordmark se queda como estaba antes de la prueba. */
+  /* Sin sombra de color en el wordmark, a propósito: se ve mejor
+     sutil, sin halo de color. */
   transition: opacity 0.4s ease;
   z-index: 200; /* mismo nivel que el botón de contacto y redes,
                     para que conviva bien con esos elementos fijos */
@@ -3633,9 +3417,9 @@ body:active {
    a sus hijos. */
 .meteoro {
   position: fixed;
-  /* top/left FIJOS en 0 (12 sept, fix de rendimiento — ver comentario
-     grande en las @keyframes ruta1/2/3 más abajo): el recorrido ya
-     NO se anima con top/left, se anima con `translate`. */
+  /* top/left FIJOS en 0 (ver comentario grande en las @keyframes
+     ruta1/2/3 más abajo): el recorrido ya NO se anima con top/left,
+     se anima con `translate`. */
   top: 0;
   left: 0;
   width: var(--tam-meteoro);
@@ -3650,26 +3434,24 @@ body:active {
      círculo/cuadro invisible — reemplaza el box-shadow circular que
      tenía .meteoro-nucleo cuando era un círculo de color plano. */
   filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
-  /* opacity 0.55 (13 sept, a pedido de Kevin): los 3 michimeteoros a
-     opacidad completa competían visualmente con los planetas (las
-     opciones clicables reales) por atención — colores saturados +
-     glow, cruzando la pantalla todo el tiempo. Esto no es un fix de
-     z-index (los meteoros ya vivían en z-index:1, muy por debajo de
-     los planetas en z-index:5 — nunca los tapaban de verdad) sino de
-     jerarquía visual: bajarles opacidad los deja leyéndose como
-     "ambiente de fondo" en vez de competir con lo que sí importa que
-     se note (los planetas). pointer-events ya en none, así que esto
-     tampoco afecta si se pueden "clickear" (nunca se pudo, es
-     decorativo). */
+  /* opacity 0.55: los 3 michimeteoros a opacidad completa competían
+     visualmente con los planetas (las opciones clicables reales) por
+     atención — colores saturados + glow, cruzando la pantalla todo el
+     tiempo. Esto no es un fix de z-index (los meteoros ya viven en
+     z-index:1, muy por debajo de los planetas en z-index:5 — nunca
+     los tapan de verdad) sino de jerarquía visual: bajarles opacidad
+     los deja leyéndose como "ambiente de fondo" en vez de competir
+     con lo que sí importa que se note (los planetas). pointer-events
+     ya en none, así que esto tampoco afecta si se pueden "clickear"
+     (nunca se pudo, es decorativo). */
   opacity: 0.55;
 }
 
 /* La cola del meteoro se quitó — ahora solo se ve el círculo/imagen */
 
-/* La foto de gato (12 sept: antes un círculo de color con la fecha
-   encimada — ver el bloque de fechas .meteoro-fecha más abajo).
-   contain + transparent, mismo motivo que las fotos de los planetas:
-   estas 3 imágenes NO son círculos perfectos, cover las recortaría. */
+/* La foto de gato: contain + transparent, mismo motivo que las fotos
+   de los planetas: estas 3 imágenes NO son círculos perfectos, cover
+   las recortaría. */
 .meteoro-nucleo {
   width: 100%;
   height: 100%;
@@ -3679,21 +3461,20 @@ body:active {
   background-color: transparent;
 }
 
-/* Imagen de cada meteoro — 3 gatos reales de Kevin, cada uno en un
-   tono duotono distinto (verde/azul/morado, ya vienen así de la
-   imagen, no es un filtro CSS). Asignación arbitraria en el orden en
-   que llegaron — avisar si Kevin quiere un tono específico por meteoro. */
+/* Imagen de cada meteoro — 3 gatos, cada uno en un tono duotono
+   distinto (verde/azul/morado, ya vienen así de la imagen, no es un
+   filtro CSS). Asignación arbitraria, sin correspondencia con ningún
+   otro dato. */
 .meteoro-1 .meteoro-nucleo { background-image: url('assets/meteoros/michi-verde.png'); }
 .meteoro-2 .meteoro-nucleo { background-image: url('assets/meteoros/michi-azul.png'); }
 .meteoro-3 .meteoro-nucleo { background-image: url('assets/meteoros/michi-morado.png'); }
 
-/* Fecha de cada show (12 sept): antes vivía centrada DENTRO del
-   círculo de color; ahora que el núcleo es una foto real con su
-   propio detalle visual, poner texto blanco encima se volvía
-   ilegible. Se sacó a una etiqueta aparte, pegada justo debajo del
-   meteoro — position:absolute con .meteoro (fixed) como ancla.
-   pointer-events:none: mismo criterio que .meteoro, esto tampoco
-   debe bloquear clics en lo que esté detrás/debajo. */
+/* Fecha de cada show: se saca a una etiqueta aparte, pegada justo
+   debajo del meteoro (el núcleo es una foto real con su propio
+   detalle visual, poner texto blanco encima del círculo se volvía
+   ilegible) — position:absolute con .meteoro (fixed) como ancla.
+   pointer-events:none: mismo criterio que .meteoro, esto tampoco debe
+   bloquear clics en lo que esté detrás/debajo. */
 .meteoro-fecha {
   position: absolute;
   top: 100%;
@@ -3714,50 +3495,41 @@ body:active {
 
 /* ===== RUTAS DE CADA METEORO (diagonales distintas) =====
    Cada uno nace fuera de la pantalla en una esquina y viaja a la
-   esquina opuesta. Usamos vw/vh (% del ancho/alto de la ventana)
-   para que funcione en cualquier tamaño de pantalla. Los 3 que
-   quedan (12 sept, ver comentario en index.html) son, sin cambiar
-   ni un valor, las mismas 3 rutas que ya traían los meteoros 1/3/5
-   originales — incluida la ruta1 ya verificada (11 sept) para no
-   pasar sobre el wordmark "GALÁCTICA". Solo se renombraron a
-   ruta1/ruta2/ruta3 para que coincidan con la nueva numeración.
+   esquina opuesta. Usamos vw/vh (% del ancho/alto de la ventana) para
+   que funcione en cualquier tamaño de pantalla. La ruta1 está
+   verificada para no pasar sobre el wordmark "GALÁCTICA".
 
-   `translate` en vez de `top`/`left` (12 sept, fix de rendimiento —
-   reporte de Mike de scroll "raro"/no fluido en mobile). Animar
+   `translate` en vez de `top`/`left` (fix de rendimiento). Animar
    `top`/`left` obliga al navegador a recalcular LAYOUT en cada frame
    (son propiedades de posición del flujo normal, aunque el elemento
    sea `position:fixed`) — con 3 meteoros corriendo SIEMPRE, en TODA
    la página, eso compite por el hilo principal justo cuando el
    navegador también está ocupado compositando el scroll, y en mobile
-   (CPU/GPU más débil) se siente como el "se buguea"/no-smooth que
-   reportó Mike. `translate` es una propiedad compuesta (mismo motor
-   que `transform`) — el navegador la anima en la GPU sin tocar
-   layout. Los VALORES no cambiaron (mismos vw/vh, mismos puntos de
-   entrada/salida) — el trayecto visual es idéntico, incluida la
-   verificación de colisión con el wordmark de ruta1 (comentario
-   original más abajo, sigue aplicando: depende de los valores
-   espaciales, no de qué propiedad los anima). Verificado con
+   (CPU/GPU más débil) se siente como scroll no fluido. `translate` es
+   una propiedad compuesta (mismo motor que `transform`) — el
+   navegador la anima en la GPU sin tocar layout. Los VALORES no
+   cambiaron (mismos vw/vh, mismos puntos de entrada/salida) — el
+   trayecto visual es idéntico, incluida la verificación de colisión
+   con el wordmark de ruta1 (comentario original más abajo, sigue
+   aplicando: depende de los valores espaciales, no de qué propiedad
+   los anima). Verificado con
    Playwright + CPU throttling (Emulation.setCPUThrottlingRate) y
    Long Tasks API: pausar/quitar los meteoros del DOM bajaba los
    frames >33ms de ~31% a ~17-21% durante un scroll simulado — con
    `translate` se recupera esa diferencia sin perder el efecto. */
 
-/* Velocidad bajada de 18s a 24s (12 sept, a pedido de Kevin — el michi
-   verde se sentía muy rápido). Mismo trayecto (ruta1) sin tocar — solo
-   cambia cuánto tarda en recorrerlo, así que la verificación de
-   colisión con el wordmark (11 sept, ver comentario en @keyframes
-   ruta1 abajo) sigue aplicando igual: esa revisión depende de los
-   valores espaciales del keyframe, no de la duración.
+/* Velocidad de 24s para el michi verde (ruta1). Mismo trayecto
+   (ruta1) sin tocar — solo cambia cuánto tarda en recorrerlo, así que
+   la verificación de colisión con el wordmark (ver comentario en
+   @keyframes ruta1 abajo) sigue aplicando igual: esa revisión depende
+   de los valores espaciales del keyframe, no de la duración.
 
-   Gated a prefers-reduced-motion (12 sept) — hallazgo real durante la
-   verificación del fix de rendimiento de arriba: a diferencia de TODA
-   otra animación decorativa del sitio (estrella, vapor de Presskit,
-   nebulosa de Biografía, vibración del botón de Contacto), los 3
-   meteoros nunca habían tenido este guard — corrían siempre, incluso
-   con esa preferencia activada. No relacionado con el bug de scroll
-   que reportó Kevin, pero es una inconsistencia real de accesibilidad
-   con el resto del sitio — se corrige de paso ya que se estaba
-   tocando esta misma sección. */
+   Gated a prefers-reduced-motion: a diferencia de TODA otra animación
+   decorativa del sitio (estrella, vapor de Presskit, nebulosa de
+   Biografía, vibración del botón de Contacto), los 3 meteoros nunca
+   habían tenido este guard — corrían siempre, incluso con esa
+   preferencia activada. Es una inconsistencia real de accesibilidad
+   con el resto del sitio, corregida aquí. */
 @media (prefers-reduced-motion: no-preference) {
   .meteoro-1 { animation-name: ruta1; animation-duration: 24s; }
   .meteoro-2 { animation-name: ruta2; animation-duration: 30s; animation-delay: -10s; }
@@ -3774,16 +3546,16 @@ body:active {
 }
 
 @keyframes ruta1 {
-  /* Punto de entrada corrido de left:-10vw a left:-30vw (11 sept,
-     backlog de code review) — con -10vw el meteoro pasaba por encima
-     del wordmark "GALÁCTICA" (fixed, arriba a la izquierda) durante
-     los primeros ~2 segundos de cada ciclo de 18s. Verificado con
-     la fórmula real del keyframe (top/left son lineales en vh/vw)
-     contra el bounding box del wordmark en 5 anchos de pantalla
-     distintos (320 a 1920px): con -30vw el meteoro sigue totalmente
-     fuera de pantalla por la izquierda hasta que ya bajó más allá
-     de la altura del wordmark, en todos los anchos probados. Mismo
-     punto de llegada (110vh/110vw) — solo cambió el de salida. */
+  /* Punto de entrada en left:-30vw (no -10vw): con -10vw el meteoro
+     pasaba por encima del wordmark "GALÁCTICA" (fixed, arriba a la
+     izquierda) durante los primeros segundos de cada ciclo.
+     Verificado con la fórmula real del keyframe (top/left son
+     lineales en vh/vw) contra el bounding box del wordmark en 5
+     anchos de pantalla distintos (320 a 1920px): con -30vw el meteoro
+     sigue totalmente fuera de pantalla por la izquierda hasta que ya
+     bajó más allá de la altura del wordmark, en todos los anchos
+     probados. Mismo punto de llegada (110vh/110vw) — solo cambió el
+     de salida. */
   from { translate: -30vw -10vh; }
   to   { translate: 110vw 110vh; }
 }

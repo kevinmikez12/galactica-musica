@@ -35,20 +35,17 @@ const nucleoBigbang = document.getElementById('nucleoBigbang');
 const flashExplosion = document.getElementById('flashExplosion');
 const textoCarga = document.getElementById('textoCarga');
 
-// nucleoBigbang es un <img> con un GIF animado (la estrella del
-// cliente). Un GIF no se puede "pausar" con CSS como una animación
-// nuestra — si el usuario pidió menos movimiento, la única forma de
-// respetarlo de verdad es servirle un frame fijo en vez del GIF.
+// nucleoBigbang es un <img> con un GIF animado de la estrella. Un GIF
+// no se puede "pausar" con CSS como una animación nuestra — si el
+// usuario prefiere menos movimiento, la única forma de respetarlo de
+// verdad es servirle un frame fijo en vez del GIF.
 if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   nucleoBigbang.src = 'assets/nucleo-estrella-estatica.png';
 }
 
 // { once: true }: el propio navegador remueve este listener después del
-// primer clic — reemplaza el intento anterior de hacerlo a mano con
-// removeEventListener, que no funcionaba porque le pasábamos una función
-// anónima DISTINTA a la que se había registrado (nunca podía coincidir,
-// así que el listener nunca se quitaba de verdad). Con doble-clic rápido
-// esto permitía re-disparar toda la secuencia y encimar los setTimeout.
+// primer clic, evitando que un doble clic rápido re-dispare toda la
+// secuencia y encime los setTimeout de abajo.
 pantallaCarga.addEventListener('click', () => {
   // Guardamos la bandera apenas hace clic (no hace falta esperar a que
   // termine la animación): la próxima vez que esta MISMA pestaña haga
@@ -74,14 +71,12 @@ pantallaCarga.addEventListener('click', () => {
   //    que es continuo). Aquí es la herramienta correcta porque solo
   //    queremos que pase una vez, con un retraso.
   setTimeout(() => {
-    // 13 sept — antes: nucleoBigbang.style.opacity = '0'. No servía de
-    // nada: la animación `respirar` (CSS, en curso) le sigue ganando a
-    // un opacity puesto por JS vía estilo inline normal, así que el
-    // núcleo seguía "respirando" visible durante todo el fundido final
-    // (bug real que reportó Kevin: "se sigue viendo la estrella después
-    // de la explosión"). classList.add en vez de .style: la clase trae
-    // animation:none, que sí apaga la animación que estaba ganando la
-    // pelea — ver .nucleo-bigbang.desvanecido en style.css.
+    // classList.add en vez de asignar opacity por JS: la animación
+    // `respirar` (CSS, en curso) tiene prioridad sobre un opacity puesto
+    // vía estilo inline normal, así que el núcleo seguiría "respirando"
+    // visible durante todo el fundido final. La clase .desvanecido trae
+    // animation:none, que sí apaga la animación en conflicto — ver
+    // .nucleo-bigbang.desvanecido en style.css.
     nucleoBigbang.classList.add('desvanecido');
     flashExplosion.classList.add('explotando'); // disparamos la expansión
   }, 600);
@@ -271,18 +266,15 @@ if (hintPlanetas) {
 
     // Salir del hero con scroll sin haber tocado ningún planeta también
     // lo cierra — no tiene sentido perseguirlo más abajo en la página.
-    // Bug real encontrado con Playwright (19 sept), probado 2 veces antes
-    // de asumir que un IntersectionObserver serviría aquí: cuando .hero
-    // mide exactamente 100vh y el scroll llega exactamente a esa
-    // distancia (justo lo que hace scrollIntoView() al entrar a Presskit/
-    // Biografía — el caso más común, no uno raro), Chromium simplemente
-    // NO vuelve a disparar el callback del observer (confirmado con log
-    // instrumentado: ni con threshold:0 ni agregando rootMargin negativo).
-    // Un scroll grande a cualquier otro punto sí lo dispara bien — el
-    // problema es específico de ese límite exacto. En vez de perseguir
-    // más ajustes de IntersectionObserver, se usa un listener de scroll
-    // directo sobre la posición real (getBoundingClientRect), que sí se
-    // evalúa de forma confiable en cada evento de scroll.
+    // Usa un listener de scroll directo con getBoundingClientRect() en
+    // vez de IntersectionObserver: cuando .hero mide exactamente 100vh y
+    // el scroll llega exactamente a esa distancia (el caso típico de
+    // scrollIntoView() al entrar a Presskit o Biografía), Chromium no
+    // vuelve a disparar el callback del observer — ni ajustar threshold
+    // ni agregar rootMargin negativo lo resuelve. Un scroll a cualquier
+    // otro punto sí lo dispara bien; el problema es específico de ese
+    // límite exacto, y el listener directo sobre la posición real lo
+    // evita por completo.
     const alSalirDelHero = () => {
       const heroRect = document.querySelector('.hero').getBoundingClientRect();
       if (heroRect.bottom <= 0) {
@@ -373,12 +365,11 @@ document.addEventListener('click', (evento) => {
 // SECCIÓN 6: EFECTO MAGNÉTICO DE LOS METEOROS (solo con mouse real)
 // ============================================================
 // Este efecto solo tiene sentido con un mouse real. En touch no
-// existe "cursor pasando cerca" — lo que pasaba antes era que el
-// navegador dispara un mousemove sintético después de cada tap, y
-// el meteoro se enganchaba hacia donde tocaste en la pantalla
-// (bug reportado en vista de celular). matchMedia detecta si el
-// dispositivo tiene puntero fino con hover real (mouse) — si no
-// lo tiene, ni siquiera corremos el efecto.
+// existe "cursor pasando cerca" — el navegador dispara un mousemove
+// sintético después de cada tap, lo que engancharía el meteoro hacia
+// el punto tocado en pantalla. matchMedia detecta si el dispositivo
+// tiene puntero fino con hover real (mouse) — si no lo tiene, ni
+// siquiera corremos el efecto.
 const tieneMouseReal = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 const RADIO_DETECCION = 150;   // distancia en px a partir de la cual "siente" el cursor
@@ -539,13 +530,11 @@ function activarRevelado(selector, threshold = 0.2) {
 // (~780px) — con un threshold más alto no disparaba en mobile.
 activarRevelado('#moodboardPresskit', 0.1);
 
-// Presskit, video destacado (13 sept, fix de rendimiento — ver
-// PENDIENTES #18 del doc del proyecto): el efecto de "vapor"
-// (::before/::after con blur(45px)) corría siempre, sin importar si
-// esta sección estaba en pantalla, mismo patrón ya corregido en v60
-// para meteoros y la nebulosa de Biografía. threshold default (0.2):
-// el bloque no cambia tanto de alto entre mobile/desktop como el
-// moodboard de arriba.
+// Video destacado de Presskit: el efecto de "vapor" (::before/::after
+// con blur(45px)) es costoso en rendimiento si corre sin importar si
+// la sección está en pantalla, por eso también usa este revelado.
+// threshold default (0.2): el bloque no cambia tanto de alto entre
+// mobile/desktop como el moodboard de arriba.
 activarRevelado('.video-destacado');
 
 // Biografía: la intro (tagline) y cada uno de los 2 bloques
@@ -565,15 +554,11 @@ activarRevelado('.bloque-bio');
 // ============================================================
 // .textura-bio (los 2 bloques de Biografía) repite una frase corta
 // como "papel tapiz" muy tenue detrás del párrafo real — ver
-// style.css para el resto del efecto. La cantidad de repeticiones
-// vivía escrita a mano en el HTML (primero 3 copias de la frase,
-// después 6) — bug real que reportó Kevin dos veces seguidas: cada
-// vez que cambiaba el tamaño de fuente de la textura o el ancho de
-// pantalla, esa cantidad fija dejaba de alcanzar (dejaba un hueco
-// sin frase) o sobraba de forma distinta en cada bloque (uno se veía
-// "completo", el otro no) — porque el alto real de cada tarjeta
-// depende de cuánto ocupa el párrafo REAL de cada bloque, que no es
-// igual entre los dos ni se puede saber de antemano.
+// style.css para el resto del efecto. Un número fijo de repeticiones
+// escrito a mano no funciona de forma confiable: el alto real de cada
+// tarjeta depende de cuánto ocupa el párrafo real de cada bloque, que
+// cambia con el tamaño de fuente y el ancho de pantalla, y no es igual
+// entre los dos bloques ni se puede saber de antemano.
 //
 // En vez de seguir ajustando el número a mano cada vez, esta función
 // mide el alto real de la tarjeta en el navegador de quien esté
@@ -603,12 +588,11 @@ function llenarTexturasBio() {
     // Límite de 80 vueltas: red de seguridad para nunca quedar en un
     // loop infinito si algo raro pasa con la medición (por ejemplo,
     // el elemento todavía no es visible y alturaObjetivo da 0) — no
-    // el número real que se espera usar. (Con 40 de tope, la frase
-    // más corta —"UN RINCÓN SEGURO"— llegó a topar el límite en
-    // algunos anchos de pantalla antes de alcanzar el margen de 1.3x
-    // de abajo, verificado con Playwright; 80 deja bastante aire de
-    // sobra sin arriesgar un loop largo de verdad — cada vuelta es
-    // barata, solo mide scrollHeight.)
+    // es el número real que se espera usar. Un tope más bajo puede no
+    // alcanzar el margen de 1.3x de abajo para frases muy cortas en
+    // anchos de pantalla grandes; 80 deja bastante aire de sobra sin
+    // riesgo real de loop largo, ya que cada vuelta es barata (solo
+    // mide scrollHeight).
     let vueltas = 0;
     // ×1.3: no solo "alcanzar" el alto exacto (ahí quedaría el último
     // renglón justo al ras, fácil que un cambio mínimo de ancho lo
@@ -646,7 +630,7 @@ window.addEventListener('resize', () => {
 
 // ============================================================
 // SECCIÓN 8C: EASTER EGG DE BIOGRAFÍA — foto de niña al tocar
-// "pequeña" (13 sept, pedido de Kevin, opción 3)
+// "pequeña"
 // ============================================================
 // El CSS (.disparador-easteregg:hover / :focus-visible, ver
 // style.css) ya resuelve mouse y teclado solos, sin JS. Lo que falta
@@ -698,6 +682,7 @@ if (disparadorEasteregg) {
 
 // ============================================================
 // SECCIÓN 9: BOTÓN STICKY → "VOLVER ARRIBA" AL LLEGAR AL FOOTER
+//            (+ OCULTAR REPRODUCTOR FLOTANTE AL LLEGAR AL FOOTER)
 // ============================================================
 // El mismo botón redondo de redes sociales (Sección 1) se transforma
 // en un cohete que regresa al usuario arriba cuando el footer entra
@@ -706,6 +691,10 @@ if (disparadorEasteregg) {
 // distinto: observamos el footer, pero el que cambia es el botón de
 // redes, que vive en otra parte del HTML.
 const piePagina = document.querySelector('.pie-pagina');
+// El reproductor flotante del sencillo también se oculta al llegar al
+// footer — reutiliza este MISMO observer en vez de crear uno nuevo, ver
+// comentario junto a .oculto-footer en style.css.
+const widgetSencillo = document.querySelector('.widget-sencillo');
 
 if (piePagina) {
   const observadorFooter = new IntersectionObserver((entradas) => {
@@ -728,6 +717,11 @@ if (piePagina) {
       // Reversible, mismo patrón que el resto del sitio: aparece al
       // entrar el footer, se deshace solo al volver a subir.
       redesFlotantes.classList.toggle('modo-volver-arriba', entrada.isIntersecting);
+      // El audio (si estaba sonando) sigue sonando igual — esto solo
+      // afecta opacity/pointer-events del widget, nunca el <audio>.
+      if (widgetSencillo) {
+        widgetSencillo.classList.toggle('oculto-footer', entrada.isIntersecting);
+      }
     });
   }, { threshold: 0.1 });
 
@@ -741,14 +735,14 @@ if (piePagina) {
 // ============================================================
 // SECCIÓN 10: WIDGET DEL SENCILLO — reproducir/pausar por clic
 // ============================================================
-// El disco de la esquina inferior izquierda (13 sept, idea de Kevin)
-// reproduce el sencillo más nuevo. A propósito NO autoplay: TODOS los
-// navegadores (Chrome, Safari, Firefox) bloquean el audio con sonido
-// que arranca solo, sin excepción y sin ningún truco de código que lo
-// evite — es una política de la plataforma, no algo que dependa de
-// cómo se escriba el JS. Por eso el disco solo suena cuando alguien le
-// da clic: ESE clic es el "gesto del usuario" que los navegadores
-// exigen antes de dejar sonar cualquier audio con volumen.
+// El disco de la esquina inferior izquierda reproduce el sencillo más
+// nuevo. A propósito NO autoplay: TODOS los navegadores (Chrome, Safari,
+// Firefox) bloquean el audio con sonido que arranca solo, sin excepción
+// y sin ningún truco de código que lo evite — es una política de la
+// plataforma, no algo que dependa de cómo se escriba el JS. Por eso el
+// disco solo suena cuando alguien le da clic: ESE clic es el "gesto del
+// usuario" que los navegadores exigen antes de dejar sonar cualquier
+// audio con volumen.
 const botonDisco = document.getElementById('botonDisco');
 const audioSencillo = document.getElementById('audioSencillo');
 
